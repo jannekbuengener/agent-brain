@@ -1,6 +1,5 @@
 import tomllib
 
-
 SCAFFOLD_MODULES = (
     "agent_brain",
     "agent_brain.core",
