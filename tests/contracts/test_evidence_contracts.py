@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from agent_brain.contracts.evidence import ClaimRef, EvidenceRef
 
 FIXTURE = Path("tests/fixtures/contracts/evidence_claim.neutral.v1.json")
