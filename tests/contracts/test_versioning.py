@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 from agent_brain.contracts.serialization import contract_payload, serialize_contract
 from agent_brain.contracts.versioning import ContractVersion, require_compatible_version
 
