@@ -17,11 +17,12 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 
 ## Wo beginne ich?
 
-1. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
-2. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
-3. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
-4. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
-5. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
+1. [Portable Foundation](foundation/README.md) — die aktuell vorhandenen produktneutralen Core-Primitiven und ihre Grenzen.
+2. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
+3. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
+4. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
+5. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
+6. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
 
 ## Was Agent Brain später können soll
 
@@ -46,9 +47,9 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 
 ```text
 0  Extraction Canon                 #3   abgeschlossen
-1  Repository Scaffold              #4   aktueller Baseline-Slice
-2  Portable Foundation              #5
-3  Shared Contracts                 #15
+1  Repository Scaffold              #4   abgeschlossen
+2  Portable Foundation              #5   aktuelle Baseline
+3  Shared Contracts                 #15  nächster linearer Slice
 4  Context / Briefing               #6
 5  Repo Ingestion                    #9
 6  Knowledge Build / Seed            #16
@@ -63,7 +64,7 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 15 Genericity / Cleanup              #19
 ```
 
-Zusätzlich existiert [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21). Dieses Gate übernimmt **keine** allgemeinen Knowledge-Mirrors, sondern schützt nur echten SurrealDB-primary State vor stillem Verlust und blockiert Slice 1 nicht.
+Zusätzlich existiert [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21). Dieses Gate übernimmt **keine** allgemeinen Knowledge-Mirrors, sondern schützt nur echten SurrealDB-primary State vor stillem Verlust und blockiert die linearen Foundation-/Contract-Slices nicht.
 
 ## Ergebnis von Slice 0
 
@@ -85,4 +86,4 @@ Details: [State Transition](extraction/STATE_TRANSITION.md).
 
 ## Aktueller Arbeitsmodus
 
-**`SLICE_1_SCAFFOLD`**. Das Repository ist als eigenständiges Python-Paket installier- und testbar, enthält aber weiterhin keine fachliche Brain-Runtime. Nach Merge von #4 ist der nächste lineare Scope [#5 — Portable Foundation](https://github.com/jannekbuengener/agent-brain/issues/5).
+**`SLICE_2_FOUNDATION`**. Das Repository ist eigenständig installier- und testbar und besitzt nun die produktneutrale Foundation für Zeit, deterministisches Hashing, Identität/Provenance, injizierte Source-Priority, Policy-Hooks und Redaction. Der nächste lineare Scope ist [#15 — Shared Contracts](https://github.com/jannekbuengener/agent-brain/issues/15).
