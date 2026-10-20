@@ -142,9 +142,9 @@ class RepositoryProfile:
             schema_version=str(payload.get("schema_version", "")),
             profile_id=str(payload.get("profile_id", "")),
             source=RepositorySource.from_dict(source_payload),
-            include_paths=tuple(payload.get("include_paths", ())),
-            exclude_paths=tuple(payload.get("exclude_paths", ())),
-            allowed_file_types=tuple(payload.get("allowed_file_types", ())),
+            include_paths=payload.get("include_paths", ()),
+            exclude_paths=payload.get("exclude_paths", ()),
+            allowed_file_types=payload.get("allowed_file_types", ()),
             metadata=metadata,
         )
 
