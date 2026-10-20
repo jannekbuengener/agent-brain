@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from agent_brain.context.package import (
     CONTEXT_PACKAGE_SCHEMA,
     ContextArtifact,
