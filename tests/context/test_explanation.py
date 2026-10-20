@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 from agent_brain.context.explanation import (
     SELF_EXPLANATION_SCHEMA,
     SelfExplanationError,
@@ -8,7 +9,6 @@ from agent_brain.context.explanation import (
     build_self_explanation,
     supported_explanation_types,
 )
-
 from agent_brain.contracts.evidence import ClaimRef, EvidenceRef
 
 EXPECTED_TYPES = frozenset(
