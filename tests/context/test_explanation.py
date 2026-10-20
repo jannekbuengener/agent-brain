@@ -9,6 +9,7 @@ from agent_brain.context.explanation import (
     build_self_explanation,
     supported_explanation_types,
 )
+
 from agent_brain.contracts.evidence import ClaimRef, EvidenceRef
 
 EXPECTED_TYPES = frozenset(
@@ -126,9 +127,7 @@ def test_shared_ref_types_are_required() -> None:
 
 
 def test_guardrails_are_generic_injected_and_non_authorizing() -> None:
-    explanation = build_self_explanation(
-        _input(guardrails=("consumer_guardrail",))
-    )
+    explanation = build_self_explanation(_input(guardrails=("consumer_guardrail",)))
     assert "explanation_does_not_authorize_action" in explanation.guardrails
     assert "consumer_guardrail" in explanation.guardrails
     serialized = str(explanation.to_dict()).lower()
