@@ -71,9 +71,9 @@ class RepositorySource:
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> RepositorySource:
         return cls(
-            schema_version=str(payload.get("schema_version", "")),
-            source_id=str(payload.get("source_id", "")),
-            repository=str(payload.get("repository", "")),
+            schema_version=payload.get("schema_version", ""),
+            source_id=payload.get("source_id", ""),
+            repository=payload.get("repository", ""),
             revision=payload.get("revision"),
             source_uri=payload.get("source_uri"),
         )
@@ -139,8 +139,8 @@ class RepositoryProfile:
         if not isinstance(metadata, Mapping):
             raise TypeError("metadata must be a mapping")
         return cls(
-            schema_version=str(payload.get("schema_version", "")),
-            profile_id=str(payload.get("profile_id", "")),
+            schema_version=payload.get("schema_version", ""),
+            profile_id=payload.get("profile_id", ""),
             source=RepositorySource.from_dict(source_payload),
             include_paths=payload.get("include_paths", ()),
             exclude_paths=payload.get("exclude_paths", ()),
@@ -189,10 +189,10 @@ class ArtifactRef:
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> ArtifactRef:
         return cls(
-            schema_version=str(payload.get("schema_version", "")),
-            artifact_id=str(payload.get("artifact_id", "")),
-            source_id=str(payload.get("source_id", "")),
-            source_path=str(payload.get("source_path", "")),
-            source_hash=str(payload.get("source_hash", "")),
+            schema_version=payload.get("schema_version", ""),
+            artifact_id=payload.get("artifact_id", ""),
+            source_id=payload.get("source_id", ""),
+            source_path=payload.get("source_path", ""),
+            source_hash=payload.get("source_hash", ""),
             revision=payload.get("revision"),
         )
