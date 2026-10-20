@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from agent_brain import context
 
-
 PUBLIC_NAMES = {
     "BRIEFING_SCHEMA",
     "CONTEXT_PACKAGE_SCHEMA",
