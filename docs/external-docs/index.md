@@ -66,6 +66,12 @@ Diese Technologien sind für die Roadmap wichtig, dürfen aber **noch nicht** wi
 | **`NEXT`** | `P1` | [JSON Schema](https://json-schema.org/) | Nützlich für spätere formale Schema-/Protocol-Validierung der versionierten Contracts. | Gegenwärtige Contracts sind Python-Datenverträge; `jsonschema` ist keine Runtime-Dependency. |
 | **`NEXT`** | `P1` | [PyPA Version Specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/) | Slice #17 Distribution/Versionierung. | Version `0.0.0` ist aktuell bewusst nur Scaffold-Platzhalter. |
 
+### Lokale SurrealDB-Research-Landschaft
+
+Für SurrealDB-nahe Arbeit existiert zusätzlich eine kuratierte lokale Upstream-/Research-Landschaft. Ihre Agent-Brain-spezifische Leseregel und Slice-Zuordnung steht in [SurrealDB Reference Landscape](surrealdb-reference-landscape.md).
+
+Diese Landschaft ist **REFERENCE**, nicht Runtime-Dependency: lokale Repository-Namen oder Workspace-Positionen beweisen weder aktuelle Ownership noch Supportstatus. Vor Reuse müssen offizieller Upstream und aktuelle Dokumentation geprüft werden. Für #9 darf daraus keine SurrealDB-Abhängigkeit entstehen; für #10/#16/#21 dient sie als Reuse-/Research-Quelle.
+
 ---
 
 ## Entwicklungs- und Operator-Referenzen
@@ -132,5 +138,6 @@ Bei einer Aufgabe mit externer Technologie:
 
 1. zuerst GitHub-/Repo-Live-State und das aktuelle Issue lesen,
 2. danach den passenden `ACTIVE`- oder `NEXT`-Eintrag hier auswählen,
-3. bevorzugt offizielle Upstream-Dokumentation verwenden,
-4. externe Docs nur zur Erklärung der eingesetzten Technologie nutzen — niemals zum Überschreiben des aktuellen Repo-Contracts.
+3. bei SurrealDB-naher Arbeit zusätzlich die [SurrealDB Reference Landscape](surrealdb-reference-landscape.md) lesen,
+4. bevorzugt offizielle Upstream-Dokumentation verwenden,
+5. externe oder lokale Reference-Repos nur zur Erklärung/Reuse-Prüfung nutzen — niemals zum Überschreiben des aktuellen Repo-Contracts.
