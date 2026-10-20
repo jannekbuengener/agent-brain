@@ -162,9 +162,13 @@ def resolve_required_reads(
     )
 
     by_path: dict[str, RequiredReadRule] = {}
-    for rule in selected:
+    order: dict[str, int] = {}
+    for index, rule in enumerate(selected):
         incumbent = by_path.get(rule.path)
-        if incumbent is None or _PRIORITY_RANK[rule.priority] < _PRIORITY_RANK[incumbent.priority]:
+        if incumbent is None:
+            by_path[rule.path] = rule
+            order[rule.path] = index
+        elif _PRIORITY_RANK[rule.priority] < _PRIORITY_RANK[incumbent.priority]:
             by_path[rule.path] = rule
 
     reads: list[RequiredRead] = []
@@ -196,6 +200,6 @@ def resolve_required_reads(
     return tuple(
         sorted(
             reads,
-            key=lambda item: (_PRIORITY_RANK[item.priority], item.path.casefold(), item.path),
+            key=lambda item: (_PRIORITY_RANK[item.priority], order[item.path]),
         )
     )
