@@ -17,12 +17,13 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 
 ## Wo beginne ich?
 
-1. [Portable Foundation](foundation/README.md) — die aktuell vorhandenen produktneutralen Core-Primitiven und ihre Grenzen.
-2. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
-3. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
-4. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
-5. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
-6. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
+1. [Portable Foundation](foundation/README.md) — produktneutrale Core-Primitiven und ihre Grenzen.
+2. [Gemeinsame Contracts](contracts/README.md) — versionierte Repository-, Index-/Graph- und Evidence-/Claim-Datenverträge.
+3. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
+4. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
+5. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
+6. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
+7. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
 
 ## Was Agent Brain später können soll
 
@@ -48,9 +49,9 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 ```text
 0  Extraction Canon                 #3   abgeschlossen
 1  Repository Scaffold              #4   abgeschlossen
-2  Portable Foundation              #5   aktuelle Baseline
-3  Shared Contracts                 #15  nächster linearer Slice
-4  Context / Briefing               #6
+2  Portable Foundation              #5   abgeschlossen
+3  Shared Contracts                 #15  aktuelle Baseline
+4  Context / Briefing               #6   nächster linearer Slice
 5  Repo Ingestion                    #9
 6  Knowledge Build / Seed            #16
 7  Retrieval                         #7
@@ -86,4 +87,4 @@ Details: [State Transition](extraction/STATE_TRANSITION.md).
 
 ## Aktueller Arbeitsmodus
 
-**`SLICE_2_FOUNDATION`**. Das Repository ist eigenständig installier- und testbar und besitzt nun die produktneutrale Foundation für Zeit, deterministisches Hashing, Identität/Provenance, injizierte Source-Priority, Policy-Hooks und Redaction. Der nächste lineare Scope ist [#15 — Shared Contracts](https://github.com/jannekbuengener/agent-brain/issues/15).
+**`SLICE_3_SHARED_CONTRACTS`**. Das Repository ist eigenständig installier- und testbar, besitzt die produktneutrale Foundation und gemeinsame v1-Verträge für Repository-Quellen/Profile, Artifact-Provenance, Index-/Graph-Struktur sowie Evidence-/Claim-Referenzen. Der nächste lineare Scope ist [#6 — Context Package und Briefing Core](https://github.com/jannekbuengener/agent-brain/issues/6).

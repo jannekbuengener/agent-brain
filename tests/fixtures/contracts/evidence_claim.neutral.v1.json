@@ -1,0 +1,35 @@
+{
+  "evidence": {
+    "schema_version": "evidence-ref/v1",
+    "evidence_id": "evidence-widget-test",
+    "evidence_type": "test-result",
+    "source_refs": [
+      "source-example"
+    ],
+    "artifact_refs": [
+      "artifact-widget"
+    ],
+    "claim_refs": [
+      "claim-widget-build"
+    ],
+    "decision_refs": [],
+    "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "summary": "Widget build behavior is covered by the neutral contract fixture."
+  },
+  "claim": {
+    "schema_version": "claim-ref/v1",
+    "claim_id": "claim-widget-build",
+    "claim_type": "behavior",
+    "statement": "The widget builder exposes the indexed symbol.",
+    "evidence_refs": [
+      "evidence-widget-test"
+    ],
+    "artifact_refs": [
+      "artifact-widget"
+    ],
+    "decision_refs": [],
+    "source_refs": [
+      "source-example"
+    ]
+  }
+}
