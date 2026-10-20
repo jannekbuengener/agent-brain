@@ -32,6 +32,15 @@ def test_repository_profile_ignores_unknown_additive_v1_fields() -> None:
     assert "future_optional_field" not in profile.to_dict()
 
 
+@pytest.mark.parametrize("field", ["include_paths", "exclude_paths", "allowed_file_types"])
+def test_repository_profile_rejects_string_where_sequence_is_required(field: str) -> None:
+    payload = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    payload[field] = "src/"
+
+    with pytest.raises(TypeError, match=field):
+        RepositoryProfile.from_dict(payload)
+
+
 def test_repository_source_round_trip() -> None:
     source = RepositorySource(
         schema_version="repository-source/v1",
