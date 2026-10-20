@@ -19,7 +19,7 @@ class ContractVersion:
     def parse(cls, value: str) -> ContractVersion:
         if not isinstance(value, str):
             raise TypeError("contract version must be a string")
-        match = _VERSION_RE.fullmatch(value.strip())
+        match = _VERSION_RE.fullmatch(value)
         if match is None:
             raise ValueError(f"invalid contract version: {value!r}")
         return cls(family=match.group("family"), major=int(match.group("major")))
