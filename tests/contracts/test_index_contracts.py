@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from agent_brain.contracts.index import GraphEdge, IndexRecord, graph_fingerprint
 
 FIXTURE = Path("tests/fixtures/contracts/index_graph.neutral.v1.json")
