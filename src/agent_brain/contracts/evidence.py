@@ -95,9 +95,9 @@ class EvidenceRef:
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> EvidenceRef:
         return cls(
-            schema_version=str(payload.get("schema_version", "")),
-            evidence_id=str(payload.get("evidence_id", "")),
-            evidence_type=str(payload.get("evidence_type", "")),
+            schema_version=payload.get("schema_version", ""),
+            evidence_id=payload.get("evidence_id", ""),
+            evidence_type=payload.get("evidence_type", ""),
             source_refs=_text_tuple(payload.get("source_refs", ()), "source_refs"),
             artifact_refs=_text_tuple(payload.get("artifact_refs", ()), "artifact_refs"),
             claim_refs=_text_tuple(payload.get("claim_refs", ()), "claim_refs"),
@@ -161,9 +161,9 @@ class ClaimRef:
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> ClaimRef:
         return cls(
-            schema_version=str(payload.get("schema_version", "")),
-            claim_id=str(payload.get("claim_id", "")),
-            claim_type=str(payload.get("claim_type", "")),
+            schema_version=payload.get("schema_version", ""),
+            claim_id=payload.get("claim_id", ""),
+            claim_type=payload.get("claim_type", ""),
             statement=payload.get("statement"),
             evidence_refs=_text_tuple(payload.get("evidence_refs", ()), "evidence_refs"),
             artifact_refs=_text_tuple(payload.get("artifact_refs", ()), "artifact_refs"),
