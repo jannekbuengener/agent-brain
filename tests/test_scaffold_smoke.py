@@ -1,8 +1,6 @@
 import importlib
 import tomllib
 
-import pytest
-
 
 SCAFFOLD_MODULES = (
     "agent_brain",
@@ -14,10 +12,10 @@ SCAFFOLD_MODULES = (
 )
 
 
-@pytest.mark.parametrize("module_name", SCAFFOLD_MODULES)
-def test_scaffold_module_boundaries_are_importable(module_name: str) -> None:
-    module = importlib.import_module(module_name)
-    assert module.__name__ == module_name
+def test_scaffold_module_boundaries_are_importable() -> None:
+    for module_name in SCAFFOLD_MODULES:
+        module = importlib.import_module(module_name)
+        assert module.__name__ == module_name
 
 
 def test_scaffold_has_no_runtime_dependencies(repo_root) -> None:
