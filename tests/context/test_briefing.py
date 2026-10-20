@@ -4,20 +4,20 @@ import json
 from pathlib import Path
 
 import pytest
+
 from agent_brain.context.briefing import (
     BRIEFING_SCHEMA,
     BriefingError,
     BriefingRequest,
     build_briefing,
 )
-from agent_brain.context.validation import ValidationPlanInput, build_validation_plan
-
 from agent_brain.context.package import (
     ContextArtifact,
     ContextPackageRequest,
     build_context_package,
 )
 from agent_brain.context.required_reads import RequiredRead
+from agent_brain.context.validation import ValidationPlanInput, build_validation_plan
 from agent_brain.contracts.evidence import EvidenceRef
 from agent_brain.contracts.repository import ArtifactRef
 from agent_brain.core.policy import PolicyDecision
