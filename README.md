@@ -21,12 +21,13 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 
 - [Start hier](docs/START_HIER.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
+- [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)
 - [Extraction Design](docs/superpowers/specs/2026-10-20-agent-brain-extraction-design.md)
 - [Extraction Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
 
 ## Roadmap v2
 
-Die operative Extraktion besteht aktuell aus **16 Slices (0–15)**. Die Reihenfolge ist im [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) und in den [Datenflüssen](docs/DATENFLUESSE.md) kanonisch dokumentiert.
+Die operative Extraktion besteht aus **16 Slices (0–15)**:
 
 ```text
 #3  Slice 0   Extraction Canon
@@ -47,7 +48,7 @@ Die operative Extraktion besteht aktuell aus **16 Slices (0–15)**. Die Reihenf
 #19 Slice 15  Genericity Proof / Claire Cleanup
 ```
 
-Die zuvor gefundenen Architektur-Gaps A–E sind damit auf **Planungsebene geschlossen**. Ein verbleibendes Gate wird bewusst in Slice #0 geklärt: Für bestehenden persistierten Claire-State muss pro Datenklasse entschieden werden, ob sie neu aufgebaut, migriert, verworfen oder deferred wird.
+Slice 0 hat die Ownership- und State-Grenzen konkretisiert. Für tatsächlich vorhandenen SurrealDB-primary State existiert zusätzlich [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21).
 
 ## Wichtige Write-Trennung
 
@@ -68,4 +69,4 @@ Die GitHub-Dokumentation wird **Human First** geschrieben:
 
 ## Aktueller Status
 
-**`ROADMAP_V2_READY_FOR_SLICE_0`** — noch kein produktiver Brain-Code wurde aus Claire de Binare verschoben. Als Nächstes wird Slice #3 / Slice 0 ausgeführt: vollständiges Extraction-, Ownership- und State-Inventar.
+**`SLICE_0_VALIDATED / READY_FOR_SLICE_1`** — die Komponenten-Ownership, State-Transition und Parity-Gates sind auditiert. Noch wurde kein produktiver Brain-Code aus Claire de Binare verschoben. Nächster linearer Slice: [#4 — Repository Scaffold](https://github.com/jannekbuengener/agent-brain/issues/4).
