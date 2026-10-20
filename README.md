@@ -20,10 +20,34 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 ## Start hier
 
 - [Start hier](docs/START_HIER.md)
+- [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
 - [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)
 - [Extraction Design](docs/superpowers/specs/2026-10-20-agent-brain-extraction-design.md)
 - [Extraction Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
+
+## Repository-Baseline
+
+Slice 1 legt eine bewusst schmale Python-Basis fest:
+
+```text
+src/agent_brain/
+├─ core/
+├─ retrieval/
+├─ memory/
+├─ surrealdb/
+└─ connectors/
+```
+
+Die Grenzen sind importierbar, aber noch ohne fachliche Runtime. Sie nehmen weder die Portable Foundation aus #5 noch die Shared Contracts aus #15 vorweg.
+
+- Python: `>=3.12`
+- Packaging: `pyproject.toml` + `src`-Layout
+- Runtime-Abhängigkeiten: keine in Slice 1
+- Qualität: Ruff + pytest
+- CI: Python 3.12, 3.13 und 3.14
+
+Schnellstart und Testkonventionen: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Roadmap v2
 
@@ -69,4 +93,4 @@ Die GitHub-Dokumentation wird **Human First** geschrieben:
 
 ## Aktueller Status
 
-**`SLICE_0_VALIDATED / READY_FOR_SLICE_1`** — die Komponenten-Ownership, State-Transition und Parity-Gates sind auditiert. Noch wurde kein produktiver Brain-Code aus Claire de Binare verschoben. Nächster linearer Slice: [#4 — Repository Scaffold](https://github.com/jannekbuengener/agent-brain/issues/4).
+**`SLICE_1_SCAFFOLD`** — die eigenständig installier- und testbare Repository-Baseline ist definiert. Nach erfolgreichem Merge von #4 ist der nächste lineare Slice [#5 — Portable Foundation](https://github.com/jannekbuengener/agent-brain/issues/5).
