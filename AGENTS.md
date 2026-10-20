@@ -17,6 +17,9 @@ Vor Implementierungsarbeit mindestens lesen:
 5. bei Ownership-Fragen `docs/extraction/COMPONENT_OWNERSHIP.md`
 6. bei Test-/Parity-Fragen `docs/extraction/PARITY_GATES.md`
 7. bei persistiertem State `docs/extraction/STATE_TRANSITION.md`
+8. bei Dependency-, CI-, Protocol-, DB- oder externen Tooling-Fragen `docs/external-docs/index.md`
+
+Externe Dokumentation erklärt Upstream-Technologien, ersetzt aber niemals GitHub-/Repo-Live-State oder einen kanonischen Agent-Brain-Contract. Im externen Referenzindex sind `ACTIVE`-Einträge aktuell im Repo belegt; `NEXT`, `REFERENCE` und `PARKED` dürfen nicht als vorhandene Runtime-Fähigkeit interpretiert werden.
 
 ## Wahrheitshierarchie
 
