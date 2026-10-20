@@ -1,5 +1,4 @@
 import tomllib
-from importlib import import_module
 
 
 SCAFFOLD_MODULES = (
@@ -14,7 +13,7 @@ SCAFFOLD_MODULES = (
 
 def test_scaffold_module_boundaries_are_importable() -> None:
     for module_name in SCAFFOLD_MODULES:
-        module = import_module(module_name)
+        module = __import__(module_name, fromlist=["*"])
         assert module.__name__ == module_name
 
 
