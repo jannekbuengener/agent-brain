@@ -1,0 +1,56 @@
+{
+  "records": [
+    {
+      "schema_version": "index-record/v1",
+      "record_id": "record-module-widget",
+      "record_type": "module",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-widget",
+        "source_id": "source-example",
+        "source_path": "src/widget.py",
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "revision": "abc123"
+      },
+      "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "attributes": {
+        "language": "python"
+      }
+    },
+    {
+      "schema_version": "index-record/v1",
+      "record_id": "record-symbol-build",
+      "record_type": "symbol",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-widget",
+        "source_id": "source-example",
+        "source_path": "src/widget.py",
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "revision": "abc123"
+      },
+      "attributes": {
+        "name": "build_widget"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "schema_version": "graph-edge/v1",
+      "edge_id": "edge-module-build",
+      "from_id": "record-module-widget",
+      "to_id": "record-symbol-build",
+      "edge_type": "contains",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-widget",
+        "source_id": "source-example",
+        "source_path": "src/widget.py",
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "revision": "abc123"
+      },
+      "confidence": 1.0,
+      "inferred": false
+    }
+  ]
+}
