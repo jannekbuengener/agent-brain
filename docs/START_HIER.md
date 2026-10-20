@@ -20,24 +20,25 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 1. [Portable Foundation](foundation/README.md) — produktneutrale Core-Primitiven und ihre Grenzen.
 2. [Gemeinsame Contracts](contracts/README.md) — versionierte Repository-, Index-/Graph- und Evidence-/Claim-Datenverträge.
 3. [Context Package und Briefing Core](context/README.md) — deterministische Context Packages, Required Reads, Self-Explanation, Validation und Briefing.
-4. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
-5. [Externe Referenzdokumentation](external-docs/index.md) — `P0`/`P1` markieren aktuell belegte Referenzen mit Repo-Evidence; `P2` ist geparkt/reference-only und keine Runtime-/Dependency-Aussage.
-6. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
-7. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
-8. [Repository Adoption How-to](extraction/REPOSITORY_ADOPTION_HOWTO.md) — wiederverwendbares Verfahren für weitere Repositories: Live-State, Canon-Audit, Ownership, State, Parity, Adoption und Closeout.
-9. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
-10. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
+4. [Repository Ingestion und Connectors](connectors/README.md) — read-only, produktneutrale lokale Ingestion und #15-Ausgaben.
+5. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
+6. [Externe Referenzdokumentation](external-docs/index.md) — `P0`/`P1` markieren aktuell belegte Referenzen mit Repo-Evidence; `P2` ist geparkt/reference-only und keine Runtime-/Dependency-Aussage.
+7. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
+8. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
+9. [Repository Adoption How-to](extraction/REPOSITORY_ADOPTION_HOWTO.md) — wiederverwendbares Verfahren für weitere Repositories: Live-State, Canon-Audit, Ownership, State, Parity, Adoption und Closeout.
+10. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
+11. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
 
-## Slice #9 vor Implementierung
+## Slice #9 — Repository Ingestion / Connectors (implementiert)
 
-Für Repository Ingestion / Connectors sind die Entscheidungen vor Codebeginn jetzt getrennt dokumentiert:
+Der read-only, produktneutrale Ingestionskern ist implementiert. Er liest explizit profilierte lokale Repositories und erzeugt deterministische #15-Ausgaben für den Knowledge-Build #16:
 
 - [Source → Target Matrix](extraction/SLICE_5_SOURCE_TARGET_MATRIX.md) — Claire-Verhalten: übernehmen, generalisieren, Adapter/Stay/Defer.
-- [Acceptance / Parity / Risk Matrix](extraction/SLICE_5_ACCEPTANCE_PARITY_MATRIX.md) — jedes AC mit späterem Beweis und Negative Controls.
+- [Acceptance / Parity / Risk Matrix](extraction/SLICE_5_ACCEPTANCE_PARITY_MATRIX.md) — jedes AC mit Beweis und Negative Controls.
 - [Implementation Plan](superpowers/plans/2026-10-20-repository-ingestion-connectors.md) — TDD-/Task-Reihenfolge.
 - [SurrealDB Reference Landscape](external-docs/surrealdb-reference-landscape.md) — Reuse-/Research-Routing; keine aktuelle Runtime-Dependency.
 
-Damit muss ein Implementierungsagent keine Architekturentscheidung über Claire-vs-Core, DB-Writes, Repo-Identität oder SurrealDB-Aktivierung neu erfinden.
+Die Entscheidungen über Claire-vs-Core, DB-Writes, Repo-Identität und SurrealDB-Aktivierung sind damit festgelegt; ein Consumer folgt dem Connectors-README und den #15-Verträgen.
 
 ## Was Agent Brain später können soll
 
@@ -65,9 +66,9 @@ Damit muss ein Implementierungsagent keine Architekturentscheidung über Claire-
 1  Repository Scaffold              #4   abgeschlossen
 2  Portable Foundation              #5   abgeschlossen
 3  Shared Contracts                 #15  abgeschlossen
-4  Context / Briefing               #6   abgeschlossen / aktuelle Code-Baseline
-5  Repo Ingestion                    #9   READY_FOR_IMPLEMENTATION
-6  Knowledge Build / Seed            #16
+4  Context / Briefing               #6   abgeschlossen
+5  Repo Ingestion                    #9   abgeschlossen / aktuelle Code-Baseline
+6  Knowledge Build / Seed            #16  nächster Slice
 7  Retrieval                         #7
 8  Evidence / Trust                  #8
 9  SurrealDB Read                    #10
@@ -101,4 +102,4 @@ Details: [State Transition](extraction/STATE_TRANSITION.md).
 
 ## Aktueller Arbeitsmodus
 
-**`SLICE_5_REPOSITORY_INGESTION — READY_FOR_IMPLEMENTATION`**. Produktcode für #9 ist noch nicht implementiert. Scope, Source→Target-Grenzen, Acceptance/Parity/Negative Controls, Reuse-Routing und Implementierungsplan sind vorab festgelegt. Die nächste erlaubte Phase ist test-first Implementierung von [#9](https://github.com/jannekbuengener/agent-brain/issues/9); nach erfolgreichem Merge folgt #16.
+**`SLICE_5_REPOSITORY_INGESTION — IMPLEMENTIERT`**. Der produktneutrale, read-only Repository-Ingestionskern ist implementiert und liefert deterministische #15-Ausgaben. Der nächste lineare Slice ist [#16 — Knowledge Build / Seed / Import](https://github.com/jannekbuengener/agent-brain/issues/16).

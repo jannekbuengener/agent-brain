@@ -60,15 +60,20 @@ src/agent_brain/
 ├─ memory/
 ├─ surrealdb/
 └─ connectors/
+   ├─ ingestion.py
+   ├─ inventory.py
+   ├─ scanner.py
+   ├─ indexer.py
+   └─ ledger.py
 ```
 
-`core/` besitzt die Portable Foundation. `contracts/` besitzt die gemeinsamen, versionierten Datenverträge. `context/` besitzt den side-effect-freien Context-Package-/Briefing-Kern. Die übrigen Verzeichnisse bleiben bewusst importierbare Grenzen ohne vorgezogene fachliche Runtime.
+`core/` besitzt die Portable Foundation. `contracts/` besitzt die gemeinsamen, versionierten Datenverträge. `context/` besitzt den side-effect-freien Context-Package-/Briefing-Kern. `connectors/` besitzt den read-only, produktneutralen Ingestionskern. Die übrigen Verzeichnisse bleiben bewusst importierbare Grenzen ohne vorgezogene fachliche Runtime.
 
 - Foundation-Verträge: [foundation/README.md](foundation/README.md)
 - gemeinsame Contracts: [contracts/README.md](contracts/README.md)
 - Context / Briefing: [context/README.md](context/README.md)
 - externe Referenzen und ihre Live-Relevanz: [external-docs/index.md](external-docs/index.md)
-- Repository Ingestion folgt in #9.
+- Repository Ingestion / Connectors: [connectors/README.md](connectors/README.md) — read-only, produktneutrale lokale Ingestion und #15-Ausgaben.
 - Retrieval, Memory und SurrealDB-Verhalten folgen in ihren eigenen Slices.
 - Distribution, Versionierung und Consumer Contract werden erst in #17 festgelegt.
 
@@ -78,8 +83,10 @@ src/agent_brain/
 - `tests/core/` schützt die produktneutralen Foundation-Verträge und deterministischen Charakterisierungen.
 - `tests/contracts/` schützt Schema-Versionierung, Round-Trips, additive v1-Kompatibilität und strukturelle Source-/Index-/Evidence-Verträge.
 - `tests/context/` schützt Context Package, Required Reads, Self-Explanation, Validation, Briefing und die öffentliche Slice-4-API.
+- `tests/connectors/` schützt Ingestion-/Policy-Verträge, Repository-Inventar, Safe Scanner, statischen Indexer, Ledger-Normalisierung, öffentliche Surface, Produktneutralität und Scope-Guards.
 - `tests/fixtures/contracts/` enthält statische, deterministische, produktneutrale Contract-Fixtures.
 - `tests/fixtures/context/` enthält neutrale Context-/Briefing-Fixtures.
+- `tests/fixtures/connectors/` enthält neutrale Ingestions-/Inventar-/Ledger-Fixtures und das neutrale Fixture-Repository.
 - `tests/conftest.py` enthält kleine prozedurale Fixtures.
 - Claire-Parity-Tests und -Fixtures werden nicht blind kopiert, sondern nur im zuständigen Slice produktneutral charakterisiert oder später im Parity-Scope verglichen.
 
