@@ -8,38 +8,53 @@ Das Projekt entsteht aus dem heute in **Claire de Binare** eingebauten Context-/
 
 Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 
-- welches Repository sie gerade bearbeiten,
+- welches Repository sie bearbeiten,
 - welche Entscheidungen bereits getroffen wurden,
 - welche Dokumente, Dateien und Issues relevant sind,
 - welche Aussagen durch echte Quellen belegt sind,
 - welche Informationen alt, widersprüchlich oder unsicher sind,
 - und welcher Kontext aus früheren Läufen wiederverwendet werden darf.
 
-**Wichtig:** Agent Brain ist Kontext- und Evidence-Infrastruktur. Es ersetzt niemals das aktuelle Repository oder GitHub als Live-Wahrheit und besitzt keine Live-Trading- oder Ausführungsautorität.
+**Wichtig:** Agent Brain ist Kontext- und Evidence-Infrastruktur. Es ersetzt niemals GitHub oder das aktuelle Repository als Live-Wahrheit und besitzt keine Live-Trading- oder Ausführungsautorität.
 
 ## Start hier
 
 - [Start hier](docs/START_HIER.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
-- [Extraction Design: aus Claire de Binare herauslösen](docs/superpowers/specs/2026-10-20-agent-brain-extraction-design.md)
+- [Extraction Design](docs/superpowers/specs/2026-10-20-agent-brain-extraction-design.md)
 - [Extraction Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
 
-## Planung und Slices
+## Roadmap v2
 
-Die operative Extraktion wird über **Epic #2** und die verlinkten Child-Slices #3–#13 gesteuert. Das Epic enthält außerdem den aktuellen **Gap Audit** und den Dependency Flow.
+Die operative Extraktion besteht aktuell aus **16 Slices (0–15)**. Die Reihenfolge ist im [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) und in den [Datenflüssen](docs/DATENFLUESSE.md) kanonisch dokumentiert.
 
-- [Epic #2 — Agent Brain aus Claire de Binare extrahieren](https://github.com/jannekbuengener/agent-brain/issues/2)
-- [Slice #3 — Extraction Canon](https://github.com/jannekbuengener/agent-brain/issues/3)
-- [Slice #4 — Repository-Baseline](https://github.com/jannekbuengener/agent-brain/issues/4)
-- [Slice #5 — Portable Foundation](https://github.com/jannekbuengener/agent-brain/issues/5)
-- [Slice #6 — Context Package / Briefing](https://github.com/jannekbuengener/agent-brain/issues/6)
-- [Slice #7 — Retrieval / Knowledge Reasoning](https://github.com/jannekbuengener/agent-brain/issues/7)
-- [Slice #8 — Evidence / Decisions / Trust](https://github.com/jannekbuengener/agent-brain/issues/8)
-- [Slice #9 — Repository Ingestion / Connectors](https://github.com/jannekbuengener/agent-brain/issues/9)
-- [Slice #10 — SurrealDB Read Runtime](https://github.com/jannekbuengener/agent-brain/issues/10)
-- [Slice #11 — Memory Read Side](https://github.com/jannekbuengener/agent-brain/issues/11)
-- [Slice #12 — CLI / Protocol Surface](https://github.com/jannekbuengener/agent-brain/issues/12)
-- [Slice #13 — Claire Cutover / Parity / Genericity](https://github.com/jannekbuengener/agent-brain/issues/13)
+```text
+#3  Slice 0   Extraction Canon
+#4  Slice 1   Repository Scaffold
+#5  Slice 2   Portable Foundation
+#15 Slice 3   Shared Source / Index / Evidence Contracts
+#6  Slice 4   Context Package / Briefing
+#9  Slice 5   Repository Ingestion / Connectors
+#16 Slice 6   Knowledge Build / Seed / Import
+#7  Slice 7   Retrieval / Knowledge Reasoning
+#8  Slice 8   Evidence / Decisions / Trust
+#10 Slice 9   SurrealDB Read Runtime
+#11 Slice 10  Memory Read Side
+#17 Slice 11  Distribution / Versionierung / Consumer Contract
+#12 Slice 12  CLI / Protocol Surface
+#13 Slice 13  Claire Adapter / Consumer Cutover
+#18 Slice 14  Parity / Dual Run / E2E
+#19 Slice 15  Genericity Proof / Claire Cleanup
+```
+
+Die zuvor gefundenen Architektur-Gaps A–E sind damit auf **Planungsebene geschlossen**. Ein verbleibendes Gate wird bewusst in Slice #0 geklärt: Für bestehenden persistierten Claire-State muss pro Datenklasse entschieden werden, ob sie neu aufgebaut, migriert, verworfen oder deferred wird.
+
+## Wichtige Write-Trennung
+
+- **Knowledge-/Index-Build-Writes:** kontrolliert und reproduzierbar in Slice #16 vorgesehen.
+- **Produktive Agent-Memory-Writes:** in diesem Epic weiterhin `DEFER`.
+
+Das sind zwei unterschiedliche Sicherheits- und Datenklassen und dürfen nicht vermischt werden.
 
 ## Dokumentationsprinzip
 
@@ -53,4 +68,4 @@ Die GitHub-Dokumentation wird **Human First** geschrieben:
 
 ## Aktueller Status
 
-**Planungs- und Extraktionsphase mit offenen Architektur-Gaps.** Noch kein produktiver Brain-Code wurde aus Claire de Binare verschoben. Der aktuelle Gap-Stand wird im [Extraction Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) gepflegt.
+**`ROADMAP_V2_READY_FOR_SLICE_0`** — noch kein produktiver Brain-Code wurde aus Claire de Binare verschoben. Als Nächstes wird Slice #3 / Slice 0 ausgeführt: vollständiges Extraction-, Ownership- und State-Inventar.
