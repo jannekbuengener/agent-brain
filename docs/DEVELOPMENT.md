@@ -1,6 +1,6 @@
 # Entwicklung — Agent Brain
 
-Diese Seite beschreibt die installierbare Repository-Baseline, die Portable Foundation und die gemeinsamen Source-/Index-/Evidence-Contracts. Retrieval-, Context-, Memory- und Datenbank-Runtime folgen weiterhin in getrennten Slices.
+Diese Seite beschreibt die installierbare Repository-Baseline, die Portable Foundation, die gemeinsamen Source-/Index-/Evidence-Contracts und den produktneutralen Context-/Briefing-Core. Retrieval-, Memory-, Ingestion- und Datenbank-Runtime folgen weiterhin in getrennten Slices.
 
 ## Voraussetzungen
 
@@ -50,17 +50,25 @@ src/agent_brain/
 │  ├─ repository.py
 │  ├─ serialization.py
 │  └─ versioning.py
+├─ context/
+│  ├─ briefing.py
+│  ├─ explanation.py
+│  ├─ package.py
+│  ├─ required_reads.py
+│  └─ validation.py
 ├─ retrieval/
 ├─ memory/
 ├─ surrealdb/
 └─ connectors/
 ```
 
-`core/` besitzt die Portable Foundation. `contracts/` besitzt die gemeinsamen, versionierten Datenverträge. Die übrigen Verzeichnisse bleiben bewusst importierbare Grenzen ohne vorgezogene fachliche Runtime.
+`core/` besitzt die Portable Foundation. `contracts/` besitzt die gemeinsamen, versionierten Datenverträge. `context/` besitzt den side-effect-freien Context-Package-/Briefing-Kern. Die übrigen Verzeichnisse bleiben bewusst importierbare Grenzen ohne vorgezogene fachliche Runtime.
 
 - Foundation-Verträge: [foundation/README.md](foundation/README.md)
 - gemeinsame Contracts: [contracts/README.md](contracts/README.md)
-- Context / Briefing folgt in #6.
+- Context / Briefing: [context/README.md](context/README.md)
+- externe Referenzen und ihre Live-Relevanz: [external-docs/index.md](external-docs/index.md)
+- Repository Ingestion folgt in #9.
 - Retrieval, Memory und SurrealDB-Verhalten folgen in ihren eigenen Slices.
 - Distribution, Versionierung und Consumer Contract werden erst in #17 festgelegt.
 
@@ -69,10 +77,12 @@ src/agent_brain/
 - `tests/test_scaffold_smoke.py` schützt die Installierbarkeit und die minimalen Modulgrenzen.
 - `tests/core/` schützt die produktneutralen Foundation-Verträge und deterministischen Charakterisierungen.
 - `tests/contracts/` schützt Schema-Versionierung, Round-Trips, additive v1-Kompatibilität und strukturelle Source-/Index-/Evidence-Verträge.
+- `tests/context/` schützt Context Package, Required Reads, Self-Explanation, Validation, Briefing und die öffentliche Slice-4-API.
 - `tests/fixtures/contracts/` enthält statische, deterministische, produktneutrale Contract-Fixtures.
+- `tests/fixtures/context/` enthält neutrale Context-/Briefing-Fixtures.
 - `tests/conftest.py` enthält kleine prozedurale Fixtures.
-- Claire-Parity-Tests und -Fixtures werden nicht blind kopiert, sondern nur im zuständigen Slice produktneutral übernommen oder später im Parity-Scope verglichen.
+- Claire-Parity-Tests und -Fixtures werden nicht blind kopiert, sondern nur im zuständigen Slice produktneutral charakterisiert oder später im Parity-Scope verglichen.
 
 ## Sicherheitsgrenzen
 
-Die aktuelle Baseline implementiert keine Repository-Ingestion, kein Retrieval, kein Context Package, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes. `EvidenceRef` und `ClaimRef` transportieren nur Identität und Beziehungen; Trust, Resolver und Scoring folgen erst in Slice #8. Produktpolicy bleibt außerhalb des generischen Kerns.
+Die aktuelle Baseline implementiert keine Repository-Ingestion, kein Retrieval, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes. Der Context-/Briefing-Core führt keine externen Aktionen aus und besitzt keine Produktfreigabe-Autorität. `EvidenceRef` und `ClaimRef` transportieren weiterhin nur Identität und Beziehungen; Trust, Resolver und Scoring folgen erst in Slice #8. Produktpolicy bleibt außerhalb des generischen Kerns und kann nur über neutrale Policy-Hooks injiziert werden.
