@@ -1,0 +1,22 @@
+{
+  "target_scope": "issue:example-42",
+  "artifact": {
+    "schema_version": "artifact-ref/v1",
+    "artifact_id": "artifact-widget",
+    "source_id": "source-example",
+    "source_path": "src/widget.py",
+    "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "revision": "abc123"
+  },
+  "evidence": {
+    "schema_version": "evidence-ref/v1",
+    "evidence_id": "evidence-widget",
+    "evidence_type": "test-result",
+    "source_refs": ["source-example"],
+    "artifact_refs": ["artifact-widget"],
+    "claim_refs": [],
+    "decision_refs": [],
+    "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "summary": "Neutral widget evidence"
+  }
+}
