@@ -36,6 +36,20 @@ Das System wird aus dem bestehenden Context-/Agent-Brain von Claire de Binare he
 
 Die wichtigsten Abläufe sind in [DATENFLUESSE.md](DATENFLUESSE.md) als Mermaid-Diagramme dokumentiert. Diese Diagramme sind bewusst Teil der normalen Markdown-Dokumentation und können direkt in GitHub gerendert und versioniert werden.
 
+## Wo sehe ich die operative Planung?
+
+Die aktuelle Roadmap lebt in [Epic #2 — Agent Brain aus Claire de Binare extrahieren](https://github.com/jannekbuengener/agent-brain/issues/2).
+
+Dort findest du:
+
+- die vollständige Slice-Kette #3–#13,
+- Vorgänger-/Nachfolger-Links,
+- den aktuellen Dependency Flow,
+- die offenen Architektur-Gaps,
+- und die Acceptance Gates des gesamten Extraction-Tracks.
+
+Die technische Zielarchitektur und Migrationslogik steht zusätzlich im [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md).
+
 ## Aktueller Arbeitsmodus
 
-Wir befinden uns in der **Extraction-Planung**. Vor dem ersten Code-Slice werden Eigentumsgrenzen, Kompatibilitätsstrategie, Parity-Gates und die Reihenfolge der Migration festgelegt.
+Wir befinden uns in der **Extraction-Planung mit offenen Gap-Gates**. Vor dem ersten Code-Slice werden Eigentumsgrenzen, Kompatibilitätsstrategie, Parity-Gates und die Reihenfolge der Migration so korrigiert, dass keine ungeklärte technische Übergabe zwischen zwei Slices bleibt.
