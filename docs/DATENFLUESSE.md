@@ -1,8 +1,8 @@
 # Agent Brain — Datenflüsse
 
-Diese Seite zeigt die wichtigsten Zusammenhänge als Mermaid-Diagramme. Ziel ist nicht technische Vollständigkeit, sondern schnelle Orientierung für den Operator.
+Diese Seite zeigt die wichtigsten Zusammenhänge als Mermaid-Diagramme. Ziel ist schnelle Orientierung für den Operator, nicht maximale Implementierungsdetailtiefe.
 
-**Operative Planung:** [Epic #2 — Agent Brain aus Claire de Binare extrahieren](https://github.com/jannekbuengener/agent-brain/issues/2)
+**Operative Planung:** [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
 
 ---
 
@@ -19,20 +19,21 @@ flowchart LR
 
     subgraph Brain["Agent Brain"]
         ING["Repo- & Dokumenten-Ingestion"]
-        IDX["Graphen & Indexe"]
+        BUILD["Knowledge Build / Indexe"]
         RET["Hybrid Retrieval"]
         EVI["Evidence Resolver"]
         DEC["Decision Replay"]
-        MEM["Memory\nQuelle + TTL + Confidence"]
+        MEM["Memory Read\nQuelle + TTL + Confidence"]
         TRUST["Trust & Quality"]
         BRIEF["Briefing Engine"]
         DB[("SurrealDB Read Layer")]
 
-        ING --> IDX --> RET
-        RET --> EVI
-        RET --> DEC
+        ING --> BUILD --> RET
+        BUILD --> DB
         DB --> RET
         MEM --> RET
+        RET --> EVI
+        RET --> DEC
         EVI --> TRUST
         DEC --> TRUST
         RET --> BRIEF
@@ -55,7 +56,7 @@ flowchart LR
     BRIEF -->|"Briefings / Nachweise"| AG
 ```
 
-**Merksatz:** Das jeweilige Repository liefert die aktuelle Wahrheit. Agent Brain strukturiert, verbindet und erklärt diese Wahrheit für Agenten.
+**Merksatz:** Das jeweilige Repository liefert die aktuelle Wahrheit. Agent Brain strukturiert, verbindet und erklärt diese Wahrheit.
 
 ---
 
@@ -74,28 +75,23 @@ flowchart LR
     REPO["Repo live"] --> C
     DOC["kanonische Dokumente"] --> D
     DB[("SurrealDB read-only")] --> D
-    MEM["Memory"] --> E
+    MEM["Memory Read"] --> E
 
     F --> H{"Evidence ausreichend?"}
     H -->|"ja"| G
-    H -->|"teilweise"| P["PARTIAL / Einschränkungen sichtbar machen"]
-    H -->|"nein"| X["BLOCKED / REPO_ONLY / keine starke Behauptung"]
+    H -->|"teilweise"| P["PARTIAL\nEinschränkungen sichtbar"]
+    H -->|"nein"| X["BLOCKED / REPO_ONLY\nkeine starke Behauptung"]
 
     G --> O["Output: Kontext · Nachweise · Risiken · nächster Schritt"]
     P --> O
     X --> O
 ```
 
-### Typische Ergebnisklassen
-
-- `DB_BACKED` — relevante Aussage ist durch echte DB-/Tool-Evidence gestützt.
-- `PARTIAL` — Teile sind belegt, Teile bleiben eingeschränkt oder unklar.
-- `REPO_ONLY` — belastbare Repo-/GitHub-Evidence, aber keine DB-gestützte Aussage.
-- `BLOCKED` — die nötige Evidence fehlt oder widerspricht sich so stark, dass keine belastbare Aussage möglich ist.
+Typische Ergebnisklassen: `DB_BACKED`, `PARTIAL`, `REPO_ONLY`, `BLOCKED`.
 
 ---
 
-## 3. Wahrheit und Evidence: was gewinnt bei Widerspruch?
+## 3. Wahrheitshierarchie
 
 ```mermaid
 flowchart TD
@@ -112,88 +108,58 @@ flowchart TD
     CD --> T
     LE --> T
     ME --> T
-
     T --> OUT["Antwort mit Quelle, Confidence und Einschränkungen"]
 ```
 
-**Grundregel:** Agent Brain darf niedrigere Ebenen nicht benutzen, um eine höhere, aktuellere Wahrheit zu überschreiben.
+Niedrigere Ebenen dürfen höhere, aktuellere Wahrheit nicht überschreiben.
 
 ---
 
-## 4. Memory-Lebenszyklus
+## 4. Zwei verschiedene Write-Klassen
+
+Das war ein zentraler Gap im ersten Plan: **Knowledge Build** und **Agent Memory** sind nicht dasselbe.
 
 ```mermaid
-flowchart LR
-    SRC["Beobachtung / Entscheidung / Erkenntnis"] --> GATE{"Für Memory geeignet?"}
+flowchart TB
+    SRC["Repo / Doku / Evidence"] --> ING["Ingestion"]
+    ING --> BUILD["Knowledge Build"]
+    BUILD --> SNAP["versionierter Knowledge-/Index-Snapshot"]
+    SNAP --> SEED["kontrollierter Seed / Import"]
+    SEED --> DB[("SurrealDB Knowledge Store")]
+    DB --> READ["read-only Retrieval"]
 
-    GATE -->|"nein"| DROP["nicht speichern"]
-    GATE -->|"ja · zukünftiger Write-Scope"| PROV["Quelle & Provenance binden"]
-    PROV --> META["Scope · TTL · Confidence · Zeitstempel"]
-    META --> STORE[("Memory Store\nWrite aktuell DEFER")]
-
-    STORE --> READ["späterer Recall"]
-    READ --> REVAL{"gegen aktuellen Live-State revalidieren"}
-
-    REVAL -->|"aktuell"| CURRENT["CURRENT"]
-    REVAL -->|"veraltet"| STALE["STALE"]
-    REVAL -->|"durch neuere Evidence ersetzt"| SUPER["SUPERSEDED"]
-    REVAL -->|"nicht prüfbar"| UNKNOWN["UNKNOWN"]
-
-    CURRENT --> RET["darf Retrieval unterstützen"]
-    STALE --> WARN["nur mit Warnung / nicht als aktuelle Wahrheit"]
-    SUPER --> WARN
-    UNKNOWN --> WARN
+    OBS["Agent-Beobachtung / Erkenntnis"] --> MGATE{"Memory Write erlaubt?"}
+    MGATE -->|"in diesem Epic: nein"| DEFER["DEFER"]
+    MGATE -.->|"späterer eigener Scope"| MSTORE[("Agent Memory Store")]
 ```
 
-**Wichtig:** Memory ist Wiederfindehilfe, keine Autorität. Ohne Quelle, Scope, TTL und Confidence gehört eine Information nicht in das dauerhafte Brain-Memory. Im aktuellen Extraction-Epic ist die **Read Side** enthalten; produktive Agent-Memory-Writes bleiben ausdrücklich `DEFER`.
+### Regel
+
+- **Knowledge-/Index-Build-Writes:** reproduzierbare Build-Artefakte; Slice [#16](https://github.com/jannekbuengener/agent-brain/issues/16).
+- **Produktive Agent-Memory-Writes:** bleiben in diesem Epic `DEFER`.
+- **Memory Read:** wird in Slice [#11](https://github.com/jannekbuengener/agent-brain/issues/11) extrahiert.
 
 ---
 
-## 5. Extraktion aus Claire de Binare: kontrollierter Cutover
+## 5. Extraction Roadmap v2
 
 ```mermaid
 flowchart LR
-    subgraph Heute["HEUTE · Brain sitzt in Claire"]
-        C1["tools/surrealdb"]
-        C2["tools/mcp"]
-        C3["Context · Evidence · Decision · Memory"]
-        C4["Claire-Policy · LR · Trading-Grenzen"]
-        C1 --- C3
-        C2 --- C3
-        C3 --- C4
-    end
-
-    subgraph Migration["ÜBERGANG · Sliceweise Extraktion"]
-        S0["#3 · Slice 0\nOwnership & Contracts"]
-        S1["#4 · Slice 1\nAgent-Brain Scaffold"]
-        S2["#5 · Slice 2\nPortable Foundation"]
-        S3["#6 · Slice 3\nContext / Briefing"]
-        S4["#7 · Slice 4\nRetrieval"]
-        S5["#8 · Slice 5\nEvidence / Decisions / Trust"]
-        S6["#9 · Slice 6\nRepo Ingestion & Connectors"]
-        S7["#10 · Slice 7\nSurrealDB Read Runtime"]
-        S8["#11 · Slice 8\nMemory Read Side"]
-        S9["#12 · Slice 9\nCLI / Protocol Surface"]
-        S10["#13 · Slice 10\nClaire Cutover + Genericity Proof"]
-
-        S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10
-    end
-
-    subgraph Ziel["ZIEL · klare Verantwortung"]
-        AB["Agent Brain\ngenerischer Brain-Kern"]
-        CP["Claire de Binare\nTrading-Core + Claire-Policy"]
-        AD["Claire Adapter / Repo-Profil"]
-        WF["Agent Workforce"]
-        OTHER["weitere Repos / Tools"]
-
-        CP --> AD -->|"Repo-Kontext / Profil"| AB
-        AB -->|"Briefings · Evidence · Trust"| CP
-        AB -->|"Kontextpakete"| WF
-        AB -->|"generischer Context Service"| OTHER
-    end
-
-    Heute -->|"Extraktion, kein Rewrite"| Migration
-    Migration -->|"Parity bewiesen"| Ziel
+    S0["0 · #3\nExtraction Canon"] --> S1["1 · #4\nScaffold"]
+    S1 --> S2["2 · #5\nPortable Foundation"]
+    S2 --> S3["3 · #15\nShared Contracts"]
+    S3 --> S4["4 · #6\nContext / Briefing"]
+    S4 --> S5["5 · #9\nRepo Ingestion"]
+    S5 --> S6["6 · #16\nKnowledge Build / Seed"]
+    S6 --> S7["7 · #7\nRetrieval"]
+    S7 --> S8["8 · #8\nEvidence / Trust"]
+    S8 --> S9["9 · #10\nSurrealDB Read"]
+    S9 --> S10["10 · #11\nMemory Read"]
+    S10 --> S11["11 · #17\nDistribution / Versioning"]
+    S11 --> S12["12 · #12\nCLI / Protocol"]
+    S12 --> S13["13 · #13\nClaire Cutover"]
+    S13 --> S14["14 · #18\nParity / Dual Run"]
+    S14 --> S15["15 · #19\nGenericity / Cleanup"]
 ```
 
 ### Direkte Issue-Links
@@ -203,33 +169,58 @@ flowchart LR
 | 0 · Extraction Canon | [#3](https://github.com/jannekbuengener/agent-brain/issues/3) |
 | 1 · Scaffold | [#4](https://github.com/jannekbuengener/agent-brain/issues/4) |
 | 2 · Portable Foundation | [#5](https://github.com/jannekbuengener/agent-brain/issues/5) |
-| 3 · Context / Briefing | [#6](https://github.com/jannekbuengener/agent-brain/issues/6) |
-| 4 · Retrieval | [#7](https://github.com/jannekbuengener/agent-brain/issues/7) |
-| 5 · Evidence / Trust | [#8](https://github.com/jannekbuengener/agent-brain/issues/8) |
-| 6 · Repo Ingestion | [#9](https://github.com/jannekbuengener/agent-brain/issues/9) |
-| 7 · SurrealDB Read | [#10](https://github.com/jannekbuengener/agent-brain/issues/10) |
-| 8 · Memory Read | [#11](https://github.com/jannekbuengener/agent-brain/issues/11) |
-| 9 · CLI / Protocol | [#12](https://github.com/jannekbuengener/agent-brain/issues/12) |
-| 10 · Claire Cutover | [#13](https://github.com/jannekbuengener/agent-brain/issues/13) |
-
-### Cutover-Regel
-
-```mermaid
-flowchart LR
-    OLD["bestehender Claire-Pfad"] --> CONTRACT["portablen Contract extrahieren"]
-    CONTRACT --> NEW["Agent Brain implementiert Contract"]
-    NEW --> TEST["Claire-Regressionen + Parity-Tests"]
-    TEST -->|"grün"| CONSUME["Claire konsumiert Agent Brain"]
-    CONSUME --> DUAL["Dual Run / Compatibility Layer"]
-    DUAL -->|"Parity stabil"| REMOVE["alten Claire-Duplikatcode entfernen"]
-    TEST -->|"nicht grün"| OLD
-```
-
-**Kein Big Bang:** Altcode wird erst entfernt, nachdem der neue Pfad dieselben relevanten Verträge und Tests erfüllt.
+| 3 · Shared Contracts | [#15](https://github.com/jannekbuengener/agent-brain/issues/15) |
+| 4 · Context / Briefing | [#6](https://github.com/jannekbuengener/agent-brain/issues/6) |
+| 5 · Repo Ingestion | [#9](https://github.com/jannekbuengener/agent-brain/issues/9) |
+| 6 · Knowledge Build / Seed | [#16](https://github.com/jannekbuengener/agent-brain/issues/16) |
+| 7 · Retrieval | [#7](https://github.com/jannekbuengener/agent-brain/issues/7) |
+| 8 · Evidence / Trust | [#8](https://github.com/jannekbuengener/agent-brain/issues/8) |
+| 9 · SurrealDB Read | [#10](https://github.com/jannekbuengener/agent-brain/issues/10) |
+| 10 · Memory Read | [#11](https://github.com/jannekbuengener/agent-brain/issues/11) |
+| 11 · Distribution / Versionierung | [#17](https://github.com/jannekbuengener/agent-brain/issues/17) |
+| 12 · CLI / Protocol | [#12](https://github.com/jannekbuengener/agent-brain/issues/12) |
+| 13 · Claire Cutover | [#13](https://github.com/jannekbuengener/agent-brain/issues/13) |
+| 14 · Parity / Dual Run | [#18](https://github.com/jannekbuengener/agent-brain/issues/18) |
+| 15 · Genericity / Cleanup | [#19](https://github.com/jannekbuengener/agent-brain/issues/19) |
 
 ---
 
-## 6. Verantwortungsgrenzen im Zielbild
+## 6. Claire-Cutover ist jetzt dreistufig
+
+```mermaid
+flowchart LR
+    VERSION["#17\nVersion / Pin / Rollback Contract"] --> CLI["#12\nStandalone Surface"]
+    CLI --> CUT["#13\nClaire Adapter + Consumer Cutover"]
+    CUT --> DUAL["#18\nDual Run + Parity + E2E"]
+    DUAL -->|"Cleanup-Go"| CLEAN["#19\nGenericity Proof + Altcode-Cleanup"]
+
+    DUAL -->|"Parity rot"| CUT
+```
+
+**Kein Big Bang:** Cutover, Beweis und Cleanup sind getrennte Entscheidungen.
+
+---
+
+## 7. Persistierter Claire-State: Slice-0-Gate
+
+Noch nicht jede bestehende Datenklasse muss automatisch migriert werden.
+
+```mermaid
+flowchart TD
+    STATE["bestehende persistierte Claire-Datenklasse"] --> AUDIT{"Slice #3 / Slice 0"}
+    AUDIT --> REBUILD["REBUILD_FROM_SOURCE"]
+    AUDIT --> MIGRATE["MIGRATE"]
+    AUDIT --> DROP["DROP_WITH_REASON"]
+    AUDIT --> DEFER["DEFER"]
+
+    MIGRATE --> FOLLOW["eigener Migrationsscope vor betroffenem Runtime-Slice"]
+```
+
+Damit wird Migration nur dort gebaut, wo sie tatsächlich nötig ist.
+
+---
+
+## 8. Verantwortungsgrenzen im Zielbild
 
 ```mermaid
 flowchart TB
@@ -260,29 +251,14 @@ flowchart TB
 
 ---
 
-## 7. Offene Gaps zwischen den Slices
+## 9. Gap-Status
 
-Der aktuelle lineare Plan ist **noch nicht vollständig implementierungsreif**. Die folgenden Übergaben sind im [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) als `OPEN_GAP` dokumentiert.
+Die ursprünglichen Gaps A–E sind in **Roadmap v2** auf Planungsebene geschlossen:
 
-```mermaid
-flowchart TB
-    S3["#6 · Context Package"] -->|"GAP E\nEvidenceRef / Claim Contract fehlt"| S5["#8 · Evidence Resolver"]
+- GAP A → #15 + #9 + #16 vor Retrieval.
+- GAP B → #16 Build/Seed; #10 bleibt read-only.
+- GAP C → #17 Distribution/Versionierung/Pinning/Rollback.
+- GAP D → #13, #18 und #19 getrennt.
+- GAP E → #15 definiert `EvidenceRef`/`ClaimRef`; #8 resolvt/scored später.
 
-    S4["#7 · Retrieval"] -.->|"GAP A\nbenötigt Source-/Index-Contract"| S6["#9 · Repo Ingestion"]
-
-    S6 -->|"GAP B\nwer baut / seeded den lesbaren Wissensstand?"| S7["#10 · SurrealDB Read"]
-
-    S9["#12 · CLI / Protocol"] -->|"GAP C\nDistribution · Versionierung · Pinning · Rollback"| S10["#13 · Claire Cutover"]
-
-    S10 --> GD["GAP D\nSlice #13 zu breit:\nCutover + Dual Run + Parity + Genericity + Cleanup"]
-```
-
-### Was vor Implementierung korrigiert werden muss
-
-1. **GAP A:** Source-/Index-/Repo-Profile-Contract vor Retrieval stabilisieren oder Slice #9 aufteilen/vorziehen.
-2. **GAP B:** Knowledge-/Index-Build-Writes sauber von produktiven Agent-Memory-Writes trennen und einen reproduzierbaren Build/Seed/Import-Pfad definieren.
-3. **GAP C:** Consumer-/Release-Contract für Claire definieren — Versionierung, Pinning, Cross-Repo Contract Tests und Rollback.
-4. **GAP D:** Slice #13 verkleinern, wenn Cutover-Vertrag feststeht.
-5. **GAP E:** Minimalen `EvidenceRef`-/Claim-Referenzvertrag früh festlegen; Resolver/Scoring bleibt später in #8.
-
-Diese Gap-Liste ist **kein zusätzlicher Produkt-Scope**, sondern die fehlende Verbindung zwischen bereits geplanten Verantwortungsbereichen.
+Offen bleibt bewusst nur **WATCH F**: bestehender persistierter Claire-State wird in Slice #0 klassifiziert.
