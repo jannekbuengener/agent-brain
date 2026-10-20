@@ -12,6 +12,7 @@ from agent_brain.context.package import (
     ContextPackageRequest,
     build_context_package,
 )
+
 from agent_brain.contracts.evidence import EvidenceRef
 from agent_brain.contracts.repository import ArtifactRef
 from agent_brain.core.source_priority import SourcePriority
