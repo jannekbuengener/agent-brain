@@ -9,6 +9,7 @@ Die Portable Foundation ist die kleinste produktneutrale technische Basis von Ag
 | `agent_brain.core.time` | injizierbare UTC-Zeit für deterministische Tests und Abläufe |
 | `agent_brain.core.canonical` | kanonisches JSON und deterministisches SHA-256-Hashing |
 | `agent_brain.core.identity` | kleine, domänenneutrale Identitäts- und Provenance-Primitiven |
+| `agent_brain.core.run_id` | portables 14-stelliges Run-ID-Format und Snapshot-Run-ID-Lesehelper |
 | `agent_brain.core.source_priority` | vom Consumer injizierte Quellpriorität ohne fest eingebaute Produktnamen |
 | `agent_brain.core.policy` | Schnittstelle für externe Policy-Entscheidungen, ohne Produktpolicy im Core |
 | `agent_brain.core.redaction` | deterministische Maskierung sensibler Ausgaben und restriktive lokale Secret-Sidecars |
@@ -27,9 +28,11 @@ Das Canonical-JSON-Verhalten wurde gegen die Claire-Extraktionsbaseline `84b5e05
 
 Die Claire-Dateien sind dabei historische Charakterisierungsquellen. Agent Brain importiert oder benötigt Claire nicht zur Laufzeit.
 
-## Zeit
+## Zeit und Run IDs
 
 `FixedClock` und der injizierbare Default-Clock-Pfad ermöglichen reproduzierbare Tests ohne versteckten Wall-Clock-Zugriff. `SystemClock` liefert wie die charakterisierte Ausgangsbasis einen naiven UTC-`datetime`.
+
+`timestamp_run_id()` bewahrt das portable `YYYYMMDDHHMMSS`-Format der extrahierten Foundation-Quelle, nutzt aber den injizierbaren Clock-Pfad. `run_id_from_snapshot()` übernimmt nur den produktneutralen JSON-`run_id`-Lesevertrag; eine CLI gehört nicht in diesen Slice.
 
 ## Policy und Source Priority
 
