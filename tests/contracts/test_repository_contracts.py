@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from agent_brain.contracts.repository import ArtifactRef, RepositoryProfile, RepositorySource
 
 FIXTURE = Path("tests/fixtures/contracts/repository_profile.neutral.v1.json")
