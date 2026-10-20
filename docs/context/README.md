@@ -62,4 +62,4 @@ Der stabile Slice-4-Einstieg ist `agent_brain.context`. Die package-level Export
 
 ## Externe technische Referenzen
 
-Bei Dependency-, CI-, Protocol-, DB- oder Tooling-Fragen zusätzlich [Externe Referenzdokumentation](../external-docs/index.md) lesen. `ACTIVE` bedeutet dort live im Agent-Brain-Repo belegt; `NEXT`, `REFERENCE` und `PARKED` sind keine Aussage über vorhandene Runtime-Fähigkeiten.
+Bei Dependency-, CI-, Protocol-, DB- oder Tooling-Fragen zusätzlich [Externe Referenzdokumentation](../external-docs/index.md) lesen. `P0`/`P1` bedeuten dort aktuell durch Repo-Evidence belegte Kern-/Sekundärreferenzen; `P2` ist geparkt/reference-only und keine Aussage über vorhandene Runtime-Fähigkeiten oder Dependencies.
