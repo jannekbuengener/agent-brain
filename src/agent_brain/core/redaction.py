@@ -77,7 +77,7 @@ def redact_sensitive_json(payload: Any) -> str:
 def write_restricted_secret_file(path: Path, secret: str) -> None:
     """Write a local credential sidecar with restrictive permissions."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = f"{secret}\n".encode("utf-8")
+    payload = f"{secret}\n".encode()
     flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
     if hasattr(os, "O_BINARY"):
         flags |= os.O_BINARY

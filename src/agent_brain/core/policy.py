@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Mapping, Protocol
+from typing import Protocol
 
 
 def _required_operation(value: str) -> str:

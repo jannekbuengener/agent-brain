@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Protocol
 
 
@@ -17,7 +17,7 @@ class SystemClock:
     """System-backed UTC clock preserving the legacy naive datetime shape."""
 
     def now(self) -> datetime:
-        return datetime.now(timezone.utc).replace(tzinfo=None)
+        return datetime.now(UTC).replace(tzinfo=None)
 
 
 class FixedClock:
