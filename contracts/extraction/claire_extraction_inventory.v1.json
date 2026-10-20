@@ -1,0 +1,115 @@
+{
+  "schema_version": "agent-brain-extraction-inventory/v1",
+  "source": {
+    "repository": "jannekbuengener/Claire_de_Binare",
+    "commit": "84b5e05765fcde402a2565aa37fd42081ee95355",
+    "brain_evidence": {
+      "source": "repo-only",
+      "status": "not-used"
+    }
+  },
+  "decision_values": [
+    "MOVE",
+    "ADAPTER",
+    "STAY",
+    "DEFER"
+  ],
+  "surrealdb_component_groups": [
+    {
+      "group": "foundation_move",
+      "files": ["__init__.py", "gen_run_id.py", "sensitive_output.py"]
+    },
+    {
+      "group": "contracts_move",
+      "files": ["context_graph_contract.py", "db_record_evidence_contract.py", "db_record_evidence_response.py"]
+    },
+    {
+      "group": "context_move",
+      "files": ["context_package_v2.py", "context_self_explanation.py", "context_validation_plan.py"]
+    },
+    {
+      "group": "repo_adapter",
+      "files": ["context_required_reads.py", "context_certify.py", "context_onboarding_doctor.py", "agent_os_readiness.py"]
+    },
+    {
+      "group": "ingestion_move",
+      "files": ["context_indexer.py", "ledger_importer.py"]
+    },
+    {
+      "group": "build_move",
+      "files": ["context_importer.py", "knowledge_refresh_cli.py", "knowledge_refresh_report.py", "local_reset.py", "local_schema_apply.py", "local_schema_check.py", "schema_snapshot.py"]
+    },
+    {
+      "group": "retrieval_move",
+      "files": ["context_impact_radar.py", "context_stop_resolver.py", "graph_vector_proof_cli.py", "hybrid_retrieval_ranking.py"]
+    },
+    {
+      "group": "evidence_trust_move",
+      "files": ["architect_signals.py", "claim_evidence_at_rest.py", "claim_evidence_proof_cli.py", "claim_evidence_proof_runtime.py", "claim_resolver.py", "contradiction_cli.py", "contradiction_scan.py", "decision_history_query.py", "decision_replay_builder.py", "drift_report.py", "evidence_lookup.py", "negative_controls.py", "negative_controls_matrix.py", "quality_scoring_cli.py", "quality_scoring.py", "scope_drift_blocking.py", "scope_drift_cli.py", "scope_drift_firewall.py", "stale_context_cli.py", "stale_knowledge_scan.py", "stale_refresh_plan.py", "trust_summary.py"]
+    },
+    {
+      "group": "db_read_move",
+      "files": ["context_query.py", "context_readonly_query_harness.py", "local_query_config_init.py"]
+    },
+    {
+      "group": "memory_read_move",
+      "files": ["memory_contract.py", "memory_cross_session_rediscovery.py", "memory_db_proof_cli.py", "memory_db_proof_local_dev.py", "memory_db_proof_runtime.py", "memory_db_read_proof.py", "memory_db_stale_scan.py", "memory_read.py", "memory_rediscovery_proof_cli.py", "memory_rediscovery_proof_runtime.py"]
+    },
+    {
+      "group": "protocol_move",
+      "files": ["context_invocation_evidence_json.py", "context_invocation_harness_types.py", "context_live_invocation_harness.py"]
+    },
+    {
+      "group": "claire_presentation_stay",
+      "files": ["control_room_signal_layer.py", "control_room_view_builder.py"]
+    },
+    {
+      "group": "memory_write_defer",
+      "files": ["audit_observation_from_gate.py", "audit_trail_t3_bootstrap.py", "audit_trail_t3_common.py", "audit_trail_t3_proof.py", "audit_trail_t4_common.py", "audit_trail_t4_proof.py", "audit_trail_t4_write.py", "memory_db_write_smoke.py", "memory_write_gate.py", "memory_write_path_productive.py", "memory_write_path_t4.py", "memory_write_path_v1.py"]
+    }
+  ],
+  "mcp_component_groups": [
+    {
+      "group": "protocol_move",
+      "files": ["__init__.py", "context_contradiction_tools.py", "context_decision_tools.py", "context_evidence_memory_tools.py", "memory_output_contract.py", "permission_guard.py", "quality_scoring_tools.py", "registry.py", "scope_drift_tools.py", "server.py", "stale_context_tools.py", "surrealdb_adapter_factory.py"]
+    },
+    {
+      "group": "adapter_split",
+      "files": ["agent_os_readiness_tools.py", "architect_signal_tools.py", "context_bridge.py", "cross_repo_root_inventory.py"]
+    },
+    {
+      "group": "claire_presentation_stay",
+      "files": ["control_room_tools.py", "README.md"]
+    },
+    {
+      "group": "memory_write_defer",
+      "files": ["memory_write_intent_tools.py"]
+    }
+  ],
+  "state_transition": {
+    "agent_memory": "MIGRATE",
+    "artifact_cites_decision": "REBUILD_FROM_SOURCE",
+    "audit_observation": "MIGRATE",
+    "chunk_mentions_symbol": "REBUILD_FROM_SOURCE",
+    "claim": "MIGRATE",
+    "code_symbol": "REBUILD_FROM_SOURCE",
+    "concept": "REBUILD_FROM_SOURCE",
+    "context_query": "DROP_WITH_REASON",
+    "contradiction": "REBUILD_FROM_SOURCE",
+    "decision_event": "REBUILD_FROM_SOURCE",
+    "dependency_edge": "REBUILD_FROM_SOURCE",
+    "doc_chunk": "REBUILD_FROM_SOURCE",
+    "doc_page": "REBUILD_FROM_SOURCE",
+    "doc_section": "REBUILD_FROM_SOURCE",
+    "evidence_ref": "MIGRATE",
+    "knowledge_quality_score": "REBUILD_FROM_SOURCE",
+    "memory_supports_decision": "REBUILD_FROM_SOURCE",
+    "repo_artifact": "REBUILD_FROM_SOURCE",
+    "scope_drift_event": "REBUILD_FROM_SOURCE",
+    "stale_context": "REBUILD_FROM_SOURCE",
+    "visual_control_view": "REBUILD_FROM_SOURCE",
+    "shared_memory_if_present": "MIGRATE"
+  },
+  "migration_gate_issue": 21,
+  "parity_gate_document": "docs/extraction/PARITY_GATES.md"
+}
