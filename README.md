@@ -97,7 +97,7 @@ Die GitHub-Dokumentation wird **Human First** geschrieben:
 - Datenflüsse und Beziehungen werden bevorzugt mit Mermaid visualisiert.
 - Maschinenverträge, APIs, Schemafelder und Code dürfen weiterhin präzise englische Bezeichner verwenden.
 
-Der externe Referenzindex trennt live belegte Technologien (`ACTIVE`) klar von konkret geplanten (`NEXT`), optionalen (`REFERENCE`) und derzeit nicht relevanten (`PARKED`) Referenzen. Externe Dokumentation ersetzt nie GitHub-/Repo-Live-State.
+Der externe Referenzindex trennt aktuell belegte Kern-/Sekundärreferenzen (`P0`/`P1`, jeweils mit Repo-Evidence) von geparkten `P2`-Referenzen. `P2` ist keine Aussage über vorhandene Runtime-Fähigkeiten oder Dependencies. Externe Dokumentation ersetzt nie GitHub-/Repo-Live-State.
 
 ## Aktueller Status
 
