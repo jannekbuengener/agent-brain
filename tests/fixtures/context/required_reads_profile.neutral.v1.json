@@ -1,0 +1,10 @@
+{
+  "minimum": [
+    {"path": "AGENTS.md", "priority": "critical", "reason": "Read repository instructions first."},
+    {"path": "README.md", "priority": "high", "reason": "Read repository overview."}
+  ],
+  "conditional": [
+    {"path": "docs/contracts.md", "priority": "high", "reason": "Contract work needs contract documentation.", "keywords": ["contract", "schema"]},
+    {"path": "docs/writes.md", "priority": "critical", "reason": "Write operations need write guidance.", "operation_modes": ["write"]}
+  ]
+}

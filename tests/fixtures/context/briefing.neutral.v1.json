@@ -1,0 +1,16 @@
+{
+  "request": {
+    "task_id": "task-example-42",
+    "task_scope": "Review the neutral widget contract.",
+    "target_issue": "#42",
+    "requested_depth": "standard",
+    "operation_mode": "review",
+    "target_paths": ["src/widget.py"],
+    "target_symbols": ["build_widget"],
+    "target_concepts": ["compatibility"],
+    "risk_level": "medium"
+  },
+  "guardrails": ["consumer_guardrail"],
+  "stop_conditions": ["stop_if_scope_changes"],
+  "unresolved_questions": ["Is the downstream consumer updated?"]
+}

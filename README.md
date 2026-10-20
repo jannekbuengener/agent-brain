@@ -22,13 +22,15 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 - [Start hier](docs/START_HIER.md)
 - [Portable Foundation](docs/foundation/README.md)
 - [Gemeinsame Source-/Index-/Evidence-Contracts](docs/contracts/README.md)
+- [Context Package und Briefing Core](docs/context/README.md)
+- [Externe technische Referenzen](docs/external-docs/index.md)
 - [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
 - [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)
 - [Extraction Design](docs/superpowers/specs/2026-10-20-agent-brain-extraction-design.md)
 - [Extraction Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
 
-## Repository-, Foundation- und Contract-Baseline
+## Repository-, Foundation-, Contract- und Context-Baseline
 
 Das Repository nutzt eine bewusst schmale Python-Basis:
 
@@ -36,13 +38,14 @@ Das Repository nutzt eine bewusst schmale Python-Basis:
 src/agent_brain/
 ├─ core/        # Portable Foundation
 ├─ contracts/   # Source / Index / Evidence Contracts
+├─ context/     # Context Package / Required Reads / Explanation / Validation / Briefing
 ├─ retrieval/   # noch ohne fachliche Runtime
 ├─ memory/      # noch ohne fachliche Runtime
 ├─ surrealdb/   # noch ohne fachliche Runtime
 └─ connectors/  # noch ohne fachliche Runtime
 ```
 
-Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Die gemeinsame Contract-Schicht definiert nun versionierte Repository-/Artifact-, Index-/Graph- und Evidence-/Claim-Typen, ohne Ingestion, Retrieval, Resolver oder Datenbank-Runtime vorwegzunehmen.
+Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Die gemeinsame Contract-Schicht definiert versionierte Repository-/Artifact-, Index-/Graph- und Evidence-/Claim-Typen. Die Context-Schicht baut darauf deterministische Packages, Required Reads, Self-Explanations, Validation Plans und Briefings auf, ohne Ingestion, Retrieval, Resolver oder Datenbank-Runtime vorwegzunehmen.
 
 - Python: `>=3.12`
 - Packaging: `pyproject.toml` + `src`-Layout
@@ -94,6 +97,8 @@ Die GitHub-Dokumentation wird **Human First** geschrieben:
 - Datenflüsse und Beziehungen werden bevorzugt mit Mermaid visualisiert.
 - Maschinenverträge, APIs, Schemafelder und Code dürfen weiterhin präzise englische Bezeichner verwenden.
 
+Der externe Referenzindex trennt live belegte Technologien (`ACTIVE`) klar von konkret geplanten (`NEXT`), optionalen (`REFERENCE`) und derzeit nicht relevanten (`PARKED`) Referenzen. Externe Dokumentation ersetzt nie GitHub-/Repo-Live-State.
+
 ## Aktueller Status
 
-**`SLICE_3_SHARED_CONTRACTS`** — Scaffold, Portable Foundation und gemeinsame Source-/Index-/Evidence-Contracts bilden die aktuelle technische Baseline. Der nächste lineare Slice ist [#6 — Context Package und Briefing Core](https://github.com/jannekbuengener/agent-brain/issues/6).
+**`SLICE_4_CONTEXT_BRIEFING`** — Scaffold, Portable Foundation, gemeinsame Source-/Index-/Evidence-Contracts sowie der produktneutrale Context-/Briefing-Core bilden die technische Baseline. Der nächste lineare Slice ist [#9 — Repository Ingestion / Connectors](https://github.com/jannekbuengener/agent-brain/issues/9).

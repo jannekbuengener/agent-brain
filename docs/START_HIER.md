@@ -19,11 +19,13 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 
 1. [Portable Foundation](foundation/README.md) — produktneutrale Core-Primitiven und ihre Grenzen.
 2. [Gemeinsame Contracts](contracts/README.md) — versionierte Repository-, Index-/Graph- und Evidence-/Claim-Datenverträge.
-3. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
-4. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
-5. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
-6. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
-7. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
+3. [Context Package und Briefing Core](context/README.md) — deterministische Context Packages, Required Reads, Self-Explanation, Validation und Briefing.
+4. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
+5. [Externe Referenzdokumentation](external-docs/index.md) — `ACTIVE` markiert heute im Repo belegte Technologien; `NEXT`/`REFERENCE`/`PARKED` trennt geplante oder optionale Referenzen davon.
+6. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
+7. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
+8. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
+9. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
 
 ## Was Agent Brain später können soll
 
@@ -50,9 +52,9 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 0  Extraction Canon                 #3   abgeschlossen
 1  Repository Scaffold              #4   abgeschlossen
 2  Portable Foundation              #5   abgeschlossen
-3  Shared Contracts                 #15  aktuelle Baseline
-4  Context / Briefing               #6   nächster linearer Slice
-5  Repo Ingestion                    #9
+3  Shared Contracts                 #15  abgeschlossen
+4  Context / Briefing               #6   aktuelle Baseline
+5  Repo Ingestion                    #9   nächster linearer Slice
 6  Knowledge Build / Seed            #16
 7  Retrieval                         #7
 8  Evidence / Trust                  #8
@@ -65,7 +67,7 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 15 Genericity / Cleanup              #19
 ```
 
-Zusätzlich existiert [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21). Dieses Gate übernimmt **keine** allgemeinen Knowledge-Mirrors, sondern schützt nur echten SurrealDB-primary State vor stillem Verlust und blockiert die linearen Foundation-/Contract-Slices nicht.
+Zusätzlich existiert [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21). Dieses Gate übernimmt **keine** allgemeinen Knowledge-Mirrors, sondern schützt nur echten SurrealDB-primary State vor stillem Verlust und blockiert die linearen Foundation-/Contract-/Context-Slices nicht.
 
 ## Ergebnis von Slice 0
 
@@ -87,4 +89,4 @@ Details: [State Transition](extraction/STATE_TRANSITION.md).
 
 ## Aktueller Arbeitsmodus
 
-**`SLICE_3_SHARED_CONTRACTS`**. Das Repository ist eigenständig installier- und testbar, besitzt die produktneutrale Foundation und gemeinsame v1-Verträge für Repository-Quellen/Profile, Artifact-Provenance, Index-/Graph-Struktur sowie Evidence-/Claim-Referenzen. Der nächste lineare Scope ist [#6 — Context Package und Briefing Core](https://github.com/jannekbuengener/agent-brain/issues/6).
+**`SLICE_4_CONTEXT_BRIEFING`**. Das Repository ist eigenständig installier- und testbar und besitzt jetzt Portable Foundation, gemeinsame v1-Contracts sowie einen produktneutralen Context-/Briefing-Core. Der nächste lineare Scope ist [#9 — Repository Ingestion / Connectors](https://github.com/jannekbuengener/agent-brain/issues/9).
