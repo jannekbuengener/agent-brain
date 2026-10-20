@@ -19,7 +19,7 @@ Vor Implementierungsarbeit mindestens lesen:
 7. bei persistiertem State `docs/extraction/STATE_TRANSITION.md`
 8. bei Dependency-, CI-, Protocol-, DB- oder externen Tooling-Fragen `docs/external-docs/index.md`
 
-Externe Dokumentation erklärt Upstream-Technologien, ersetzt aber niemals GitHub-/Repo-Live-State oder einen kanonischen Agent-Brain-Contract. Im externen Referenzindex sind `ACTIVE`-Einträge aktuell im Repo belegt; `NEXT`, `REFERENCE` und `PARKED` dürfen nicht als vorhandene Runtime-Fähigkeit interpretiert werden.
+Externe Dokumentation erklärt Upstream-Technologien, ersetzt aber niemals GitHub-/Repo-Live-State oder einen kanonischen Agent-Brain-Contract. Im externen Referenzindex sind `P0`/`P1`-Einträge durch aktuelle Repo-Evidence belegt; `P2` ist geparkt/reference-only und darf nicht als vorhandene Runtime-Fähigkeit oder Dependency interpretiert werden.
 
 ## Wahrheitshierarchie
 
