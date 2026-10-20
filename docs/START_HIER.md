@@ -21,7 +21,7 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 2. [Gemeinsame Contracts](contracts/README.md) — versionierte Repository-, Index-/Graph- und Evidence-/Claim-Datenverträge.
 3. [Context Package und Briefing Core](context/README.md) — deterministische Context Packages, Required Reads, Self-Explanation, Validation und Briefing.
 4. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
-5. [Externe Referenzdokumentation](external-docs/index.md) — `ACTIVE` markiert heute im Repo belegte Technologien; `NEXT`/`REFERENCE`/`PARKED` trennt geplante oder optionale Referenzen davon.
+5. [Externe Referenzdokumentation](external-docs/index.md) — `P0`/`P1` markieren aktuell belegte Referenzen mit Repo-Evidence; `P2` ist geparkt/reference-only und keine Runtime-/Dependency-Aussage.
 6. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
 7. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
 8. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
