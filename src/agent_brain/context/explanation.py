@@ -115,7 +115,7 @@ class SelfExplanation:
 
 
 def supported_explanation_types() -> frozenset[str]:
-    """Return the portable explanation kinds characterized from the Claire baseline."""
+    """Return the supported portable explanation kinds."""
     return _SUPPORTED_TYPES
 
 
