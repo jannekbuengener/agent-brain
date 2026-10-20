@@ -20,10 +20,11 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 1. [Portable Foundation](foundation/README.md) — produktneutrale Core-Primitiven und ihre Grenzen.
 2. [Gemeinsame Contracts](contracts/README.md) — versionierte Repository-, Index-/Graph- und Evidence-/Claim-Datenverträge.
 3. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
-4. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
-5. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
-6. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
-7. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
+4. [Externe Referenzdokumentation](external-docs/index.md) — `ACTIVE` markiert heute im Repo belegte Technologien; `NEXT`/`REFERENCE`/`PARKED` trennt geplante oder optionale Referenzen davon.
+5. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
+6. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
+7. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
+8. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
 
 ## Was Agent Brain später können soll
 
