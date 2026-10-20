@@ -1,0 +1,8 @@
+[
+  {
+    "event_id": "event-example",
+    "timestamp": "2026-01-01T00:00:00Z",
+    "agent_id": "agent-example",
+    "message": "neutral fixture event"
+  }
+]

@@ -23,6 +23,7 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 - [Portable Foundation](docs/foundation/README.md)
 - [Gemeinsame Source-/Index-/Evidence-Contracts](docs/contracts/README.md)
 - [Context Package und Briefing Core](docs/context/README.md)
+- [Repository Ingestion und Connectors](docs/connectors/README.md)
 - [Externe technische Referenzen](docs/external-docs/index.md)
 - [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
@@ -42,10 +43,10 @@ src/agent_brain/
 ├─ retrieval/   # noch ohne fachliche Runtime
 ├─ memory/      # noch ohne fachliche Runtime
 ├─ surrealdb/   # noch ohne fachliche Runtime
-└─ connectors/  # noch ohne fachliche Runtime
+└─ connectors/  # read-only Repository Ingestion (Slice #9)
 ```
 
-Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Die gemeinsame Contract-Schicht definiert versionierte Repository-/Artifact-, Index-/Graph- und Evidence-/Claim-Typen. Die Context-Schicht baut darauf deterministische Packages, Required Reads, Self-Explanations, Validation Plans und Briefings auf, ohne Ingestion, Retrieval, Resolver oder Datenbank-Runtime vorwegzunehmen.
+Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Die gemeinsame Contract-Schicht definiert versionierte Repository-/Artifact-, Index-/Graph- und Evidence-/Claim-Typen. Die Context-Schicht baut darauf deterministische Packages, Required Reads, Self-Explanations, Validation Plans und Briefings auf. Die Connector-Schicht liest produktneutral profilierte lokale Repositories read-only und erzeugt die deterministischen #15-Ausgaben für den späteren Knowledge-Build.
 
 - Python: `>=3.12`
 - Packaging: `pyproject.toml` + `src`-Layout
@@ -101,4 +102,4 @@ Der externe Referenzindex trennt aktuell belegte Kern-/Sekundärreferenzen (`P0`
 
 ## Aktueller Status
 
-**`SLICE_4_CONTEXT_BRIEFING`** — Scaffold, Portable Foundation, gemeinsame Source-/Index-/Evidence-Contracts sowie der produktneutrale Context-/Briefing-Core bilden die technische Baseline. Der nächste lineare Slice ist [#9 — Repository Ingestion / Connectors](https://github.com/jannekbuengener/agent-brain/issues/9).
+**`SLICE_5_REPOSITORY_INGESTION`** — Scaffold, Portable Foundation, gemeinsame Source-/Index-/Evidence-Contracts, der produktneutrale Context-/Briefing-Core und der read-only Repository-Ingestionskern bilden die technische Baseline. Der nächste lineare Slice ist [#16 — Knowledge Build / Seed / Import](https://github.com/jannekbuengener/agent-brain/issues/16).

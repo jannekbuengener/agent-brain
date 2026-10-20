@@ -1,0 +1,12 @@
+{
+  "schema_version": "repository-inventory/v1",
+  "entries": [
+    {
+      "key": "widgets",
+      "source_id": "source-widgets",
+      "repository": "example/widgets",
+      "configured_source_uri": "https://example.invalid/widgets.git",
+      "required": true
+    }
+  ]
+}

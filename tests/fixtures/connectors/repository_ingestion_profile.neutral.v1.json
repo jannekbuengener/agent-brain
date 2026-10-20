@@ -1,0 +1,15 @@
+{
+  "schema_version": "repository-profile/v1",
+  "profile_id": "profile-widgets",
+  "source": {
+    "schema_version": "repository-source/v1",
+    "source_id": "source-widgets",
+    "repository": "example/widgets",
+    "revision": "abc123",
+    "source_uri": "https://example.invalid/widgets.git"
+  },
+  "include_paths": ["src/", "docs/"],
+  "exclude_paths": ["private/"],
+  "allowed_file_types": ["python", "markdown"],
+  "metadata": {}
+}

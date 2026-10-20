@@ -217,3 +217,20 @@
 - [ ] **Step 10: Review full PR diff, comments/reviews/threads and exact main/head SHAs.** Fix only #9/user-directed docs scope findings.
 - [ ] **Step 11: Squash-merge with exact-head lease**, then live-verify main SHA, PR merged state, Issue #9 close and post-merge CI.
 - [ ] **Step 12: Comment delivery evidence on #9 and Epic #2.** Use `DONE_MERGED_CLOSED` only after implementation, merge, issue closure and post-merge CI are all live-confirmed.
+
+---
+
+## Completion Notes (Slice #9 implementation)
+
+Local implementation evidence on the implementation worktree (Python 3.12.10, pytest 8.4.2, Ruff current):
+
+- Tasks 1–5 implemented: ingestion contracts, repository inventory, safe scanner, static indexer, ledger normalization.
+- Task 6 public surface exported from `agent_brain.connectors`; product-neutrality and scope-guard tests added.
+- Focused connector validation: `pytest tests/connectors` green (27 tests).
+- Full suite: `pytest -q` green (155 tests).
+- `ruff check .` green.
+- Fixture tree `tests/fixtures/connectors/repository_neutral/` contains intentionally invalid Python (`src/broken.py`); it is excluded from Ruff via `extend-exclude` and never parsed by the indexer tests (they build their own temp trees).
+- Connector test modules were renamed to unique basenames (`test_connector_public_surface.py`, `test_connector_product_neutrality.py`) to avoid pytest module-name collisions with the existing `tests/context/` modules; `test_scope_guards.py` was already unique.
+- `pyproject.toml` runtime dependencies remain `[]`; no new runtime dependency was added.
+
+Merge, exact-head CI on Python 3.12/3.13/3.14, post-merge CI, issue closure and epic handoff remain open until live-verified.
