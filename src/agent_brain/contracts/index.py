@@ -85,9 +85,9 @@ class IndexRecord:
         if not isinstance(attributes, Mapping):
             raise TypeError("attributes must be a mapping")
         return cls(
-            schema_version=str(payload.get("schema_version", "")),
-            record_id=str(payload.get("record_id", "")),
-            record_type=str(payload.get("record_type", "")),
+            schema_version=payload.get("schema_version", ""),
+            record_id=payload.get("record_id", ""),
+            record_type=payload.get("record_type", ""),
             source=ArtifactRef.from_dict(source_payload),
             content_hash=payload.get("content_hash"),
             attributes=attributes,
@@ -153,11 +153,11 @@ class GraphEdge:
                 raise TypeError("source must be a mapping when present")
             source = ArtifactRef.from_dict(source_payload)
         return cls(
-            schema_version=str(payload.get("schema_version", "")),
-            edge_id=str(payload.get("edge_id", "")),
-            from_id=str(payload.get("from_id", "")),
-            to_id=str(payload.get("to_id", "")),
-            edge_type=str(payload.get("edge_type", "")),
+            schema_version=payload.get("schema_version", ""),
+            edge_id=payload.get("edge_id", ""),
+            from_id=payload.get("from_id", ""),
+            to_id=payload.get("to_id", ""),
+            edge_type=payload.get("edge_type", ""),
             source=source,
             confidence=payload.get("confidence", 1.0),
             inferred=payload.get("inferred", False),
