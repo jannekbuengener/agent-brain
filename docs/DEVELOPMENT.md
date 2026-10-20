@@ -1,6 +1,6 @@
 # Entwicklung — Agent Brain
 
-Diese Seite beschreibt die installierbare Repository-Baseline und die Portable Foundation. Fachliche Repository-, Retrieval-, Context-, Memory- und Datenbank-Verträge folgen in getrennten Slices.
+Diese Seite beschreibt die installierbare Repository-Baseline, die Portable Foundation und die gemeinsamen Source-/Index-/Evidence-Contracts. Retrieval-, Context-, Memory- und Datenbank-Runtime folgen weiterhin in getrennten Slices.
 
 ## Voraussetzungen
 
@@ -43,16 +43,24 @@ src/agent_brain/
 │  ├─ run_id.py
 │  ├─ source_priority.py
 │  └─ time.py
+├─ contracts/
+│  ├─ evidence.py
+│  ├─ index.py
+│  ├─ registry.py
+│  ├─ repository.py
+│  ├─ serialization.py
+│  └─ versioning.py
 ├─ retrieval/
 ├─ memory/
 ├─ surrealdb/
 └─ connectors/
 ```
 
-Nur `core/` besitzt in der aktuellen Baseline fachliche Foundation-Primitiven. Die übrigen Verzeichnisse bleiben bewusst importierbare Grenzen ohne vorgezogene Runtime.
+`core/` besitzt die Portable Foundation. `contracts/` besitzt die gemeinsamen, versionierten Datenverträge. Die übrigen Verzeichnisse bleiben bewusst importierbare Grenzen ohne vorgezogene fachliche Runtime.
 
 - Foundation-Verträge: [foundation/README.md](foundation/README.md)
-- gemeinsame Source-/Index-/Evidence-Contracts folgen in #15.
+- gemeinsame Contracts: [contracts/README.md](contracts/README.md)
+- Context / Briefing folgt in #6.
 - Retrieval, Memory und SurrealDB-Verhalten folgen in ihren eigenen Slices.
 - Distribution, Versionierung und Consumer Contract werden erst in #17 festgelegt.
 
@@ -60,10 +68,11 @@ Nur `core/` besitzt in der aktuellen Baseline fachliche Foundation-Primitiven. D
 
 - `tests/test_scaffold_smoke.py` schützt die Installierbarkeit und die minimalen Modulgrenzen.
 - `tests/core/` schützt die produktneutralen Foundation-Verträge und deterministischen Charakterisierungen.
+- `tests/contracts/` schützt Schema-Versionierung, Round-Trips, additive v1-Kompatibilität und strukturelle Source-/Index-/Evidence-Verträge.
+- `tests/fixtures/contracts/` enthält statische, deterministische, produktneutrale Contract-Fixtures.
 - `tests/conftest.py` enthält kleine prozedurale Fixtures.
-- `tests/fixtures/` ist für statische, deterministische, produktneutrale Fixtures reserviert.
 - Claire-Parity-Tests und -Fixtures werden nicht blind kopiert, sondern nur im zuständigen Slice produktneutral übernommen oder später im Parity-Scope verglichen.
 
 ## Sicherheitsgrenzen
 
-Die Foundation implementiert absichtlich keine Repository-/Evidence-Domaincontracts aus #15, kein Retrieval, kein Context Package, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes. Produktpolicy wird ausschließlich über injizierbare Hooks vorbereitet und nicht im Core fest verdrahtet.
+Die aktuelle Baseline implementiert keine Repository-Ingestion, kein Retrieval, kein Context Package, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes. `EvidenceRef` und `ClaimRef` transportieren nur Identität und Beziehungen; Trust, Resolver und Scoring folgen erst in Slice #8. Produktpolicy bleibt außerhalb des generischen Kerns.

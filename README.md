@@ -21,26 +21,28 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 
 - [Start hier](docs/START_HIER.md)
 - [Portable Foundation](docs/foundation/README.md)
+- [Gemeinsame Source-/Index-/Evidence-Contracts](docs/contracts/README.md)
 - [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
 - [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)
 - [Extraction Design](docs/superpowers/specs/2026-10-20-agent-brain-extraction-design.md)
 - [Extraction Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
 
-## Repository- und Foundation-Baseline
+## Repository-, Foundation- und Contract-Baseline
 
 Das Repository nutzt eine bewusst schmale Python-Basis:
 
 ```text
 src/agent_brain/
 ├─ core/        # Portable Foundation
+├─ contracts/   # Source / Index / Evidence Contracts
 ├─ retrieval/   # noch ohne fachliche Runtime
 ├─ memory/      # noch ohne fachliche Runtime
 ├─ surrealdb/   # noch ohne fachliche Runtime
 └─ connectors/  # noch ohne fachliche Runtime
 ```
 
-Die Portable Foundation stellt nur generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Gemeinsame Repository-/Index-/Evidence-Contracts werden erst in #15 definiert.
+Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Die gemeinsame Contract-Schicht definiert nun versionierte Repository-/Artifact-, Index-/Graph- und Evidence-/Claim-Typen, ohne Ingestion, Retrieval, Resolver oder Datenbank-Runtime vorwegzunehmen.
 
 - Python: `>=3.12`
 - Packaging: `pyproject.toml` + `src`-Layout
@@ -94,4 +96,4 @@ Die GitHub-Dokumentation wird **Human First** geschrieben:
 
 ## Aktueller Status
 
-**`SLICE_2_FOUNDATION`** — Scaffold und Portable Foundation sind die aktuelle technische Baseline. Der nächste lineare Slice ist [#15 — Shared Contracts](https://github.com/jannekbuengener/agent-brain/issues/15).
+**`SLICE_3_SHARED_CONTRACTS`** — Scaffold, Portable Foundation und gemeinsame Source-/Index-/Evidence-Contracts bilden die aktuelle technische Baseline. Der nächste lineare Slice ist [#6 — Context Package und Briefing Core](https://github.com/jannekbuengener/agent-brain/issues/6).
