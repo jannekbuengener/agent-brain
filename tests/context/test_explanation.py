@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from agent_brain.context.explanation import (
     SELF_EXPLANATION_SCHEMA,
     SelfExplanationError,
