@@ -1,6 +1,6 @@
 # Entwicklung — Agent Brain
 
-Diese Seite beschreibt nur die Repository-Baseline aus Slice 1. Fachliche Brain-Funktionen kommen in späteren, getrennten Slices.
+Diese Seite beschreibt die installierbare Repository-Baseline und die Portable Foundation. Fachliche Repository-, Retrieval-, Context-, Memory- und Datenbank-Verträge folgen in getrennten Slices.
 
 ## Voraussetzungen
 
@@ -36,15 +36,21 @@ CI führt dieselben Qualitätsprüfungen auf Python 3.12, 3.13 und 3.14 aus.
 ```text
 src/agent_brain/
 ├─ core/
+│  ├─ canonical.py
+│  ├─ identity.py
+│  ├─ policy.py
+│  ├─ redaction.py
+│  ├─ source_priority.py
+│  └─ time.py
 ├─ retrieval/
 ├─ memory/
 ├─ surrealdb/
 └─ connectors/
 ```
 
-Diese Verzeichnisse sind in Slice 1 bewusst nur importierbare Grenzen. Sie definieren noch keine fachliche API und keine endgültige Multi-Package- oder Distributionsstruktur.
+Nur `core/` besitzt in der aktuellen Baseline fachliche Foundation-Primitiven. Die übrigen Verzeichnisse bleiben bewusst importierbare Grenzen ohne vorgezogene Runtime.
 
-- Portable Foundation folgt in #5.
+- Foundation-Verträge: [foundation/README.md](foundation/README.md)
 - gemeinsame Source-/Index-/Evidence-Contracts folgen in #15.
 - Retrieval, Memory und SurrealDB-Verhalten folgen in ihren eigenen Slices.
 - Distribution, Versionierung und Consumer Contract werden erst in #17 festgelegt.
@@ -52,10 +58,11 @@ Diese Verzeichnisse sind in Slice 1 bewusst nur importierbare Grenzen. Sie defin
 ## Tests und Fixtures
 
 - `tests/test_scaffold_smoke.py` schützt die Installierbarkeit und die minimalen Modulgrenzen.
+- `tests/core/` schützt die produktneutralen Foundation-Verträge und deterministischen Charakterisierungen.
 - `tests/conftest.py` enthält kleine prozedurale Fixtures.
 - `tests/fixtures/` ist für statische, deterministische, produktneutrale Fixtures reserviert.
 - Claire-Parity-Tests und -Fixtures werden nicht blind kopiert, sondern nur im zuständigen Slice produktneutral übernommen oder später im Parity-Scope verglichen.
 
 ## Sicherheitsgrenzen
 
-Die Baseline implementiert absichtlich keine Context-/Retrieval-Funktion, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes.
+Die Foundation implementiert absichtlich keine Repository-/Evidence-Domaincontracts aus #15, kein Retrieval, kein Context Package, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes. Produktpolicy wird ausschließlich über injizierbare Hooks vorbereitet und nicht im Core fest verdrahtet.

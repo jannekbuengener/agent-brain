@@ -20,30 +20,31 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 ## Start hier
 
 - [Start hier](docs/START_HIER.md)
+- [Portable Foundation](docs/foundation/README.md)
 - [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
 - [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)
 - [Extraction Design](docs/superpowers/specs/2026-10-20-agent-brain-extraction-design.md)
 - [Extraction Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
 
-## Repository-Baseline
+## Repository- und Foundation-Baseline
 
-Slice 1 legt eine bewusst schmale Python-Basis fest:
+Das Repository nutzt eine bewusst schmale Python-Basis:
 
 ```text
 src/agent_brain/
-├─ core/
-├─ retrieval/
-├─ memory/
-├─ surrealdb/
-└─ connectors/
+├─ core/        # Portable Foundation
+├─ retrieval/   # noch ohne fachliche Runtime
+├─ memory/      # noch ohne fachliche Runtime
+├─ surrealdb/   # noch ohne fachliche Runtime
+└─ connectors/  # noch ohne fachliche Runtime
 ```
 
-Die Grenzen sind importierbar, aber noch ohne fachliche Runtime. Sie nehmen weder die Portable Foundation aus #5 noch die Shared Contracts aus #15 vorweg.
+Die Portable Foundation stellt nur generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Gemeinsame Repository-/Index-/Evidence-Contracts werden erst in #15 definiert.
 
 - Python: `>=3.12`
 - Packaging: `pyproject.toml` + `src`-Layout
-- Runtime-Abhängigkeiten: keine in Slice 1
+- Runtime-Abhängigkeiten: keine
 - Qualität: Ruff + pytest
 - CI: Python 3.12, 3.13 und 3.14
 
@@ -93,4 +94,4 @@ Die GitHub-Dokumentation wird **Human First** geschrieben:
 
 ## Aktueller Status
 
-**`SLICE_1_SCAFFOLD`** — die eigenständig installier- und testbare Repository-Baseline ist definiert. Nach erfolgreichem Merge von #4 ist der nächste lineare Slice [#5 — Portable Foundation](https://github.com/jannekbuengener/agent-brain/issues/5).
+**`SLICE_2_FOUNDATION`** — Scaffold und Portable Foundation sind die aktuelle technische Baseline. Der nächste lineare Slice ist [#15 — Shared Contracts](https://github.com/jannekbuengener/agent-brain/issues/15).
