@@ -8,8 +8,8 @@ from agent_brain.contracts.serialization import contract_payload, serialize_cont
 from agent_brain.contracts.versioning import ContractVersion, require_compatible_version
 
 __all__ = [
-    "ArtifactRef",
     "CONTRACT_SCHEMAS",
+    "ArtifactRef",
     "ClaimRef",
     "ContractVersion",
     "EvidenceRef",
