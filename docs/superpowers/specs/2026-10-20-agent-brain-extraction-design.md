@@ -1,26 +1,25 @@
 # Agent Brain — Extraction Design
 
 **Stand:** 2026-10-20  
-**Status:** Design bestätigt, noch keine Implementierung  
+**Status:** Design bestätigt; Roadmap v2 gapsicher neu geschnitten; noch keine Produktimplementierung  
 **Ziel:** Das heute in Claire de Binare eingebaute Context-/Agent-Brain kontrolliert in ein eigenständiges, generisches Repository extrahieren.  
 **Operative Roadmap:** [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2)
 
-## 1. Warum dieses Repository existiert
+## 1. Leitentscheidung
 
-Claire de Binare besitzt bereits einen umfangreichen Context-, Evidence-, Decision-, Memory- und Retrieval-Layer. Viele dieser Funktionen sind nicht trading-spezifisch und sollen künftig von mehreren Projekten und Agenten genutzt werden können.
+Agent Brain entsteht durch **Extraktion statt Rewrite**.
 
-Das Ziel ist deshalb **Extraktion statt Rewrite**:
+Wir übernehmen bewährte Contracts und Verhalten aus Claire, trennen dabei aber konsequent:
 
-- bewährte Contracts und Tests wiederverwenden,
-- generische Brain-Funktionen aus Claire herauslösen,
-- Claire-spezifische Policy außerhalb des generischen Kerns halten,
-- während der Migration keinen Big-Bang-Cutover durchführen.
+- generische Brain-Funktionen,
+- Claire-spezifische Policy,
+- persistierten Knowledge-/Index-State,
+- Agent-Memory,
+- Consumer-/Release-Verträge.
+
+Kein Big-Bang-Cutover.
 
 ## 2. Zielbild
-
-Agent Brain wird ein eigenständiges Monorepo für wiederverwendbare Brain-Komponenten.
-
-Vorgesehene Bereiche:
 
 ```text
 agent-brain/
@@ -39,13 +38,11 @@ agent-brain/
 └─ docs/
 ```
 
-Die konkrete Paketstruktur wird erst in den jeweiligen Implementierungs-Slices kanonisiert. Diese Liste beschreibt Verantwortungsbereiche, keine bereits freigegebene Python-Package-API.
+Die konkrete Paketstruktur wird erst in den Implementierungs-Slices kanonisiert. Diese Darstellung beschreibt Verantwortungsbereiche, keine festgeschriebene Python-API.
 
 ## 3. Wahrheitshierarchie
 
-Agent Brain ist **keine Source of Truth** für den aktuellen Repository-Zustand.
-
-Priorität bei Widersprüchen:
+Agent Brain ist **keine Source of Truth** für aktuellen Repository-Zustand.
 
 1. GitHub Live
 2. Repo Live
@@ -63,149 +60,180 @@ Niedrigere Ebenen dürfen höhere Ebenen nicht überschreiben.
 | Context Package / Briefing Envelope | MOVE | generisch und wiederverwendbar |
 | Source Priority / Provenance / Trust | MOVE | Brain-Kernfunktion |
 | Repo-/Code-/Documentation-Graph | MOVE | repoübergreifend nutzbar |
+| Source-/Index-/EvidenceRef-Contracts | MOVE | gemeinsame Basis mehrerer Module |
 | Hybrid Retrieval / Ranking | MOVE | produktneutral |
 | Evidence-/Claim-Resolution | MOVE | produktneutral |
-| Decision History / Decision Replay | MOVE | produktneutral, solange keine Produktentscheidung autorisiert wird |
+| Decision History / Decision Replay | MOVE | produktneutral, nicht autorisierend |
 | Scope Drift / Stale / Contradiction / Quality | MOVE | generische Kontextqualität |
 | Memory Contract / TTL / Freshness / Redaction | MOVE | generische Memory-Grundlage |
-| SurrealDB Query / Schema / Index / Import | MOVE NACH GENERALISIERUNG | aktuell teilweise Claire-gekoppelt |
+| Knowledge-/Index-Build + Seed/Import | MOVE NACH GENERALISIERUNG | reproduzierbare Build-Daten, nicht Agent-Memory |
+| SurrealDB Query / Schema / Read Adapter | MOVE NACH GENERALISIERUNG | aktuell teilweise Claire-gekoppelt |
 | Repo-/Workspace-Inventar | MOVE NACH GENERALISIERUNG | Prinzip generisch, aktuelle Implementierung Claire-zentriert |
+| Distribution / Versionierung / Consumer Contract | MOVE | Voraussetzung für stabile Cross-Repo-Nutzung |
 | Claire Live-Readiness / Echtgeld-Grenzen | STAY | Claire-spezifische Produktpolicy |
-| Trading-State-Verbote | ADAPTER / CLAIRE POLICY | allgemeiner Brain-Kern kennt kein Trading |
+| Trading-State-Verbote | ADAPTER / CLAIRE POLICY | generischer Core kennt kein Trading |
 | CONTROL_REGISTER / Claire Bootloader Reads | STAY | Claire-spezifisch |
-| CDB-spezifische Env-Namen / Namespaces | ADAPTER | dürfen nicht im generischen Kern bleiben |
-| produktive Memory Writes | DEFER | eigener späterer Sicherheits-/Governance-Scope |
+| CDB-spezifische Env-Namen / Namespaces | ADAPTER | nicht generisch |
+| produktive Agent-Memory-Writes | DEFER | eigener späterer Sicherheits-/Governance-Scope |
 | Agent Workforce Rollen / Autorität | STAY IN AGENT-WORKFORCE | Workforce ist nicht Memory/Context |
 | privater ChatGPT-MCP | OUT OF SCOPE | Operator-Fähigkeit, keine gemeinsame Agent-Infrastruktur |
 
-## 5. Dokumentationsstandard
+## 5. Write-Klassen
+
+### 5.1 Knowledge-/Index-Build-Writes
+
+Erlaubter Scope innerhalb dieses Epics, aber nur explizit in Slice [#16](https://github.com/jannekbuengener/agent-brain/issues/16):
+
+- deterministische Build-Artefakte,
+- versionierte Knowledge-/Index-Snapshots,
+- kontrollierter Seed/Import,
+- Provenance und Source Hashes,
+- reproduzierbare Fixtures.
+
+### 5.2 Agent-Memory-Writes
+
+Bleiben in diesem Epic `DEFER`.
+
+Sie dürfen nicht stillschweigend über den Knowledge-Build-Pfad eingeführt werden.
+
+## 6. Dokumentationsstandard
 
 GitHub-facing Dokumentation ist **Human First**:
 
 - Deutsch als Standardsprache.
 - Zweck und Wirkung vor Implementierungsdetail.
 - technische Begriffe beim ersten Auftreten erklären.
-- Mermaid-Diagramme für Datenflüsse und Beziehungen.
+- Mermaid für Datenflüsse und Beziehungen.
 - README und `docs/START_HIER.md` müssen ohne klassische Softwareausbildung verständlich sein.
 
-Machine-facing Artefakte bleiben maximal präzise:
+Machine-facing Artefakte bleiben maximal präzise: APIs, Schemas, JSON/YAML, Contracts, Symbole und Tests.
 
-- APIs,
-- Schemafelder,
-- JSON/YAML,
-- Contracts,
-- Code-Symbole,
-- Tests.
+## 7. Roadmap v2
 
-## 6. Migrationsstrategie
-
-Kein Kopieren und anschließendes Hoffen.
-
-```mermaid
-flowchart LR
-    OLD["Claire bestehender Brain-Pfad"] --> CONTRACT["Contract extrahieren"]
-    CONTRACT --> NEW["Agent Brain implementiert Contract"]
-    NEW --> PARITY["Regression + Parity"]
-    PARITY -->|"grün"| SWITCH["Claire konsumiert Agent Brain"]
-    SWITCH --> DUAL["Compatibility Layer / Dual Run"]
-    DUAL --> CLEAN["Altcode entfernen"]
-    PARITY -->|"rot"| OLD
-```
-
-## 7. Slice-Reihenfolge
-
-Die Live-Issues sind die operative Arbeitsoberfläche; dieses Dokument beschreibt das Design dahinter.
+Die Live-Issues sind die operative Arbeitsoberfläche.
 
 ### Slice 0 — Extraction Canon — [#3](https://github.com/jannekbuengener/agent-brain/issues/3)
 
-Vollständige Inventarisierung und Klassifizierung `MOVE / STAY / ADAPTER / DEFER`. Keine Produktcodeänderung.
+Ownership, Abhängigkeiten, Parity-Gates und persistierte Datenklassen inventarisieren. Jede Datenklasse erhält `REBUILD_FROM_SOURCE / MIGRATE / DROP_WITH_REASON / DEFER`.
 
-### Slice 1 — Agent-Brain Scaffold — [#4](https://github.com/jannekbuengener/agent-brain/issues/4)
+### Slice 1 — Scaffold — [#4](https://github.com/jannekbuengener/agent-brain/issues/4)
 
-Repo-Struktur, Python-/Workspace-Baseline, CI, Test-Baseline und Dokumentationssurface.
+Repo-/Package-Baseline, CI, Tests, AGENTS und Doku-Surface.
 
 ### Slice 2 — Portable Foundation — [#5](https://github.com/jannekbuengener/agent-brain/issues/5)
 
-Claire-Abhängigkeiten für Clock, Canonical JSON/Hashing, Identität, Provenance und Policy-Hooks lösen.
+Clock, Canonical JSON/Hashing, Identität, Provenance und Policy-Hooks ohne Claire-Abhängigkeit.
 
-### Slice 3 — Context Package & Briefing Core — [#6](https://github.com/jannekbuengener/agent-brain/issues/6)
+### Slice 3 — Shared Contracts — [#15](https://github.com/jannekbuengener/agent-brain/issues/15)
 
-Context Package, Source Priority, Redaction, Evidence Envelope und Briefing-Grundcontract extrahieren.
+`RepositorySource`, `RepositoryProfile`, Index-/Graph-Record, `EvidenceRef`, `ClaimRef`, Schema-Versionierung und Producer-/Consumer-Grenzen.
 
-### Slice 4 — Retrieval & Knowledge Reasoning — [#7](https://github.com/jannekbuengener/agent-brain/issues/7)
+### Slice 4 — Context Package / Briefing — [#6](https://github.com/jannekbuengener/agent-brain/issues/6)
 
-Hybrid Retrieval, Ranking, Required Reads, Stop Resolver, Impact Radar und Graph-Grundverträge.
+Context Package, Briefing Envelope, Source Priority, Redaction und Nutzung der gemeinsamen Evidence-/Source-Refs.
 
-### Slice 5 — Evidence / Decisions / Trust — [#8](https://github.com/jannekbuengener/agent-brain/issues/8)
+### Slice 5 — Repository Ingestion / Connectors — [#9](https://github.com/jannekbuengener/agent-brain/issues/9)
 
-Evidence Resolver, Claims, Decision Replay, Contradictions, Stale Detection, Scope Drift, Quality und Trust.
+Indexer, Repo Inventory, Include/Exclude-Regeln und standardisierte Ingestion-Outputs.
 
-### Slice 6 — Repository Ingestion & Connectors — [#9](https://github.com/jannekbuengener/agent-brain/issues/9)
+### Slice 6 — Knowledge Build / Seed / Import — [#16](https://github.com/jannekbuengener/agent-brain/issues/16)
 
-Indexer, Repo Inventory und Importer generalisieren. Claire-spezifische Pfade werden Repo-Profile.
+Deterministischer Knowledge-/Index-Build, Snapshots, Schema-Versionierung und kontrollierter Befüllungspfad.
 
-### Slice 7 — SurrealDB Read Runtime — [#10](https://github.com/jannekbuengener/agent-brain/issues/10)
+### Slice 7 — Retrieval / Knowledge Reasoning — [#7](https://github.com/jannekbuengener/agent-brain/issues/7)
 
-Schema, Query Adapter, lokale DB-Konfiguration und read-only DB-Pfad.
+Hybrid Retrieval, Ranking, Required Reads, Stop Resolver, Impact Radar und Explainability auf stabilen Contracts/Fixtures.
 
-### Slice 8 — Memory Read Side — [#11](https://github.com/jannekbuengener/agent-brain/issues/11)
+### Slice 8 — Evidence / Decisions / Trust — [#8](https://github.com/jannekbuengener/agent-brain/issues/8)
 
-Memory Contract, TTL/Freshness, Provenance, Read und Cross-Session Rediscovery.
+Evidence Resolver, Decision Replay, Contradictions, Stale, Scope Drift, Quality und Trust.
 
-### Slice 9 — CLI / Protocol Surface — [#12](https://github.com/jannekbuengener/agent-brain/issues/12)
+### Slice 9 — SurrealDB Read Runtime — [#10](https://github.com/jannekbuengener/agent-brain/issues/10)
 
-Eigenständige CLI und optionaler normaler Brain-MCP-Adapter. MCP ist Interface, nicht Core-Abhängigkeit.
+Read Adapter, Query-Schutz, lokale Konfiguration, Noop/Fallback und Lesen der versionierten Knowledge-Stände.
 
-### Slice 10 — Claire Cutover + Genericity Proof — [#13](https://github.com/jannekbuengener/agent-brain/issues/13)
+### Slice 10 — Memory Read Side — [#11](https://github.com/jannekbuengener/agent-brain/issues/11)
 
-Claire konsumiert Agent Brain. Parity- und Dual-Run-Nachweis. Anschließend zweiter Consumer-/Fixture-Proof gegen versteckte Claire-/Trading-Kopplung.
+TTL/Freshness, Provenance, Confidence, Rediscovery und Live-State-Revalidation. Keine produktiven Memory Writes.
 
-### Offene Gap-Gates
+### Slice 11 — Distribution / Versionierung / Consumer Contract — [#17](https://github.com/jannekbuengener/agent-brain/issues/17)
 
-Der lineare Slice-Plan ist noch **nicht vollständig implementierungsreif**. Der aktuelle Gap-Audit wird kanonisch in [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) gepflegt.
+Package-/Dependency-Modell, Versionierung, Pinning, Cross-Repo Contract Tests, Upgrade und Rollback.
 
-Aktuell offen:
+### Slice 12 — CLI / Protocol Surface — [#12](https://github.com/jannekbuengener/agent-brain/issues/12)
 
-- **GAP A:** Retrieval benötigt einen Source-/Index-/Repo-Profile-Contract, bevor die konkrete Ingestion-Generalisation abgeschlossen ist.
-- **GAP B:** SurrealDB Read benötigt einen reproduzierbaren Knowledge-/Index-Build-/Seed-/Import-Pfad; produktive Agent-Memory-Writes bleiben davon getrennt und `DEFER`.
-- **GAP C:** Claire-Cutover benötigt Distribution, Versionierung, Pinning, Cross-Repo Contract Tests und Rollback-Regeln.
-- **GAP D:** Slice #13 ist voraussichtlich zu breit und muss nach Auflösung des Consumer-Contracts neu geschnitten werden.
-- **GAP E:** Context Package und Evidence Resolver benötigen einen früh kanonisierten minimalen `EvidenceRef`-/Claim-Referenzvertrag.
+Standalone CLI und optionaler normaler Brain-MCP-Adapter. Core bleibt MCP-unabhängig.
 
-Die visuelle Gap-Ansicht steht in [DATENFLUESSE.md](../../DATENFLUESSE.md#7-offene-gaps-zwischen-den-slices).
+### Slice 13 — Claire Adapter / Consumer Cutover — [#13](https://github.com/jannekbuengener/agent-brain/issues/13)
 
-## 8. Harte Non-Goals der ersten Extraktionsphase
+Claire konsumiert eine gepinnte Agent-Brain-Version über expliziten Adapter. Alter Pfad bleibt für Parity vergleichbar.
 
-- kein Big-Bang-Rewrite,
-- keine Live-Trading-Autorität,
-- keine Echtgeld-Autorität,
-- keine Übernahme des Claire Trading-Cores,
-- keine produktiven Agent-Memory-Writes,
-- keine Abhängigkeit vom privaten ChatGPT-MCP,
-- keine Agent-Workforce-Integration vor erfolgreichem eigenständigem Brain-Baseline-Proof.
+### Slice 14 — Parity / Dual Run / E2E — [#18](https://github.com/jannekbuengener/agent-brain/issues/18)
 
-## 9. Validation
+Alten und neuen Pfad vergleichen, Regressionen/E2E beweisen, Rollback testen und Cleanup-Go erzeugen.
 
-Die Migration nutzt die vorhandenen Claire-Tests als Charakterisierungs- und Parity-Gates.
+### Slice 15 — Genericity Proof / Cleanup — [#19](https://github.com/jannekbuengener/agent-brain/issues/19)
+
+Neutraler Consumer/Fixture-Proof und erst danach gezielter Altcode-Cleanup in Claire.
+
+## 8. Gap Audit v2
+
+Die ursprünglichen Gaps A–E sind **auf Planungsebene geschlossen**:
+
+- **A:** Shared Source-/Index-Contracts stehen in #15 vor Ingestion/Build/Retrieval.
+- **B:** #16 besitzt den reproduzierbaren Knowledge-Build-/Seed-Pfad; #10 bleibt read-only.
+- **C:** #17 besitzt Distribution, Versionierung, Pinning, Cross-Repo Tests und Rollback.
+- **D:** der ehemalige Monster-Cutover ist in #13, #18 und #19 geteilt.
+- **E:** `EvidenceRef`/`ClaimRef` werden in #15 definiert; Resolution/Scoring kommt erst #8.
+
+### WATCH F — persistierter Claire-State
+
+Bleibt bewusst ein Slice-0-Gate. #3 entscheidet pro Datenklasse:
+
+- `REBUILD_FROM_SOURCE`
+- `MIGRATE`
+- `DROP_WITH_REASON`
+- `DEFER`
+
+Nur bei echtem `MIGRATE` wird ein zusätzlicher Migrationsscope vor dem betroffenen Runtime-Slice angelegt.
+
+## 9. Migrationsstrategie
+
+```mermaid
+flowchart LR
+    OLD["Claire bestehender Brain-Pfad"] --> CONTRACT["portable Contracts"]
+    CONTRACT --> NEW["Agent Brain Module"]
+    NEW --> VERSION["versionierter Consumer Contract"]
+    VERSION --> CUT["Claire Consumer Cutover"]
+    CUT --> DUAL["Dual Run + Parity + E2E"]
+    DUAL -->|"grün"| GENERIC["Genericity Proof"]
+    GENERIC --> CLEAN["Altcode entfernen"]
+    DUAL -->|"rot"| CUT
+```
+
+## 10. Validation
 
 Jeder Implementierungs-Slice muss mindestens beweisen:
 
-1. die betroffenen bestehenden Verträge sind verstanden,
+1. bestehende Claire-Verträge wurden verstanden,
 2. der portable Pfad funktioniert ohne Claire-Produktlogik,
-3. Claire-spezifische Guardrails bleiben in Claire oder einem expliziten Adapter erhalten,
-4. keine niedrigere Evidence-Schicht gewinnt gegen GitHub/Repo-Live-State,
+3. Claire-spezifische Guardrails bleiben in Claire oder expliziten Adaptern,
+4. niedrigere Evidence gewinnt nie gegen GitHub/Repo-Live-State,
 5. relevante Regressionstests bleiben grün,
-6. Altcode wird erst entfernt, nachdem der neue Pfad Parity erreicht hat.
+6. Consumer-Versionen sind reproduzierbar,
+7. Altcode wird erst nach Parity- und Cleanup-Go entfernt.
 
-## 10. Definition des ersten großen Meilensteins
+## 11. Definition des ersten großen Meilensteins
 
-Der erste Extraction-Meilenstein ist erreicht, wenn:
+Der Extraction-Meilenstein ist erreicht, wenn:
 
-- Agent Brain als eigenständiges Repo testbar läuft,
-- Claire den generischen Brain-Kern über eine klar definierte Schnittstelle konsumiert,
+- Agent Brain eigenständig testbar läuft,
+- gemeinsame Contracts produktneutral und versioniert sind,
+- Knowledge-/Index-Build reproduzierbar ist,
+- Claire eine konkrete Agent-Brain-Version konsumiert,
 - Claire-spezifische Policy nicht in den generischen Kern geleakt ist,
-- die relevanten Claire-Regressionen und Parity-Gates grün sind,
-- ein zweiter neutraler Consumer oder eine neutrale Fixture die Wiederverwendbarkeit beweist,
-- die alte doppelte Implementierung sicher entfernt werden kann.
+- Parity und E2E grün sind,
+- ein neutraler Genericity-Proof bestanden ist,
+- alter doppelter Claire-Code sicher entfernt wurde.
 
 Bis dahin ist `agent-brain` eine Extraktions- und Migrationsfläche, keine neue Autoritätsschicht.

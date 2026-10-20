@@ -2,16 +2,18 @@
 
 ## Was ist Agent Brain?
 
-Agent Brain ist das gemeinsame Kontext- und Wissenssystem für KI-Agenten. Es soll nicht selbst entscheiden, **was** ein Produkt tun darf, sondern Agenten dabei helfen, den aktuellen Zustand eines Projekts korrekt zu verstehen und ihre Aussagen mit Evidence zu belegen.
+Agent Brain ist das gemeinsame Kontext- und Wissenssystem für KI-Agenten. Es entscheidet nicht selbst, **was** ein Produkt tun darf. Es hilft Agenten, den aktuellen Zustand eines Projekts korrekt zu verstehen, relevante Zusammenhänge wiederzufinden und Aussagen mit Evidence zu belegen.
 
 Das System wird aus dem bestehenden Context-/Agent-Brain von Claire de Binare herausgelöst und als eigenständiges Repository generalisiert.
 
 ## Die wichtigste Trennung
 
-- **Agent Brain** besitzt generische Funktionen wie Retrieval, Evidence, Decision Replay, Memory, Trust und Repo-Kontext.
-- **Claire de Binare** behält Trading-Core, Live-Readiness, Echtgeld-Grenzen und andere Claire-spezifische Policies.
-- **Agent Workforce** bleibt für Rollen, Zuständigkeiten und Agentenführung verantwortlich.
-- **GitHub und das jeweilige Repository bleiben die aktuelle Wahrheit.** Agent Brain liefert Kontext, nicht Autorität.
+- **GitHub / jeweiliges Repo** = aktuelle Wahrheit.
+- **Agent Brain** = Kontext, Retrieval, Evidence, Memory, Trust.
+- **Agent Workforce** = Rollen, Zuständigkeiten und Agentenführung.
+- **Claire de Binare** = Trading-Core und Claire-spezifische Policies.
+
+Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 
 ## Was Agent Brain später können soll
 
@@ -25,7 +27,7 @@ Das System wird aus dem bestehenden Context-/Agent-Brain von Claire de Binare he
 
 ## Was Agent Brain ausdrücklich nicht sein soll
 
-- keine zweite Source of Truth neben GitHub oder dem Repo,
+- keine zweite Source of Truth,
 - keine Trading-Runtime,
 - keine Live-/Echtgeld-Freigabeinstanz,
 - kein unkontrollierter Memory-Speicher,
@@ -34,22 +36,65 @@ Das System wird aus dem bestehenden Context-/Agent-Brain von Claire de Binare he
 
 ## Wo sehe ich die Datenflüsse?
 
-Die wichtigsten Abläufe sind in [DATENFLUESSE.md](DATENFLUESSE.md) als Mermaid-Diagramme dokumentiert. Diese Diagramme sind bewusst Teil der normalen Markdown-Dokumentation und können direkt in GitHub gerendert und versioniert werden.
+In [DATENFLUESSE.md](DATENFLUESSE.md). Dort stehen die wichtigsten Mermaid-Diagramme für:
+
+- Gesamtarchitektur,
+- Auftrag → Ergebnis,
+- Wahrheitshierarchie,
+- Knowledge Build versus Memory,
+- Extraction Roadmap v2,
+- Claire-Cutover und Parity.
 
 ## Wo sehe ich die operative Planung?
 
-Die aktuelle Roadmap lebt in [Epic #2 — Agent Brain aus Claire de Binare extrahieren](https://github.com/jannekbuengener/agent-brain/issues/2).
+Die aktuelle Roadmap lebt in [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2).
 
-Dort findest du:
+Die neue Reihenfolge lautet:
 
-- die vollständige Slice-Kette #3–#13,
-- Vorgänger-/Nachfolger-Links,
-- den aktuellen Dependency Flow,
-- die offenen Architektur-Gaps,
-- und die Acceptance Gates des gesamten Extraction-Tracks.
+```text
+0 Canon
+1 Scaffold
+2 Portable Foundation
+3 Shared Contracts
+4 Context / Briefing
+5 Repo Ingestion
+6 Knowledge Build / Seed
+7 Retrieval
+8 Evidence / Trust
+9 SurrealDB Read
+10 Memory Read
+11 Distribution / Versionierung
+12 CLI / Protocol
+13 Claire Cutover
+14 Parity / Dual Run
+15 Genericity / Cleanup
+```
 
-Die technische Zielarchitektur und Migrationslogik steht zusätzlich im [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md).
+Die vollständigen Issues sind #3–#13 sowie #15–#19. PR #14 war ausschließlich die vorherige Dokumentations-/Gap-Verlinkung und ist kein Slice.
+
+## Warum wurde die Roadmap erweitert?
+
+Beim Gap Audit wurden fünf echte Übergabelücken gefunden:
+
+- Retrieval brauchte stabile Source-/Index-Contracts.
+- Der read-only DB-Pfad hatte keinen expliziten Build-/Seed-Pfad.
+- Claire hatte noch keinen Versionierungs-/Consumer-Vertrag.
+- Der alte Cutover-Slice war zu groß.
+- Context Package und Evidence Resolver brauchten einen gemeinsamen Referenzcontract.
+
+Diese Punkte sind jetzt jeweils eigenen Slices oder klaren Slice-Grenzen zugeordnet.
+
+## Noch offenes Gate
+
+Slice #3 / Slice 0 muss bestehenden persistierten Claire-State klassifizieren:
+
+- `REBUILD_FROM_SOURCE`
+- `MIGRATE`
+- `DROP_WITH_REASON`
+- `DEFER`
+
+Erst danach wissen wir, ob zusätzlich ein eigener Legacy-State-Migrationsslice nötig ist.
 
 ## Aktueller Arbeitsmodus
 
-Wir befinden uns in der **Extraction-Planung mit offenen Gap-Gates**. Vor dem ersten Code-Slice werden Eigentumsgrenzen, Kompatibilitätsstrategie, Parity-Gates und die Reihenfolge der Migration so korrigiert, dass keine ungeklärte technische Übergabe zwischen zwei Slices bleibt.
+**`ROADMAP_V2_READY_FOR_SLICE_0`**. Die Roadmap ist neu geschnitten; der nächste Schritt ist der Extraction Canon. Noch keine Brain-Runtime wird verschoben.
