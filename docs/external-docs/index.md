@@ -2,16 +2,13 @@
 
 **Stand:** 2026-10-20  
 **Status:** kanonischer Docs-Index für externe technische Referenzen  
-**Quelle:** aus der früheren CDB-Extern-Dokumentationsliste abgeleitet und auf den tatsächlichen Agent-Brain-Scope reduziert.
+**Contract:** <https://github.com/jannekbuengener/agent-workforce/blob/main/contracts/EXTERNAL_REFERENCE_CONTRACT.md>
 
 ## Zweck
 
-Diese Datei beantwortet zwei Fragen:
+Diese Datei dokumentiert, welche externen technischen Referenzen für den **aktuellen Agent-Brain-Repozustand** relevant sind und welche Quellen bewusst nur für spätere Slices geparkt bleiben.
 
-1. **Welche externen Dokumentationen erklären Technologien, die Agent Brain heute tatsächlich benutzt?**
-2. **Welche Referenzen werden für bereits geplante Agent-Brain-Slices wahrscheinlich wichtig, ohne heute schon eine Repo-Abhängigkeit zu sein?**
-
-Externe Dokumentation ist **keine Source of Truth für den aktuellen Repo-Zustand**. Bei Widersprüchen gilt weiterhin:
+Externe Dokumentation ist keine Source of Truth für den aktuellen Repo-Zustand. Bei Widersprüchen gilt weiterhin:
 
 1. GitHub Live
 2. Repo Live
@@ -19,125 +16,79 @@ Externe Dokumentation ist **keine Source of Truth für den aktuellen Repo-Zustan
 4. kanonische Projektdateien
 5. externe Dokumentation
 
-## Status-Legende
+## Priorität und Source Authority
 
-| Status | Bedeutung |
-|---|---|
-| **`ACTIVE`** | Im aktuellen Repository, Build, Test- oder CI-Pfad live belegt. Für gegenwärtige Arbeit besonders relevant. |
-| **`NEXT`** | Im kanonischen Agent-Brain-Roadmap-/Extraction-Scope konkret vorgesehen, aber noch keine aktive Runtime-Abhängigkeit. |
-| **`REFERENCE`** | Hilfreiche offizielle Referenz für Entwicklung/Operator-Arbeit, aber nicht als Agent-Brain-Dependency belegt. |
-| **`PARKED`** | Kein gegenwärtiger Agent-Brain-Scope. Nur bei einem konkreten zukünftigen Issue wieder hochstufen. |
+- `P0` — aktive Kernreferenz, durch aktuelle Repo-/Build-/Test-/CI-Evidence belegt.
+- `P1` — aktive sekundäre Referenz, ebenfalls durch aktuelle Repo-Evidence belegt.
+- `P2` — geparkt/reference-only; darf nicht als vorhandene Runtime-Fähigkeit oder Dependency interpretiert werden.
 
-> **Agentenregel:** `ACTIVE` zuerst lesen, wenn die Aufgabe den jeweiligen Bereich berührt. `NEXT` nur für den zugehörigen Roadmap-Slice verwenden. `REFERENCE` und `PARKED` niemals als Beweis dafür behandeln, dass eine Technologie im Repo bereits eingesetzt wird.
+Priorität beschreibt Repo-Relevanz, nicht Wahrheit. External Source Authority ist separat:
 
----
+`OFFICIAL_SPEC` > `OFFICIAL_DOCS` > `UPSTREAM_PROJECT_DOCS` > `UPSTREAM_ISSUES_RELEASES` > `ESTABLISHED_TECHNICAL_KNOWLEDGE` > `COMMUNITY` > `EXAMPLE_DISCOVERY`.
 
-## Gegenwärtig besonders relevant
+## Aktive Referenzen
 
-Diese Referenzen sind durch den aktuellen Repo-/CI-Stand belegt und deshalb für heutige Änderungen besonders wichtig.
+| Kategorie | Referenz | Priorität | Source type | Authority | Warum aktuell relevant | Repo-Beleg / Wann nutzen |
+|---|---|---|---|---|---|---|
+| Runtime | [Python](https://docs.python.org/3/) | `P0` | `official_docs` | `OFFICIAL_DOCS` | Primäre Sprache und Runtime-Baseline. | `pyproject.toml` verlangt Python `>=3.12`; bei Runtime-/Stdlib-/Kompatibilitätsfragen. |
+| Testing | [pytest](https://docs.pytest.org/en/stable/) | `P0` | `official_docs` | `OFFICIAL_DOCS` | Contract-, Foundation- und Extraction-Regressionstests. | `pyproject.toml` dev dependency, `tests/`, `python -m pytest -q`. |
+| Static analysis | [Ruff](https://docs.astral.sh/ruff/) | `P0` | `official_docs` | `OFFICIAL_DOCS` | Aktiver Linter und Validierungspfad. | `pyproject.toml`, `python -m ruff check .`. |
+| Packaging | [Setuptools](https://setuptools.pypa.io/en/latest/) | `P0` | `official_docs` | `OFFICIAL_DOCS` | Aktuelles Build-Backend und src-layout Packaging. | `pyproject.toml`: `setuptools.build_meta`, `setuptools>=75`. |
+| Repo/CI | [GitHub Actions](https://docs.github.com/en/actions) | `P0` | `official_docs` | `OFFICIAL_DOCS` | Automatische Validierungsfläche. | `.github/workflows/ci.yml`; bei CI-/Check-Änderungen. |
+| Repo/SCM | [GitHub Docs](https://docs.github.com/) | `P0` | `official_docs` | `OFFICIAL_DOCS` | Issues, PRs, Checks und GitHub-Live-State sind Teil der kanonischen Arbeitsweise. | `AGENTS.md` Wahrheitshierarchie und Git-/PR-Regeln. |
+| Packaging | [Python Packaging User Guide](https://packaging.python.org/) | `P1` | `official_docs` | `OFFICIAL_DOCS` | Editable installs und Packaging-/Distribution-Grenzen. | `python -m pip install -e ".[dev]"`; bei Packaging-/Distribution-Arbeit. |
+| Repo/CI | [actions/checkout](https://github.com/actions/checkout) | `P1` | `upstream_project_docs` | `UPSTREAM_PROJECT_DOCS` | Aktiver CI-Baustein. | `.github/workflows/ci.yml` nutzt `actions/checkout@v7`. |
+| Repo/CI | [actions/setup-python](https://github.com/actions/setup-python) | `P1` | `upstream_project_docs` | `UPSTREAM_PROJECT_DOCS` | Aktiver Python-Matrix-/Cache-Baustein. | `.github/workflows/ci.yml` nutzt `actions/setup-python@v7`. |
+| Repo/SCM | [Git](https://git-scm.com/docs) | `P1` | `official_docs` | `OFFICIAL_DOCS` | Branch-/Worktree-/Diff-/Merge-Grundlage. | `AGENTS.md` verlangt isolierten Branch/Worktree und verbietet direkte Implementierung auf `main`. |
 
-| Status | Priorität | Referenz | Warum aktuell relevant | Repo-Beleg |
-|---|---:|---|---|---|
-| **`ACTIVE`** | `P0` | [Python](https://docs.python.org/3/) | Primäre Sprache und Runtime-Baseline. | `pyproject.toml` verlangt Python `>=3.12`; CI testet 3.12/3.13/3.14. |
-| **`ACTIVE`** | `P0` | [pytest](https://docs.pytest.org/en/stable/) | Test-Framework für Contract-, Foundation- und Extraction-Regressionstests. | `pyproject.toml` dev dependency; `tests/`; CI führt `python -m pytest -q` aus. |
-| **`ACTIVE`** | `P0` | [Ruff](https://docs.astral.sh/ruff/) | Aktiver Linter und CI-Gate. | `pyproject.toml`; CI führt `python -m ruff check .` aus. |
-| **`ACTIVE`** | `P0` | [Setuptools](https://setuptools.pypa.io/en/latest/) | Aktuelles Build-Backend und src-layout Packaging. | `pyproject.toml`: `setuptools.build_meta`, `setuptools>=75`. |
-| **`ACTIVE`** | `P0` | [Python Packaging User Guide](https://packaging.python.org/) | Referenz für editable installs, Build-/Distribution-Grenzen und spätere Versionierung. | `python -m pip install -e ".[dev]"`; Slice #17 ist Distribution/Versionierung. |
-| **`ACTIVE`** | `P0` | [GitHub Actions](https://docs.github.com/en/actions) | CI ist gegenwärtig die verbindliche automatische Validierungsfläche. | `.github/workflows/ci.yml`. |
-| **`ACTIVE`** | `P1` | [actions/checkout](https://github.com/actions/checkout) | Aktiver CI-Baustein. | `.github/workflows/ci.yml` nutzt `actions/checkout@v7`. |
-| **`ACTIVE`** | `P1` | [actions/setup-python](https://github.com/actions/setup-python) | Aktiver Python-Matrix-/Cache-Baustein. | `.github/workflows/ci.yml` nutzt `actions/setup-python@v7`. |
-| **`ACTIVE`** | `P0` | [GitHub Docs](https://docs.github.com/) | Issues, PRs, Checks und Repo-Live-State sind Teil der kanonischen Arbeitsweise. | `AGENTS.md` Wahrheitshierarchie und Git-/PR-Regeln. |
-| **`ACTIVE`** | `P1` | [Git](https://git-scm.com/docs) | Branch-/Worktree-/Diff- und Merge-Grundlage des Entwicklungsmodells. | `AGENTS.md` verlangt isolierten Branch/Worktree und verbietet direkte Implementierung auf `main`. |
+## Geparkte / geplante Referenzen
 
-### Was `ACTIVE` ausdrücklich bedeutet
+Die folgenden Quellen haben einen dokumentierten möglichen Bezug, sind aber **keine aktuelle Runtime- oder Dependency-Evidence** und bleiben deshalb `P2`.
 
-`ACTIVE` ist kein allgemeines Architekturwunschbild. Der Status wird nur vergeben, wenn der aktuelle Repo-Stand die Technologie direkt belegt. Bei einem späteren Austausch der Technologie muss diese Liste zusammen mit dem Repo-State aktualisiert werden.
+| Referenz | Priorität | Source type | Authority | Geplanter / referenzieller Bezug | Aktuelle Grenze |
+|---|---|---|---|---|---|
+| [SurrealDB](https://surrealdb.com/docs) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Roadmap-Slice `SurrealDB Read` (#10), Knowledge Build (#16) und separates State-Migration-Gate #21. | Keine freigegebene SurrealDB-Runtime im aktuellen Core; Namespace und Research allein sind keine Capability. |
+| [Model Context Protocol](https://modelcontextprotocol.io/docs) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Spätere Protocol-/Consumer-Adapter können MCP-relevant werden. | Privater ChatGPT-MCP ist ausdrücklich keine Repo-Abhängigkeit; Tests/CI dürfen ihn nicht voraussetzen. |
+| [JSON Schema](https://json-schema.org/) | `P2` | `official_spec` | `OFFICIAL_SPEC` | Mögliche spätere formale Schema-/Protocol-Validierung. | Aktuelle Contracts sind Python-Datenverträge; keine jsonschema-Runtime-Dependency. |
+| [PyPA Version Specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/) | `P2` | `official_spec` | `OFFICIAL_SPEC` | Distribution-/Versionierungs-Slice #17. | Version `0.0.0` bleibt aktuell Scaffold-Platzhalter. |
+| [GitHub CLI](https://cli.github.com/manual/) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Optionale Operator-Referenz für Issues/PRs/Checks. | Keine Agent-Brain-Runtime-Dependency. |
+| [OpenAI Codex](https://developers.openai.com/codex) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Optionaler Coding-Agent/Worker. | Tool-spezifische Features sind kein Repo-Canon. |
+| [Claude Code](https://code.claude.com/docs/en/overview) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Optionaler Coding-Agent/Worker. | Keine Repo-Dependency. |
+| [Cursor](https://cursor.com/docs) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Optionaler Editor-/Agenten-Workflow. | Keine Repo-Dependency. |
+| [Gemini API / Google AI](https://ai.google.dev/gemini-api/docs) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Optionaler Agent-/Model-Kontext. | Keine Repo-Dependency. |
+| [GitHub Copilot](https://docs.github.com/en/copilot) | `P2` | `official_docs` | `OFFICIAL_DOCS` | Optionaler Review-/Coding-Workflow. | Keine Repo-Dependency. |
+| [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) | `P2` | `official_spec` | `OFFICIAL_SPEC` | Mögliche Commit-/Release-Konvention. | Kein verpflichtender Repo-Contract. |
 
----
+### SurrealDB Research-Landschaft
 
-## Konkret nächste / bereits geplante Referenzen
+Für SurrealDB-nahe Arbeit existiert die lokale [SurrealDB Reference Landscape](surrealdb-reference-landscape.md). Sie ist ein kuratiertes Reuse-/Research-Artefakt und **keine Runtime-Dependency**. Für #9 darf daraus keine SurrealDB-Abhängigkeit entstehen; für #10/#16/#21 kann sie Kandidaten und Upstream-Pfade liefern. Vor Übernahme müssen offizieller Upstream und aktuelle Dokumentation erneut geprüft werden.
 
-Diese Technologien sind für die Roadmap wichtig, dürfen aber **noch nicht** wie heutige Runtime-Abhängigkeiten behandelt werden.
+### Nicht aktueller Agent-Brain-Scope
 
-| Status | Priorität | Referenz | Geplanter Bezug | Aktuelle Grenze |
-|---|---:|---|---|---|
-| **`NEXT`** | `P0` | [SurrealDB](https://surrealdb.com/docs) | Roadmap-Slice `SurrealDB Read` (#10) und separates State-Migration-Gate #21. | Namespace/Extraction-Grenze existiert, aber noch keine freigegebene SurrealDB-Runtime im Core. |
-| **`NEXT`** | `P1` | [Model Context Protocol](https://modelcontextprotocol.io/docs) | Relevant für spätere Protocol-/Consumer-Adapter und Claire-Parity-Kontext. | Der private ChatGPT-MCP ist ausdrücklich **keine** Repo-Abhängigkeit; Core-Tests/CI dürfen ihn nicht voraussetzen. |
-| **`NEXT`** | `P1` | [JSON Schema](https://json-schema.org/) | Nützlich für spätere formale Schema-/Protocol-Validierung der versionierten Contracts. | Gegenwärtige Contracts sind Python-Datenverträge; `jsonschema` ist keine Runtime-Dependency. |
-| **`NEXT`** | `P1` | [PyPA Version Specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/) | Slice #17 Distribution/Versionierung. | Version `0.0.0` ist aktuell bewusst nur Scaffold-Platzhalter. |
+Docker/Compose, Dev Containers, PostgreSQL, Redis, Prometheus/Grafana, mypy, Black, pre-commit, Gitleaks, Bandit, pip-audit, Trivy, FastAPI, SQLAlchemy/Alembic, Node/npm und Kubernetes sind gegenwärtig **nicht** als Agent-Brain-Technologie belegt. Sie werden nicht einzeln im aktiven Index geführt; bei einem konkreten zukünftigen Issue können sie als `P2` mit dokumentiertem Zweck aufgenommen werden.
 
-### Lokale SurrealDB-Research-Landschaft
-
-Für SurrealDB-nahe Arbeit existiert zusätzlich eine kuratierte lokale Upstream-/Research-Landschaft. Ihre Agent-Brain-spezifische Leseregel und Slice-Zuordnung steht in [SurrealDB Reference Landscape](surrealdb-reference-landscape.md).
-
-Diese Landschaft ist **REFERENCE**, nicht Runtime-Dependency: lokale Repository-Namen oder Workspace-Positionen beweisen weder aktuelle Ownership noch Supportstatus. Vor Reuse müssen offizieller Upstream und aktuelle Dokumentation geprüft werden. Für #9 darf daraus keine SurrealDB-Abhängigkeit entstehen; für #10/#16/#21 dient sie als Reuse-/Research-Quelle.
-
----
-
-## Entwicklungs- und Operator-Referenzen
-
-Nützlich für Agenten und Menschen, aber nicht automatisch Teil des Agent-Brain-Produkts.
-
-| Status | Priorität | Referenz | Verwendung |
-|---|---:|---|---|
-| **`REFERENCE`** | `P1` | [GitHub CLI](https://cli.github.com/manual/) | Issues/PRs/Checks bei lokalen Operator-Workflows. Nicht als Runtime-Abhängigkeit behandeln. |
-| **`REFERENCE`** | `P1` | [OpenAI Codex](https://developers.openai.com/codex) | Hilfreich für AGENTS.md-/Agenten-Workflows, wenn Codex als Worker eingesetzt wird. Tool-spezifische Features sind nicht Repo-Canon. |
-| **`REFERENCE`** | `P1` | [Claude Code](https://code.claude.com/docs/en/overview) | Optionaler Coding-Agent/Worker. Keine aktuelle Repo-Dependency. |
-| **`REFERENCE`** | `P1` | [Cursor](https://cursor.com/docs) | Optionaler Editor-/Agenten-Workflow. Keine aktuelle Repo-Dependency. |
-| **`REFERENCE`** | `P1` | [Gemini API / Google AI](https://ai.google.dev/gemini-api/docs) | Optionaler Agent-/Model-Kontext. Keine aktuelle Repo-Dependency. |
-| **`REFERENCE`** | `P1` | [GitHub Copilot](https://docs.github.com/en/copilot) | Optionaler Review-/Coding-Workflow. Keine aktuelle Repo-Dependency. |
-| **`REFERENCE`** | `P2` | [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) | Mögliche Commit-/Release-Konvention; derzeit kein eigener verpflichtender Repo-Contract. |
-
----
-
-## Geparkt — nur bei echtem Agent-Brain-Scope
-
-Die folgende Dokumentation stammt aus dem breiteren CDB-/Tooling-Umfeld oder ist allgemein interessant. Sie wird **nicht** als aktuelle Agent-Brain-Technologie dargestellt.
-
-| Status | Referenz | Warum geparkt |
-|---|---|---|
-| **`PARKED`** | [Docker](https://docs.docker.com/) / [Docker Compose](https://docs.docker.com/compose/) | Kein aktueller Agent-Brain-Container-/Compose-Pfad. |
-| **`PARKED`** | [Dev Containers](https://containers.dev/) | Kein aktueller `.devcontainer`-Pfad. |
-| **`PARKED`** | [PostgreSQL](https://www.postgresql.org/docs/) | Kein aktueller Agent-Brain-Postgres-Pfad. |
-| **`PARKED`** | [Redis](https://redis.io/docs/latest/) | Kein aktueller Agent-Brain-Redis-Pfad. |
-| **`PARKED`** | [Prometheus](https://prometheus.io/docs/) / [Grafana](https://grafana.com/docs/) | Kein aktueller Monitoring-Runtime-Scope im Agent-Brain-Repo. |
-| **`PARKED`** | [mypy](https://mypy.readthedocs.io/en/stable/) | Nicht in `pyproject.toml` oder CI aktiviert. |
-| **`PARKED`** | [Black](https://black.readthedocs.io/en/stable/) | Nicht in `pyproject.toml` oder CI aktiviert; Ruff ist das aktuelle Lint-Gate. |
-| **`PARKED`** | [pre-commit](https://pre-commit.com/) | Keine aktuelle `.pre-commit-config.yaml` im Agent-Brain-Repo. |
-| **`PARKED`** | [Gitleaks](https://gitleaks.io/) | Keine aktuelle Gitleaks-Konfiguration im Agent-Brain-Repo. |
-| **`PARKED`** | [Bandit](https://bandit.readthedocs.io/en/latest/) | Nicht in aktuellem Dev-/CI-Stack. |
-| **`PARKED`** | [pip-audit](https://pypa.github.io/pip-audit/) | Nicht in aktuellem Dev-/CI-Stack. |
-| **`PARKED`** | [Trivy](https://trivy.dev/docs/) | Kein aktueller Container-/Supply-Chain-Scan im Repo. |
-| **`PARKED`** | [FastAPI](https://fastapi.tiangolo.com/) | Keine aktuelle HTTP-Runtime. |
-| **`PARKED`** | [SQLAlchemy](https://docs.sqlalchemy.org/) / [Alembic](https://alembic.sqlalchemy.org/en/latest/) | Keine aktuelle ORM-/Migration-Dependency. |
-| **`PARKED`** | [Node.js](https://nodejs.org/docs/latest/api/) / [npm](https://docs.npmjs.com/) | Agent Brain ist gegenwärtig ein Python-Paket; Node ist kein Repo-Core-Pfad. |
-| **`PARKED`** | [Kubernetes](https://kubernetes.io/docs/) | Kein aktueller Deployment-Scope. |
-
----
-
-## Bewusst nicht aus der CDB-Liste übernommen
-
-Die ursprüngliche Liste enthielt produkt- und trading-spezifische Referenzen wie MEXC Spot/Contract APIs, WebSocket-Market-Data, CDB-Monitoring-/Execution-Flächen und weitere Claire-spezifische Runtime-Komponenten.
-
-Diese gehören **nicht** in den kanonischen Agent-Brain-Referenzindex, solange kein eigenständiges Agent-Brain-Issue einen generischen Bezug herstellt. Das verhindert, dass Agenten aus externer Dokumentation fälschlich eine Trading-, Exchange- oder Live-Autorität für Agent Brain ableiten.
+Produkt- und trading-spezifische CDB-Referenzen wie MEXC-, Market-Data-, Execution- oder CDB-Monitoring-Flächen gehören nicht in diesen Index, solange kein eigenständiger produktneutraler Agent-Brain-Scope existiert.
 
 ## Pflege-Regel
 
-Eine Referenz darf auf `ACTIVE` hochgestuft werden, wenn mindestens eines gilt:
+Eine Referenz darf auf `P0` oder `P1` hochgestuft werden, wenn mindestens eines gilt:
 
 1. Die Technologie ist direkte Runtime- oder Dev-Dependency in `pyproject.toml` oder einer gleichwertigen kanonischen Manifestdatei.
 2. Sie wird durch aktuelle CI-/Build-Konfiguration ausgeführt.
 3. Ein produktiver Modulpfad importiert oder verwendet sie direkt.
 4. Ein kanonischer Repo-Contract erklärt sie ausdrücklich als gegenwärtige technische Baseline.
 
-`NEXT` setzt einen konkreten Roadmap-/Issue-/Extraction-Bezug voraus. Reine Ideen bleiben `REFERENCE` oder `PARKED`.
+Ein geplanter Slice, optionaler Worker oder allgemeines Interesse reicht nur für `P2`, nicht für eine aktive Einstufung.
 
 ## Agenten-Leseregel
 
 Bei einer Aufgabe mit externer Technologie:
 
 1. zuerst GitHub-/Repo-Live-State und das aktuelle Issue lesen,
-2. danach den passenden `ACTIVE`- oder `NEXT`-Eintrag hier auswählen,
-3. bei SurrealDB-naher Arbeit zusätzlich die [SurrealDB Reference Landscape](surrealdb-reference-landscape.md) lesen,
-4. bevorzugt offizielle Upstream-Dokumentation verwenden,
-5. externe oder lokale Reference-Repos nur zur Erklärung/Reuse-Prüfung nutzen — niemals zum Überschreiben des aktuellen Repo-Contracts.
+2. danach nur passende `P0`/`P1`-Einträge laden,
+3. `P2` nur verwenden, wenn der aktuelle Task den dokumentierten zukünftigen/reference Scope tatsächlich aktiviert,
+4. bei SurrealDB-naher Arbeit zusätzlich die [SurrealDB Reference Landscape](surrealdb-reference-landscape.md) lesen,
+5. bevorzugt offizielle/upstream Dokumentation verwenden,
+6. externe oder lokale Reference-Repos niemals zum Überschreiben des aktuellen Agent-Brain-Contracts oder zum Erfinden einer Runtime-Fähigkeit verwenden.
+
+Keine workstation-spezifischen absoluten Pfade, Credentials, privaten Endpoints oder CDB-/Produktdaten in diesem Index pflegen.
