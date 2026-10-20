@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from agent_brain.context.package import (
     CONTEXT_PACKAGE_SCHEMA,
     ContextArtifact,
@@ -11,7 +12,6 @@ from agent_brain.context.package import (
     ContextPackageRequest,
     build_context_package,
 )
-
 from agent_brain.contracts.evidence import EvidenceRef
 from agent_brain.contracts.repository import ArtifactRef
 from agent_brain.core.source_priority import SourcePriority
