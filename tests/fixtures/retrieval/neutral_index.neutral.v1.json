@@ -10,7 +10,7 @@
         "artifact_id": "artifact-widget",
         "source_id": "source-widgets",
         "source_path": "src/widget.py",
-        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source_hash": "ab412d12295afd8254b4d01d9d016d95e7daff39678113dde8b74b0fa27d8b3f",
         "revision": "abc123"
       },
       "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -27,7 +27,7 @@
         "artifact_id": "artifact-widget",
         "source_id": "source-widgets",
         "source_path": "src/widget.py",
-        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source_hash": "ab412d12295afd8254b4d01d9d016d95e7daff39678113dde8b74b0fa27d8b3f",
         "revision": "abc123"
       },
       "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
@@ -44,7 +44,7 @@
         "artifact_id": "artifact-docs",
         "source_id": "source-widgets",
         "source_path": "docs/widget.md",
-        "source_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "source_hash": "ce1cf0283e1398682672aa993f423c3d68f9d494830753eafb4b9d7bbca243d2",
         "revision": "abc123"
       },
       "content_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
