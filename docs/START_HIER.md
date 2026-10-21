@@ -40,6 +40,15 @@ Der read-only, produktneutrale Ingestionskern ist implementiert. Er liest expliz
 
 Die Entscheidungen über Claire-vs-Core, DB-Writes, Repo-Identität und SurrealDB-Aktivierung sind damit festgelegt; ein Consumer folgt dem Connectors-README und den #15-Verträgen.
 
+## Slice #6 — Knowledge Build / Seed / Import (implementiert)
+
+Der deterministische Knowledge-Build, der neutrale Seed und der Snapshot-Import sind implementiert und bauen auf dem #9-Ingestion und den #15-Verträgen auf:
+
+- **Build:** `build_knowledge_snapshot` erzeugt aus `RepositoryIngestionResult`-Eingängen einen stabilen `knowledge-snapshot/v1`-Snapshot mit Manifest, Build-Metadaten und kanonisierter JSON-Serialisierung.
+- **Seed-Fixture:** `tests/fixtures/knowledge/knowledge_snapshot.neutral.v1.json` ist der committete, produktneutrale Seed-Snapshot auf Basis des Ingestion-Fixtures unter `tests/fixtures/connectors/` (profilgesteuert, ohne Claire-, Trading- oder Live-Bezug).
+- **Import:** `import_knowledge_snapshot` führt einen Snapshot atomar in einen importierenden Ziel-Store ein (Validation-First, keine Teil-Commits; identische Records werden übersprungen, geänderte aktualisiert, fehlende via Tombstone entfernt).
+- **Write-Grenze:** KB-Writes sind reproduzierbare Build-Artefakte und nicht mit produktiven Agent-Memory-Writes zu verwechseln; letztere bleiben im Epic `DEFER`.
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
@@ -68,7 +77,7 @@ Die Entscheidungen über Claire-vs-Core, DB-Writes, Repo-Identität und SurrealD
 3  Shared Contracts                 #15  abgeschlossen
 4  Context / Briefing               #6   abgeschlossen
 5  Repo Ingestion                    #9   abgeschlossen / aktuelle Code-Baseline
-6  Knowledge Build / Seed            #16  nächster Slice
+6  Knowledge Build / Seed            #16  abgeschlossen
 7  Retrieval                         #7
 8  Evidence / Trust                  #8
 9  SurrealDB Read                    #10
@@ -102,4 +111,4 @@ Details: [State Transition](extraction/STATE_TRANSITION.md).
 
 ## Aktueller Arbeitsmodus
 
-**`SLICE_5_REPOSITORY_INGESTION — IMPLEMENTIERT`**. Der produktneutrale, read-only Repository-Ingestionskern ist implementiert und liefert deterministische #15-Ausgaben. Der nächste lineare Slice ist [#16 — Knowledge Build / Seed / Import](https://github.com/jannekbuengener/agent-brain/issues/16).
+**`SLICE_6_KNOWLEDGE_BUILD_SEED_IMPORT — IMPLEMENTIERT`**. Der produktneutrale, read-only Repository-Ingestionskern (#9) ist implementiert und liefert deterministische #15-Ausgaben; der deterministische Knowledge-Build, der neutrale Seed-Fixture und der Snapshot-Import (#16) sind darauf implementiert. Der nächste lineare Slice ist [#7 — Retrieval](https://github.com/jannekbuengener/agent-brain/issues/7).
