@@ -8,12 +8,12 @@ the store.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from dataclasses import dataclass
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, replace
 
 from agent_brain.core.time import Clock
 from agent_brain.knowledge.serialization import parse_knowledge_snapshot
-from agent_brain.knowledge.snapshot import KnowledgeSnapshot
+from agent_brain.knowledge.snapshot import KnowledgeManifest, KnowledgeSnapshot
 
 ALLOWED_IMPORT_MODES: frozenset[str] = frozenset({"reference_only"})
 
@@ -81,7 +81,7 @@ class KnowledgeImportStore:
         Rejected inputs produce a rejected result with findings and
         never mutate the store.
         """
-        report, snapshot = self._validate_input(snapshot_or_payload)
+        report, snapshot = validate_snapshot_input(snapshot_or_payload)
         if report.status != "ok" or snapshot is None:
             return KnowledgeImportResult(
                 status=IMPORT_RESULT_STATUS_REJECTED,
@@ -118,32 +118,53 @@ class KnowledgeImportStore:
         """Return a defensive copy of the current tombstones."""
         return tuple(self._tombstones)
 
-    def _validate_input(
-        self,
-        snapshot_or_payload: KnowledgeSnapshot | str | Mapping[str, object],
-    ) -> tuple[SnapshotValidationReport, KnowledgeSnapshot | None]:
-        if isinstance(snapshot_or_payload, KnowledgeSnapshot):
-            snapshot = snapshot_or_payload
-        else:
-            try:
-                snapshot = parse_knowledge_snapshot(snapshot_or_payload)
-            except (TypeError, ValueError) as exc:
-                return (
-                    SnapshotValidationReport(
-                        status="rejected",
-                        findings=(f"invalid snapshot payload: {exc}",),
-                    ),
-                    None,
-                )
-        if not snapshot.manifests:
+    def commit_reconciliation(self, records: Sequence[ImportedRecord], tombstones: Sequence[Tombstone]) -> None:
+        """Replace store state with a reconciled record and tombstone set."""
+        self._records = list(records)
+        self._tombstones = list(tombstones)
+
+
+def validate_snapshot_input(
+    snapshot_or_payload: KnowledgeSnapshot | str | Mapping[str, object],
+) -> tuple[SnapshotValidationReport, KnowledgeSnapshot | None]:
+    """Validate a snapshot input and normalize its manifests.
+
+    Duplicate manifests sharing a ``source_ref`` are deduplicated by
+    keeping the first occurrence in manifest order.
+    """
+    if isinstance(snapshot_or_payload, KnowledgeSnapshot):
+        snapshot = snapshot_or_payload
+    else:
+        try:
+            snapshot = parse_knowledge_snapshot(snapshot_or_payload)
+        except (TypeError, ValueError) as exc:
             return (
                 SnapshotValidationReport(
                     status="rejected",
-                    findings=("snapshot contains no manifests",),
+                    findings=(f"invalid snapshot payload: {exc}",),
                 ),
                 None,
             )
+
+    deduped_manifests: list[KnowledgeManifest] = []
+    seen_source_refs: set[str] = set()
+    for manifest in snapshot.manifests:
+        if manifest.source_ref in seen_source_refs:
+            continue
+        seen_source_refs.add(manifest.source_ref)
+        deduped_manifests.append(manifest)
+    if len(deduped_manifests) != len(snapshot.manifests):
+        snapshot = replace(snapshot, manifests=tuple(deduped_manifests))
+
+    if not snapshot.manifests:
         return (
-            SnapshotValidationReport(status="ok", findings=()),
-            snapshot,
+            SnapshotValidationReport(
+                status="rejected",
+                findings=("snapshot contains no manifests",),
+            ),
+            None,
         )
+    return (
+        SnapshotValidationReport(status="ok", findings=()),
+        snapshot,
+    )
