@@ -104,9 +104,11 @@ def test_core_imports_without_claire() -> None:
 
 
 def test_no_host_paths_in_public_surface() -> None:
+    import inspect
+
     import agent_brain.retrieval as mod
 
-    source = mod.__file__ or ""
+    source = inspect.getsource(mod)
     assert "C:" not in source
     assert "/home/" not in source
     assert "/Users/" not in source
@@ -226,7 +228,6 @@ def test_run_retrieval_against_neutral_fixtures() -> None:
             encoding="utf-8"
         )
     )
-
 
     _source()
     records = tuple(
