@@ -80,4 +80,3 @@ def test_provenance_rejects_incompatible_major() -> None:
             source_kind="repo",
             source_ref="repo:example",
         )
-

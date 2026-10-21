@@ -1,6 +1,6 @@
 # Temporal- und Provenance-Contract-Design
 
-**Issue:** #37  
+**Issue:** #37
 **Status:** APPROVED / IMPLEMENTATION BASELINE
 
 ## Ziel
