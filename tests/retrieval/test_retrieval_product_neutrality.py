@@ -249,11 +249,12 @@ def test_run_retrieval_against_neutral_fixtures() -> None:
     assert len(result.candidates) == 3
     assert result.stop_applied is False
     assert result.impact_applied is True
-    # Alle Kandidaten müssen eine deterministische candidate_id haben.
     assert all(c.candidate_id.startswith("cand_") for c in result.candidates)
-    # Stabil sortiert nach record_id.
-    record_ids = [c.record_id for c in result.candidates]
-    assert record_ids == sorted(record_ids)
+    assert {c.record_id for c in result.candidates} == {
+        "record-widget-module",
+        "record-widget-symbol-build",
+        "record-docs-widget",
+    }
 
 
 def test_run_retrieval_zero_candidates() -> None:
