@@ -12,7 +12,7 @@
         "artifact_id": "artifact-widget",
         "source_id": "source-widgets",
         "source_path": "src/widget.py",
-        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source_hash": "ab412d12295afd8254b4d01d9d016d95e7daff39678113dde8b74b0fa27d8b3f",
         "revision": "abc123"
       },
       "confidence": 1.0,
@@ -29,7 +29,7 @@
         "artifact_id": "artifact-widget",
         "source_id": "source-widgets",
         "source_path": "src/widget.py",
-        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source_hash": "ab412d12295afd8254b4d01d9d016d95e7daff39678113dde8b74b0fa27d8b3f",
         "revision": "abc123"
       },
       "confidence": 0.8,
