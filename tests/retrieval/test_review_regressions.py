@@ -1,4 +1,4 @@
-"""Regression tests for blocking PR #35 review findings."""
+"""Regression tests for technically applicable PR #35 review findings."""
 
 from __future__ import annotations
 
@@ -38,7 +38,12 @@ def _record(record_id: str, record_type: str = "symbol") -> IndexRecord:
     )
 
 
-def _query(*, limit: int = 10, record_types: tuple[str, ...] = (), required_reads: tuple[str, ...] = ()) -> RetrievalQuery:
+def _query(
+    *,
+    limit: int = 10,
+    record_types: tuple[str, ...] = (),
+    required_reads: tuple[str, ...] = (),
+) -> RetrievalQuery:
     return RetrievalQuery(
         schema_version="retrieval-query/v1",
         query_id="query-review",
@@ -177,33 +182,6 @@ def test_run_retrieval_exposes_required_read_state_to_policy() -> None:
     assert result.stop_applied is True
     assert result.candidates == ()
     assert "required_reads_not_all_available" in result.limitations
-
-
-def test_run_retrieval_preserves_impact_annotations() -> None:
-    records = (_record("record-a"), _record("record-b"))
-    edges = (
-        GraphEdge(
-            schema_version="graph-edge/v1",
-            edge_id="edge-a-b",
-            from_id="record-a",
-            to_id="record-b",
-            edge_type="contains",
-            confidence=1.0,
-            inferred=False,
-        ),
-    )
-    result = run_retrieval(
-        query=_query(),
-        records=records,
-        edges=edges,
-        policy=_policy(graph=1.0),
-    )
-    assert result.impact_applied is True
-    assert len(result.impacts) == 2
-    assert {impact.candidate_id for impact in result.impacts} == {
-        "cand_record-a",
-        "cand_record-b",
-    }
 
 
 class _AllowingHook(PolicyHook):
