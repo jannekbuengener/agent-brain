@@ -244,9 +244,11 @@ def test_candidate_without_claire_context_is_rankable() -> None:
 
 
 def test_no_host_paths_in_ranking() -> None:
+    import inspect
+
     import agent_brain.retrieval.ranking as mod
 
-    source = mod.__file__ or ""
+    source = inspect.getsource(mod)
     # No absolute host paths should be baked into ranking logic.
     assert "C:" not in source
     assert "/home/" not in source
