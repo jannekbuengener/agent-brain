@@ -35,7 +35,7 @@
 
 ## Review Focus
 
-Die vierzehn maßgeblichen Failure Classes — jede ist einem konkreten Task-Test zugeordnet:
+Die siebzehn maßgeblichen Failure Classes — jede ist einem konkreten Task-Test zugeordnet:
 
 1. **Cross-Provenance-Konflikt ohne Last-Write-Wins** → Task 2 erkennt und exponiert die Konfliktgruppen; Task 4 fixiert die vollständige Matrix in `tests/evidence/test_cross_provenance_conflict.py` und materialisiert das blockierende Finding. Dieselbe logische ID kollidiert bei unterschiedlichem `provenance.source_ref` **oder** unterschiedlichem nicht-leerem `provenance.source_hash`; gleicher Ref + gleicher nicht-leerer Hash kollidiert nicht; eine explizite Supersession-Beziehung verhindert den Falschkonflikt. Fehlt mindestens ein Hash, bleibt die Identität konservativ unbestimmt: alle Kandidaten bleiben sichtbar, es gibt kein Gewinner-Feld und ohne Supersession wird die Gruppe als `cross_provenance_conflict` materialisiert. Task 2/4 berechnen keinen `ResolutionState`; ausschließlich Task 5 leitet daraus `ResolutionState.UNKNOWN` mit `reason_code = cross_provenance_conflict` ab.
 2. **Type-B-Typen ohne eindeutigen Owner oder vor ihrer Erzeugung konsumiert** → Tasks 1/4/5, `tests/evidence/test_evidence_contracts.py`, `test_contradiction.py`, `test_freshness.py`, `test_scope_drift.py`: jeder interne Typ ist genau einem Modul und Creation Task zugeordnet, vor dem ersten Consumer getestet und trägt keine `schema_version`.
@@ -51,6 +51,9 @@ Die vierzehn maßgeblichen Failure Classes — jede ist einem konkreten Task-Tes
 12. **Blockierende Freshness wird im Trust übergangen** → Task 7, `tests/evidence/test_trust.py`: blockierende Findings aus allen drei Stage-3-Reports werden in `blocking_findings` übernommen und erzwingen `insufficient`.
 13. **Finding-ID driftet mit dem Auswertungszeitpunkt** → Tasks 4/5, `tests/evidence/test_determinism.py`: Contradiction-, Stale- und Scope-Drift-IDs schließen `as_of`/`detected_at` aus und bleiben bei sonst identischem logischem Finding über Auswertungszeiten stabil.
 14. **Unbekannter Finding-Status wird still ignoriert** → Task 6, `tests/evidence/test_conservative_defaults.py`: ein unbekannter Status bleibt konservativ aktiv, seine Penalty wird angewendet und `unknown_finding_status` wird gewarnt.
+15. **Artifact-Cap ohne Artifact-Inputs** → Task 5, `tests/evidence/test_scope_drift.py`: `ScopeDriftBundle` führt `ArtifactState`-Werte; `max_artifact_count` erzeugt bei überschrittener Grenze `unexpected_dependency_expansion`, wirkt aber nur bei deklarierten `target_paths`.
+16. **Zwei gleichartige Contradiction-Regeln kollidieren bei der Finding-ID** → Task 4, `tests/evidence/test_contradiction.py`: `rule_id` ist Teil des ID-Payloads; zwei Regeln mit gleichem Typ und gleichen Referenzen bleiben unterscheidbar.
+17. **Unbekannte Integrity-Typen werden wie bekannte Findings bewertet** → Task 6, `tests/evidence/test_conservative_defaults.py`: unbekannte `rule_type`/`stale_type`/`drift_type` bleiben sichtbar, werden nicht bewertet und erzeugen `unknown_type`.
 
 Weitere Review-Punkte: der Resolver darf unter keinen Umständen Zeit auswerten; alle Default-Zahlen müssen in Policies oder RuleSets auffindbar und nirgends im Algorithmus verteilt sein; `QualityPolicy.default().dependency_confidence_threshold` bleibt `0.5`.
 
@@ -82,13 +85,13 @@ Weitere Review-Punkte: der Resolver darf unter keinen Umständen Zeit auswerten;
 | Typ-B-Typ | Einziger Owner / Creation Task | Erster Consumer | Verbindlicher Inhalt / Grenze |
 |---|---|---|---|
 | `SourceState` | `contract.py` / Task 1 | Task 5 (`FreshnessBundle`) | gemeinsamer, validierter Source-Value-Type; `frozen=True`, `slots=True`; keine `schema_version`, keine externe Public Surface |
-| `ArtifactState` | `contract.py` / Task 1 | Task 5 (`FreshnessBundle`, `ScopeDriftBundle`) | gemeinsamer, validierter Artifact-Value-Type; `frozen=True`, `slots=True`; keine `schema_version`, keine externe Public Surface |
+| `ArtifactState` | `contract.py` / Task 1 | Task 5 (`FreshnessBundle`, `ScopeDriftBundle`) | gemeinsamer, validierter Value-Type um `artifact_ref: ArtifactRef` plus Artifact-Typ, Temporal-/Snapshot-Identität; stabile ID/Pfad kommen aus `ArtifactRef`; `frozen=True`, `slots=True`; keine `schema_version`, keine externe Public Surface |
 | `SurfaceState` | `contract.py` / Task 1 | Task 5 (`ScopeDriftBundle`), danach Task 6 | gemeinsamer, validierter Surface-Value-Type; `frozen=True`, `slots=True`; keine `schema_version`, keine externe Public Surface |
 | `ContradictionBundle` | `contradiction.py` / Task 4 | Task 4 (`detect_contradictions`) | typisierte `ClaimRef`/`ClaimState`, `EvidenceRef`/`EvidenceState`, `DecisionRecord` und Stage-1-Resultate; kein untypisiertes Fremd-Dict |
-| `ContradictionRule` | `contradiction.py` / Task 4 | Task 4 (`ContradictionRuleSet`) | immutable Regel samt purem Detector; keine `schema_version` |
+| `ContradictionRule` | `contradiction.py` / Task 4 | Task 4 (`ContradictionRuleSet`) | immutable Regel mit stabilem `rule_id`, `rule_type` und purem Detector; keine `schema_version` |
 | `ContradictionRuleSet` | `contradiction.py` / Task 4 | Task 4 (`detect_contradictions`) | immutable, validierte Regelmenge; keine `schema_version` |
 | `FreshnessBundle` | `freshness.py` / Task 5 | Task 5 (`evaluate_freshness`) | `EvidenceRef`/`EvidenceState`, `ClaimRef`/`ClaimState`, `DecisionRecord`, erwartete/beobachtete Source-Presence und -Hashes, Artifact-Typen/Temporal-/Snapshot-Identitäten, erwartete Dependency-Edges, beobachtete Edge-IDs sowie Conflict-/Resolution-Inputs |
-| `ScopeDriftBundle` | `scope_drift.py` / Task 5 | Task 5 (`detect_scope_drift`) | deklarierte/beobachtete Pfade, Domains, Issues, Surfaces, Operation Modes und Dependencies sowie opake `authorization_refs`; keine Autorisierungsvalidierung |
+| `ScopeDriftBundle` | `scope_drift.py` / Task 5 | Task 5 (`detect_scope_drift`) | `ArtifactState`-Werte sowie deklarierte/beobachtete Pfade, Domains, Issues, Surfaces und Operation Modes plus opake `authorization_refs`; keine Autorisierungsvalidierung |
 
 Jeder Typ-B-Typ wird in seinem Creation Task vor dem ersten Fachconsumer erzeugt und getestet. Kein Typ-B-Typ ist ein versionierter Schema-Contract oder Teil der externen Public Surface.
 
@@ -118,11 +121,11 @@ Jeder Typ-B-Typ wird in seinem Creation Task vor dem ersten Fachconsumer erzeugt
 | `test_temporal_semantics.py` | #37-Temporal-Konsum, `system_as_of` nie als Fact-Zeit |
 | `test_supersession_semantics.py` | Supersession nur aus `ResolutionMeta`, dangling, Cycle |
 | `test_freshness.py` | alle sechs Stale-Typen, Freshness Window, Snapshot Identity, Dependency-Edge-Differenz und Refresh-Empfehlungen |
-| `test_scope_drift.py` | alle acht Drift-Typen, Pfad/Glob/Verzeichnisgrenze, Policy-Pflicht, Presence ≠ Authorization |
+| `test_scope_drift.py` | alle acht Drift-Typen, Pfad/Glob/Verzeichnisgrenze, Artifact-Cap, Policy-Pflicht, Presence ≠ Authorization |
 | `test_quality.py` | 7 Dimensionen, Grade-Bänder, Penalties, missing dimension, NaN/Inf |
 | `test_trust.py` | 3 Komponenten, Level, `evidence_sufficiency`, `required_components`, blocking findings aus allen Stage-3-Reports |
 | `test_source_trust_confidence_separation.py` | Unabhängigkeit beider Werte, kein Beitrag zum Composite |
-| `test_conservative_defaults.py` | Negativkontrollen-Katalog inklusive konservativ aktivem unbekanntem Finding-Status (siehe unten) |
+| `test_conservative_defaults.py` | Negativkontrollen-Katalog inklusive unbekanntem Finding-Status und unbekannten Integrity-Typen (siehe unten) |
 | `test_determinism.py` | Reorder-Identität über alle Stufen, wiederholte Runs und Finding-IDs über verschiedene `as_of` identisch |
 | `test_product_neutrality.py` | Wortliste, keine Claire-/CDB-/Trading-Begriffe, keine Host-Pfade, kein DB/Netzwerk, keine Memory-Importe, kein Clock-Import |
 | `test_no_authority_signals.py` | Verbotene Resultfelder, `authorization_implied` immer `False`, `limitations` nie leer |
@@ -296,7 +299,7 @@ Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt 
 - Test: `tests/evidence/test_evidence_contracts.py`, `tests/evidence/test_public_surface.py` (nur Inventar-Teil)
 
 **Interfaces**
-- Consumes: `EvidenceRef`, `ClaimRef`, `TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`, `require_compatible_version`, `serialize_contract`, `canonical_hash`
+- Consumes: `EvidenceRef`, `ClaimRef`, `ArtifactRef`, `TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`, `require_compatible_version`, `serialize_contract`, `canonical_hash`
 - Produces: `EvidenceState`, `ClaimState`, `DecisionRecord`, `EvidenceQuery`, `ClaimQuery`, `DecisionQuery`, `DecisionReplayQuery`, `TrustRequest`, `EvidenceResolution`, `ClaimResolution`, `DecisionHistoryResult`, `DecisionReplay`, `ContradictionFinding`, `ContradictionScanResult`, `StaleFinding`, `ResolutionStateEntry`, `FreshnessReport`, `ScopeDriftFinding`, `ScopeDriftReport`, `ScopeDriftBlocking`, `QualityDimensionScore`, `QualityAssessment`, `TrustSummary`, `QualityPolicy`, `TrustPolicy`, `FreshnessPolicy`, `ScopeDriftPolicy`, `EvidenceResolutionPolicy`, `ClaimResolutionPolicy`, `SourceState`, `ArtifactState`, `SurfaceState`, `EvidenceError` + 7 Unterklassen, alle Vokabulare
 
 - [ ] RED: Schema-Familie und Major-Version jedes Typ-A-Contracts werden fail-closed abgelehnt (`require_compatible_version`).
@@ -304,7 +307,7 @@ Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt 
 - [ ] RED: Overlays enthalten **kein** eigenes `known_at`/`valid_from`/`valid_until`/`system_as_of`/`source_trust`/`confidence`/`supersedes_ref`/`superseded_by_ref`/`source_hashes`-Feld; `Confidence`/`source_trust` stehen ausschließlich in `ResolutionMeta`.
 - [ ] RED: Kein #8-Overlay oder persistierbarer Input-Contract führt ein Feld namens `resolution_state`. Task 1 definiert nur die Resultform `ResolutionStateEntry`; ihr Feld `resolution_state` wird erst in Task 5 abgeleitet und ist keine gespeicherte Wahrheit.
 - [ ] RED: `EvidenceState`/`ClaimState`/`DecisionRecord` sind `frozen=True, slots=True`; Mutation wirft `FrozenInstanceError`.
-- [ ] RED: `SourceState`, `ArtifactState` und `SurfaceState` werden in Task 1 als gemeinsame interne Value/Input Types erzeugt, sind validiert sowie `frozen=True, slots=True`, besitzen keine `schema_version`/`to_dict`/`from_dict`-Schema-Surface und werden nicht über die externe Public Surface exportiert.
+- [ ] RED: `SourceState`, `ArtifactState` und `SurfaceState` werden in Task 1 als gemeinsame interne Value/Input Types erzeugt, sind validiert sowie `frozen=True, slots=True`, besitzen keine `schema_version`/`to_dict`/`from_dict`-Schema-Surface und werden nicht über die externe Public Surface exportiert. `ArtifactState` komponiert einen vorhandenen `ArtifactRef`; `artifact_id`, `source_path` und `source_hash` werden nicht dupliziert.
 - [ ] RED: `to_dict()` liefert JSON-sichere Primitive (Datetimes via #37-Serialisierung, Tupel als Listen).
 - [ ] RED: `QualityPolicy.default()` liefert die in [Policy-Defaults](#policy-defaults-alle-zahlen-ausschließlich-hier) fixierten Zahlen; keine andere Policy führt score-relevante Zahlen.
 - [ ] RED: Policy-Mappings werden read-only materialisiert (`MappingProxyType`); Änderungsversuch wirft.
@@ -400,7 +403,8 @@ Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt 
 - [ ] RED: `cross_provenance_conflict` wird als Finding mit Severity `blocking` materialisiert und in `blocking_count` gezählt.
 - [ ] RED: Task 4 berechnet **keinen** `ResolutionState` und importiert keine vollständige State-Ableitung; er liefert nur Konfliktgruppen/Marker und das blockierende Finding als Input für Task 5.
 - [ ] RED: `claim_vs_evidence`, `decision_vs_evidence` (`requires_evidence=True` ohne auflösbare bzw. nur schwache Evidence) und `stale_decision_vs_new_evidence` treffen die im injizierten RuleSet fixierten Severity-/Confidence-Werte. Kein Detektor liest einen gespeicherten Status `stale`, leitet `ResolutionState.STALE` ab oder wertet Freshness Windows aus; `stale_decision_vs_new_evidence` ist nur der stabile Regeltypname für einen Widerspruch zwischen einer Entscheidung und explizit neuerer Evidence.
-- [ ] RED: Finding-IDs sind `canonical_hash(...)[:16]`, über Input-Reihenfolge stabil und eindeutig. Der ID-Payload enthält Regeltyp und stabile fachliche Referenzen, aber weder `as_of` noch `detected_at`; dasselbe logische Finding behält bei zwei Auswertungszeitpunkten dieselbe ID, während nur `detected_at` wechselt.
+- [ ] RED: Finding-IDs sind `canonical_hash(...)[:16]`, über Input-Reihenfolge stabil und eindeutig. Der ID-Payload enthält `rule_id`, `rule_type` und stabile fachliche Referenzen, aber weder `as_of` noch `detected_at`; dasselbe logische Finding behält bei zwei Auswertungszeitpunkten dieselbe ID, während nur `detected_at` wechselt.
+- [ ] RED: Zwei injizierte `ContradictionRule`-Werte mit verschiedenem `rule_id`, aber identischem `rule_type` und identischen gematchten Referenzen erzeugen zwei verschiedene Finding-IDs und werden nicht dedupliziert.
 - [ ] RED: Die Detektorfunktionen enthalten **keine** Severity-/Confidence-Literale; alle Werte kommen aus der injizierten Regel. Ein AST-/Quelltext-Scan belegt das.
 - [ ] RED: `detect_contradictions` mit ungültigem Bundle schlägt fail-closed fehl (`ContradictionError`); jeder Finding trägt `detected_at` aus `as_of`.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
@@ -422,7 +426,7 @@ Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt 
 - Produces: `FreshnessBundle`, `ScopeDriftBundle`, `evaluate_freshness(...) -> FreshnessReport`, `detect_scope_drift(...) -> ScopeDriftReport`, `build_scope_drift_blocking(...) -> ScopeDriftBlocking`
 
 - [ ] RED: `FreshnessBundle` wird in `freshness.py` vor `evaluate_freshness` als validierter, immutable Typ-B-Typ (`frozen=True, slots=True`, keine `schema_version`) erzeugt. Es enthält explizit `EvidenceRef`/`EvidenceState`, `ClaimRef`/`ClaimState`, `DecisionRecord`, paarweise erwartete/beobachtete Source-Presence und -Hashes, `ArtifactState`-Werte mit Artifact-Typ/Temporal-/Snapshot-Identität, erwartete Dependency-Edges, aktuell beobachtete Edge-IDs sowie Conflict-Marker/Resolution-Inputs für die vollständige `ResolutionState`-Ableitung; untypisierte Fremd-Dicts werden abgelehnt.
-- [ ] RED: `ScopeDriftBundle` wird in `scope_drift.py` vor `detect_scope_drift` als validierter, immutable Typ-B-Typ (`frozen=True, slots=True`, keine `schema_version`) erzeugt. Es enthält ausschließlich deklarierte/beobachtete Pfade, Domains, Issue-Refs, Surfaces, Operation Modes und Dependency-IDs sowie opake `authorization_refs`; es validiert oder interpretiert keine Autorisierung.
+- [ ] RED: `ScopeDriftBundle` wird in `scope_drift.py` vor `detect_scope_drift` als validierter, immutable Typ-B-Typ (`frozen=True, slots=True`, keine `schema_version`) erzeugt. Es enthält `ArtifactState`-Werte sowie ausschließlich deklarierte/beobachtete Pfade, Domains, Issue-Refs, Surfaces und Operation Modes plus opake `authorization_refs`; es validiert oder interpretiert keine Autorisierung.
 - [ ] RED: `source_hash_changed` entsteht ausschließlich bei explizit unterschiedlichem erwarteten und beobachteten nicht-leeren Source-Hash; fehlende Hashes erzeugen Warnung/Limitation statt einer erfundenen Änderung.
 - [ ] RED: `source_deleted` entsteht ausschließlich, wenn eine erwartete Source explizit als nicht mehr beobachtet markiert ist; fehlende Beobachtungsdaten allein behaupten keine Löschung.
 - [ ] RED: `evaluate_freshness` wertet `valid_until <= as_of` ⇒ Stale-Finding `validity_window_closed` aus.
@@ -438,10 +442,11 @@ Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt 
 - [ ] RED: Kein `memory_ttl_expired`; kein Memory-Import in `freshness.py`.
 - [ ] RED: `detect_scope_drift` verlangt `ScopeDriftPolicy` als Pflichtparameter; ohne Policy entsteht kein Ergebnis.
 - [ ] RED: `path_out_of_scope` hat einen eigenen Positiv- und Gegenfall: der Pfadvergleich respektiert die Verzeichnisgrenze (`tools/surrealdb` trifft nicht `tools/surrealdb_extra`), Globs (`*`, `?`, `[`) werden explizit ausgewertet und leeres `target_paths` deaktiviert nur diese Pfadregel.
-- [ ] RED: Jede verbleibende Scope-Drift-Regel hat einen eigenen Positiv- und Gegenfall: `forbidden_surface_touched` über `policy.forbidden_surfaces`, `runtime_surface_touched` über `policy.protected_surface_types`, `domain_out_of_scope` über deklarierte/beobachtete Domains + `policy.allowed_domains`, `issue_out_of_scope` über deklarierte/beobachtete Issue-Refs + `policy.allowed_issues` und `unexpected_dependency_expansion` über die Differenz deklarierter zu beobachteten Dependency-IDs.
+- [ ] RED: Jede verbleibende Scope-Drift-Regel hat einen eigenen Positiv- und Gegenfall: `forbidden_surface_touched` über `policy.forbidden_surfaces`, `runtime_surface_touched` über `policy.protected_surface_types`, `domain_out_of_scope` über deklarierte/beobachtete Domains + `policy.allowed_domains` und `issue_out_of_scope` über deklarierte/beobachtete Issue-Refs + `policy.allowed_issues`.
+- [ ] RED: `unexpected_dependency_expansion` zählt die nichtleeren `ArtifactState`-Werte. Bei deklarierten `target_paths` erzeugt der Default `max_artifact_count = 20` bei genau 20 Artefakten kein Finding und bei 21 ein Warning-Finding mit stabil sortierten betroffenen `ArtifactRef`-IDs/Pfaden; bei leeren `target_paths` bleibt die Regel unabhängig von der Artefaktzahl deaktiviert.
 - [ ] RED: `write_intent_without_authorization_ref` und `write_mode_without_authorization_ref` haben je einen eigenen Positiv- und Gegenfall: fehlende Autorisierungsreferenz ⇒ entsprechendes Finding; vorhandene Referenz ⇒ **kein** positives Autorisierungsfeld, nur das Finding entfällt.
 - [ ] RED: `StaleFinding`- und `ScopeDriftFinding`-IDs nutzen `canonical_hash(...)[:16]` über Typ und stabile fachliche Referenzen, nie über `as_of`/`detected_at`. Je ein Zwei-Zeitpunkte-Test belegt identische IDs bei geändertem `detected_at`.
-- [ ] RED: `ScopeDriftBlocking` enthält nur `blocking`, `blocking_count`, `summary`, Artefakte, Findings, generische `recommended_actions`/`recommended_next_reads` — kein `operator_action`, keine `anti_actions`, kein autoritätsbehauptendes Feld.
+- [ ] RED: `ScopeDriftBlocking` enthält nur `blocking`, `blocking_count`, `summary`, betroffene Artifact-Refs aus dem `ScopeDriftBundle`, Findings, generische `recommended_actions`/`recommended_next_reads` — kein `operator_action`, keine `anti_actions`, kein autoritätsbehauptendes Feld.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
 - [ ] GREEN: `freshness.py` (`FreshnessBundle`, Stale-Findings, vollständige `ResolutionState`-Ableitung als private Helper, Report), `scope_drift.py` (`ScopeDriftBundle`, Drift-Findings, Blocking-Ausgabe).
 - [ ] Test: alle vier Testdateien fokussiert grün; Task-3-Suite bleibt grün.
@@ -464,6 +469,7 @@ Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt 
 - [ ] RED: Zähldimensionen = erfüllte Kriterien / verfügbare Kriterien; `dependency_confidence` zählt nur `GraphEdge.confidence >= QualityPolicy.dependency_confidence_threshold`.
 - [ ] RED: Invers-penalisierende Dimensionen nutzen `max(0, 1 - Σ policy.severity_penalties[severity])`; Report ohne aktive Findings ⇒ `1.0`; fehlender Report ⇒ Dimension **nicht verfügbar**.
 - [ ] RED: Ein Finding mit unbekanntem oder vorwärts-additivem Status gilt konservativ als aktiv, seine Severity-Penalty wird angewendet und die Warnung `unknown_finding_status` bleibt sichtbar; es wird nie still als resolved/exempt verworfen.
+- [ ] RED: Ein unbekannter `rule_type`, `stale_type` oder `drift_type` bleibt im Report sichtbar, wird nicht bewertet und erzeugt jeweils `unknown_type`; kein unbekannter Typ erhält eine Severity-Penalty oder einen positiven Beitrag. Diese drei Fälle sind getrennt vom unbekannten Finding-Status getestet.
 - [ ] RED: Fehlende Dimension wird ausgelassen und als Limitation sichtbar — **kein** neutraler `0.5`-Ersatz.
 - [ ] RED: Grade-Bänder kommen aus `QualityPolicy.default()`: `blocking < 0.30`, `watch < 0.50`, `weak < 0.70`, `good >= 0.70`.
 - [ ] RED: Eine Dimension mit Grade `blocking` senkt einen Gesamt-Grade `weak`/`good` auf `watch`; `blocking` bleibt `blocking`.
@@ -556,10 +562,13 @@ Jeder Eintrag ist einem Test in `tests/evidence/` zugeordnet und muss RED→GREE
 | fehlender `source_hash` auf einer oder beiden Seiten ohne Supersession | `test_cross_provenance_conflict.py` |
 | unbekannter Record-Status | `test_conservative_defaults.py` (neutraler Wert + sichtbare Warnung) |
 | unbekannter Finding-Status | `test_conservative_defaults.py`, `test_quality.py` (konservativ aktiv + Penalty + Warnung `unknown_finding_status`) |
+| unbekannter `rule_type`, `stale_type` oder `drift_type` | `test_conservative_defaults.py`, `test_quality.py` (sichtbar, nicht bewertet, Warnung `unknown_type`) |
 | fehlende Policy | `test_scope_drift.py` (`ScopeDriftPolicy` Pflicht), `test_quality.py` (Default greift) |
 | versteckte Wall Clock | `test_product_neutrality.py` (kein Clock-Import, kein `now()`-Aufruf) |
 | dict-/set-Nondeterminismus | `test_determinism.py` |
 | gleicher Contradiction-/Stale-/Scope-Fund bei unterschiedlichem `as_of` | `test_determinism.py` (gleiche `finding_id`, nur `detected_at` ändert sich) |
+| zwei Contradiction-Regeln mit gleichem Typ/Match, aber verschiedenem `rule_id` | `test_contradiction.py` (verschiedene `finding_id`) |
+| Artifact-Cap bei `target_paths`: 20 / 21 / deaktiviert ohne Pfadscope | `test_scope_drift.py` |
 | absolute Host-Pfade | `test_product_neutrality.py` |
 | Netzwerknutzung | `test_product_neutrality.py` |
 | DB-Nutzung | `test_product_neutrality.py` |
