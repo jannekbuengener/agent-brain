@@ -1,0 +1,39 @@
+{
+  "schema_version": "graph-edge/v1",
+  "edges": [
+    {
+      "schema_version": "graph-edge/v1",
+      "edge_id": "edge-module-contains-symbol",
+      "from_id": "record-widget-module",
+      "to_id": "record-widget-symbol-build",
+      "edge_type": "contains",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-widget",
+        "source_id": "source-widgets",
+        "source_path": "src/widget.py",
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "revision": "abc123"
+      },
+      "confidence": 1.0,
+      "inferred": false
+    },
+    {
+      "schema_version": "graph-edge/v1",
+      "edge_id": "edge-module-references-doc",
+      "from_id": "record-widget-module",
+      "to_id": "record-docs-widget",
+      "edge_type": "references",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-widget",
+        "source_id": "source-widgets",
+        "source_path": "src/widget.py",
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "revision": "abc123"
+      },
+      "confidence": 0.8,
+      "inferred": false
+    }
+  ]
+}
