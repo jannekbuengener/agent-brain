@@ -264,3 +264,26 @@ def test_rank_no_claire_or_trading_terms() -> None:
     assert "claire" not in source.lower()
     assert "trading" not in source.lower()
     assert "surrealdb" not in source.lower()
+
+
+def test_explanation_source_refs_contain_no_host_paths() -> None:
+    artifact = ArtifactRef(
+        schema_version="artifact-ref/v1",
+        artifact_id="artifact-widget",
+        source_id="source-widgets",
+        source_path="C:/absolute/host/path/widget.py",
+        source_hash="a" * 64,
+        revision="abc123",
+    )
+    candidate = _candidate("record-widget", artifact, score=0.0)
+    policy = _policy()
+
+    ranked = rank_candidates(
+        (candidate,), policy=policy, source_priority=None
+    )
+    candidate, explanation = ranked[0]
+
+    for ref in explanation.source_refs:
+        assert ":" not in ref
+        assert not ref.startswith("/")
+        assert not ref.startswith("\\")

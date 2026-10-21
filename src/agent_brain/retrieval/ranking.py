@@ -201,7 +201,7 @@ def rank_candidates(
             fallbacks=tuple(
                 f.factor_name for f in factors if f.fallback
             ),
-            source_refs=(candidate.artifact_ref.source_path,),
+            source_refs=(candidate.record_id,),
             graph_refs=(),
         )
 
