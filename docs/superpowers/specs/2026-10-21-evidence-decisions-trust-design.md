@@ -49,7 +49,7 @@ Slice #8 enthält **nicht**:
 | `ArtifactRef`, `RepositorySource`, `RepositoryProfile` | Scope-/Provenienzbezug |
 | `IndexRecord`, `GraphEdge` | Coverage / Dependency Confidence |
 | `canonical_json_dumps`, `canonical_hash`, `sha256_hex` | stabile IDs, Hashes, Fixture-Vergleiche |
-| `require_compatible_version`, Contract Registry | Versionierung neuer #8-Verträge |
+| `require_compatible_version` | Schema-Familienprüfung der neuen #8-Verträge; Slice-7-Präzedenz: slice-lokale Contract-Familien müssen nicht automatisch in `CONTRACT_SCHEMAS` aufgenommen werden |
 | Contract Serialization | kanonische Result-Ausgabe |
 | Slice-7 Contract-/Policy-Stil | immutable Contracts + injizierbare Policy + kleine Public Surface |
 
@@ -57,7 +57,7 @@ Slice #8 enthält **nicht**:
 
 Drei Invarianten tragen den Slice:
 
-1. Status wird vom Producer deklariert, nicht heimlich aus anderen Daten abgeleitet.
+1. Lebenszyklus-Status und `requires_evidence` werden vom Producer deklariert, nicht heimlich aus anderen Daten abgeleitet. Fehlt ein `EvidenceState`, darf eine Policy nur einen konservativen Effective-Strength-Fallback liefern; dieser Fallback darf niemals `strong` erzeugen.
 2. Zeitabhängige Bewertung erfolgt nur an explizit zeitabhängigen Grenzen mit injiziertem `as_of`.
 3. Quality und Trust aggregieren bereits berechnete Resultate; sie rufen keine vorgelagerte Fachlogik erneut auf.
 
@@ -223,6 +223,12 @@ Nicht als Prozess-/Dateivertrag serialisiert; immutable und validiert:
 
 Rule-/Bundle-Typen dürfen Funktionsreferenzen bzw. heterogene Domain-Records halten und sind deshalb bewusst keine Schema-Verträge.
 
+Verbindliche Bundle-Semantik:
+
+- `ContradictionBundle` enthält die benötigten `ClaimRef`/`ClaimState`, `EvidenceRef`/`EvidenceState` und `DecisionRecord`-Mengen explizit; Detektoren leiten Status, Strength oder Zeit nicht aus untypisierten Fremd-Dicts ab.
+- `FreshnessBundle` trennt erwartete Dependency-Edges von aktuell beobachteten Edge-IDs. `dependency_edge_no_longer_observed` entsteht ausschließlich aus dieser expliziten Snapshot-Differenz; `GraphEdge.inferred` oder ein niedriger Confidence-Wert allein machen eine Edge nicht stale.
+- `ScopeDriftBundle` enthält nur beobachtete/deklarierte Scope-Fakten und opake Autorisierungsreferenzen; es validiert keine Autorisierung.
+
 ### Generische Vokabulare
 
 ```text
@@ -247,9 +253,11 @@ EVIDENCE_SUFFICIENCY_LEVELS = sufficient, partial, insufficient
 | Decisions | `DecisionRecord[]` + Query | `DecisionHistoryResult`, `DecisionReplay` | History nein, Replay ja |
 | Integrity | Bundles + Policies | Contradiction/Freshness/Scope Results | ja |
 | Quality | Resultate 1–3 + `SurfaceState[]` + Policy | `QualityAssessment` | ja |
-| Trust | TrustRequest + Resultate 1/2/4 + Policy | `TrustSummary` | übernimmt Assessment-Zeit |
+| Trust | `TrustRequest` + Resultate 1/2/3/4 + Policy | `TrustSummary` | übernimmt Assessment-Zeit |
 
-Datenqualitätsprobleme werden als Warnungen/Limitations/Findings sichtbar. Strukturell ungültige Requests oder Contracts schlagen fail-closed fehl.
+Trust darf Stage-3-Reports direkt **nur** lesen, um blockierende Findings transparent in `TrustSummary.blocking_findings` zu referenzieren; es berechnet keine Integrity-Signale neu. Quality bleibt die einzige Score-Aggregation über Stage 1–3.
+
+Datenqualitätsprobleme werden als Warnungen/Limitations/Findings sichtbar. Strukturell ungültige Requests oder Contracts schlagen fail-closed fehl. `limitations` ist für die top-level Aufrufergebnisse (`EvidenceResolution`, `ClaimResolution`, `DecisionHistoryResult`, `DecisionReplay`, `ContradictionScanResult`, `FreshnessReport`, `ScopeDriftReport`, `QualityAssessment`, `TrustSummary`) Pflicht; verschachtelte Finding-/Dimension-Contracts müssen kein eigenes `limitations`-Feld tragen.
 
 ## Evidence / Claim Resolution
 
@@ -262,10 +270,11 @@ def resolve_evidence(*, evidence, states=(), query=None, policy=None) -> Evidenc
 ```
 
 - Overlay per `evidence_id`; orphan States erzeugen Warnung.
-- Stärke aus `EvidenceState`; fehlt State, konservative Policy-Ableitung; nie `strong` ohne tragfähige Provenienz.
+- Stärke aus `EvidenceState`; fehlt der State, gilt ausschließlich `EvidenceResolutionPolicy.default_strength` als konservativer Effective-Strength-Fallback (Core-Default `weak`). `content_hash`/`source_refs` dürfen Provenienz erklären, aber den fehlenden State **nicht** automatisch auf `strong` hochstufen.
 - Producer-Status wird nur durchgereicht und gezählt.
 - Query-Modi: Artifact, Claim, Decision, Source, Evidence Type, Strength, Status.
 - **kein** `by_freshness`, **kein** `as_of`, **keine** Expiry-/Age-Auswertung.
+- `resolve_evidence` erfindet keine `unresolved_evidence_refs`, weil ihm keine fremden Claim-/Decision-Referenzmengen vorliegen. Orphan States werden hier gemeldet; unresolved Evidence-Refs aus Claims/Decisions gehören in `ClaimResolution` bzw. `DecisionHistoryResult`/`DecisionReplay`.
 
 ### `resolve_claims`
 
@@ -339,6 +348,8 @@ Generische Stale-Typen:
 
 `memory_ttl_expired` gehört #11.
 
+Für `dependency_edge_no_longer_observed` gilt eine harte Trennung von Freshness und Quality: `FreshnessBundle` liefert erwartete Edges plus explizite aktuell beobachtete Edge-IDs. Nur eine erwartete, aktuell nicht beobachtete Edge erzeugt dieses Stale-Finding. `GraphEdge.confidence` und `GraphEdge.inferred` werden hier **nicht** als Staleness-Proxies verwendet; die Confidence-Schwelle gehört ausschließlich in `QualityPolicy.dependency_confidence_threshold`.
+
 Mechanismen: Expiry vs. `as_of`, Freshness Window, Snapshot Identity. Fehlende/unparsbare Zeitinformation erzeugt keine künstliche Freshness und keine unbelegte Stale-Behauptung; sie erzeugt Warnung/Limitation.
 
 Refresh-Ausgabe bleibt Empfehlung (`reverify_source`, `refresh_evidence`, `recheck_decision`, `rebuild_context_package`, `regenerate_briefing`, `reobserve_dependency_edge`, `manual_review`) und trägt keine Write-Autorität.
@@ -360,8 +371,8 @@ Generische Drift-Typen:
 - `path_out_of_scope`
 - `forbidden_surface_touched`
 - `runtime_surface_touched`
-- `unauthorized_write_intent`
-- `missing_authorization_for_write_mode`
+- `write_intent_without_authorization_ref`
+- `write_mode_without_authorization_ref`
 - `domain_out_of_scope`
 - `issue_out_of_scope`
 - `unexpected_dependency_expansion`
@@ -370,9 +381,9 @@ Pfadvergleich respektiert Verzeichnisgrenzen; Globs sind explizit. Leere `target
 
 ### Authorization references
 
-`authorization_refs` sind opake Referenzen. Der Core darf Presence prüfen, wenn eine generische Policy das verlangt. Er darf **nicht** Gültigkeit prüfen, eine Freigabe ableiten oder Referenzinhalte interpretieren.
+`authorization_refs` sind opake Referenzen. Der Core darf Presence prüfen, wenn eine generische Policy das verlangt. Fehlt die Referenz bei einem schreibähnlichen Intent/Mode, darf er ausschließlich den fehlenden Referenznachweis melden (`write_*_without_authorization_ref`). Ist eine Referenz vorhanden, entfällt nur dieses Missing-Reference-Finding; daraus entsteht **keine** positive Autorisierungsaussage. Der Core darf **nicht** Gültigkeit prüfen, eine Freigabe ableiten oder Referenzinhalte interpretieren.
 
-**Presence ≠ Authorization.**
+**Presence ≠ Authorization.** `ScopeDriftBlocking` materialisiert deshalb nur `blocking`, `blocking_count`, `summary`, betroffene Artefakte, Findings und generische `recommended_actions`/`recommended_next_reads`. Es enthält weder `operator_action` noch `anti_actions` oder ein autoritätsbehauptendes Feld.
 
 ## Quality Scoring
 
@@ -390,16 +401,16 @@ Memory existiert weder als aktive noch als optionale Dimension.
 
 ```python
 def score_quality(*, scope_id, as_of, level="system", surfaces=(),
-                  evidence_resolution=None, claim_resolution=None,
-                  decision_history=None, contradictions=None,
-                  freshness=None, scope_drift=None,
+                  dependency_edges=(), evidence_resolution=None,
+                  claim_resolution=None, decision_history=None,
+                  contradictions=None, freshness=None, scope_drift=None,
                   policy=None) -> QualityAssessment
 ```
 
 Mechanik:
 
-- Zähldimensionen: erfüllte Kriterien / verfügbare Kriterien.
-- invers penalisierende Dimensionen: `max(0, 1 - Σ penalty)`.
+- `coverage`, `evidence`, `decision_validity` und `dependency_confidence` sind Zähldimensionen: erfüllte Kriterien / verfügbare Kriterien. `dependency_confidence` zählt ausschließlich `GraphEdge.confidence >= QualityPolicy.dependency_confidence_threshold`; deshalb sind `dependency_edges` expliziter Input.
+- `contradiction`, `freshness` und `scope_risk` verwenden dieselbe deterministische Penalty-Mechanik über aktive Findings: `max(0, 1 - Σ policy.severity_penalties[finding.severity])`. Ein vorhandener Report ohne aktive Findings ergibt `1.0`; ein fehlender Report macht die Dimension unverfügbar.
 - Freshness wird aus `FreshnessReport` abgeleitet, nicht neu berechnet.
 - fehlende Dimensionen werden nicht mit neutralem `0.5` erfunden; sie werden ausgelassen und als Limitation sichtbar.
 - alle Gewichte, Grade-Bänder, Penalties und Thresholds liegen in `QualityPolicy`, nicht versteckt im Algorithmus.
@@ -421,6 +432,16 @@ Genau drei Trust-Komponenten:
 
 Keine Memory-Komponente.
 
+```python
+def build_trust_summary(*, request, evidence_resolution=None,
+                        claim_resolution=None, decision_history=None,
+                        contradictions=None, freshness=None,
+                        scope_drift=None, quality=None,
+                        policy=None) -> TrustSummary
+```
+
+Die Stage-3-Reports dienen hier ausschließlich dazu, konkrete blockierende Findings und Evidence-Sufficiency-Limitations sichtbar zu referenzieren. Sie werden nicht erneut gescored; der Composite-Score besteht weiterhin nur aus den drei Komponenten Evidence/Claims/Decisions. `assessed_at` wird aus `QualityAssessment.scored_at` übernommen und ist ohne Quality-Assessment `None`.
+
 `TrustPolicy.required_components` ist standardmäßig Evidence + Claims + Decisions. Fehlt eine Pflichtkomponente, darf das Ergebnis nie `strong` werden; fehlen alle Komponenten, ist es `insufficient`. Blocking Findings erzwingen `insufficient` und bleiben sichtbar.
 
 `evidence_sufficiency` trägt AC5 unabhängig vom Gesamtscore direkt maschinenlesbar.
@@ -431,13 +452,15 @@ Keine Memory-Komponente.
 
 Neutrale Defaults sind erlaubt, aber nicht als verstreute Magic Numbers.
 
-- Quality: verfügbare Dimensionen standardmäßig gleich gewichtet.
-- Trust: Evidence/Claims/Decisions standardmäßig gleich gewichtet.
-- Grade-/Trust-Bänder ausschließlich in `QualityPolicy.default()` / `TrustPolicy.default()`.
-- Severity-Penalties ausschließlich in Policy.
+- Quality: verfügbare Dimensionen standardmäßig gleich gewichtet (`1.0` je Dimension).
+- Trust: Evidence/Claims/Decisions standardmäßig gleich gewichtet (`1.0` je Komponente).
+- `QualityPolicy.default().grade_bands`: `blocking < 0.30`, `watch < 0.50`, `weak < 0.70`, sonst `good`.
+- `TrustPolicy.default().level_thresholds`: `strong >= 0.80`, `partial >= 0.50`, sonst `insufficient`.
+- `QualityPolicy.default().severity_penalties`: `blocking=0.50`, `warning=0.25`, `info=0.0`.
+- `QualityPolicy.default().dependency_confidence_threshold = 0.50`.
+- `FreshnessPolicy.default().default_freshness_window_seconds = 86_400`; Policy-Zeitwerte sind ausschließlich **Dauern**, niemals Wall-Clock-Zeitpunkte oder `as_of`.
 - Contradiction Severity/Confidence ausschließlich im RuleSet.
-- Freshness Window ausschließlich in `FreshnessPolicy`.
-- Scope-Pfade/Surfaces ausschließlich in Consumer-Policy.
+- Scope-Pfade/Surfaces ausschließlich in Consumer-Policy; `ScopeDriftPolicy` bleibt expliziter Pflichtparameter.
 
 Claire-spezifische Zahlen werden nur in einer Test-Fixture-Policy materialisiert, um numerische Parity zu beweisen, nicht als Runtime-Default.
 
@@ -609,15 +632,17 @@ Noch **kein** Implementation Plan; nur Architektur-Reihenfolge:
 
 Spätere Umsetzung ist test-first. Slice 8 aktualisiert erst bei tatsächlicher Implementierung `docs/START_HIER.md`, `docs/DATENFLUESSE.md` und `docs/contracts/README.md`.
 
-## Open Questions
+## Proposed Review Decisions
 
-1. **Quality-Gewichte:** neutral gleich gewichtet vs. Claire-Gewichte? Empfehlung: gleich gewichtet + Parity-Fixture.
-2. **Grade-Bänder:** generischer Default oder gar kein Default? Empfehlung: Default nur in `QualityPolicy.default()`.
-3. **Zeit-API:** explizites `as_of` vs. Clock-Parameter? Empfehlung: explizites `as_of`.
-4. **Severity-Penalties:** konservativer Core-Default vs. weichere Claire-Werte? Empfehlung: konservativer, injizierbarer Default.
-5. **`ScopeDriftPolicy` Pflichtparameter?** Empfehlung: ja; ohne Policy wäre der Aufruf Scheinsicherheit.
-6. **`TrustPolicy.required_components`:** Core-Default alle drei oder Consumer? Empfehlung: alle drei als konservativer Default.
-7. **Finding Exemptions:** Vocabulary im Core, Auswahl in Policy? Empfehlung: ja.
+Die folgenden Punkte sind nach der technischen Self-Review als **konkrete Designentscheidungen vorgeschlagen** und werden mit der menschlichen Spec-Freigabe bestätigt oder geändert:
+
+1. **Quality-Gewichte:** neutral gleich gewichtet; Claire-Gewichte ausschließlich in der Parity-Fixture.
+2. **Grade-Bänder:** generischer Default ausschließlich in `QualityPolicy.default()` (`0.30/0.50/0.70`).
+3. **Zeit-API:** explizites `as_of`; kein stiller `SystemClock`-Fallback im Slice-8-Core.
+4. **Severity-Penalties:** konservativer, injizierbarer Core-Default `blocking=0.50`, `warning=0.25`, `info=0.0`.
+5. **`ScopeDriftPolicy`:** Pflichtparameter; ohne Policy wäre der Aufruf Scheinsicherheit.
+6. **`TrustPolicy.required_components`:** Core-Default alle drei (`evidence`, `claims`, `decisions`); fehlende Pflichtkomponente deckelt auf `partial`.
+7. **Finding Exemptions:** Status-Vokabular im Core; welche Statuswerte von Penalties ausgenommen sind, liegt in der jeweiligen Policy.
 
 Bereits entschieden: Paketname `agent_brain.evidence`; Overlay-Design statt #15-v2; Trust-Level `strong/partial/insufficient`; `evidence_sufficiency`; Contradiction Default-Scope = 3 Regeltypen; Memory vollständig #11; fünf Pipeline-Stufen; `authorization_refs` opak.
 
