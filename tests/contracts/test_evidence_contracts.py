@@ -143,3 +143,49 @@ def test_optional_text_must_not_be_blank_when_present() -> None:
             claim_type="assertion",
             statement=" ",
         )
+
+
+def test_reference_contracts_ignore_temporal_provenance_and_resolution_metadata() -> None:
+    evidence = EvidenceRef.from_dict(
+        {
+            "schema_version": "evidence-ref/v1",
+            "evidence_id": "evidence-boundary",
+            "evidence_type": "observation",
+            "known_at": "2026-10-21T11:05:00Z",
+            "source_trust": 0.95,
+            "confidence": 0.25,
+            "supersedes_ref": "evidence:old",
+            "resolution_state": "STALE",
+        }
+    )
+    claim = ClaimRef.from_dict(
+        {
+            "schema_version": "claim-ref/v1",
+            "claim_id": "claim-boundary",
+            "claim_type": "assertion",
+            "valid_from": "2026-10-01T00:00:00Z",
+            "source_span": {"start": 0, "end": 7},
+            "source_trust": 0.1,
+            "confidence": 0.9,
+            "superseded_by_ref": "claim:new",
+        }
+    )
+
+    assert evidence.to_dict() == {
+        "schema_version": "evidence-ref/v1",
+        "evidence_id": "evidence-boundary",
+        "evidence_type": "observation",
+        "source_refs": [],
+        "artifact_refs": [],
+        "claim_refs": [],
+        "decision_refs": [],
+    }
+    assert claim.to_dict() == {
+        "schema_version": "claim-ref/v1",
+        "claim_id": "claim-boundary",
+        "claim_type": "assertion",
+        "evidence_refs": [],
+        "artifact_refs": [],
+        "decision_refs": [],
+        "source_refs": [],
+    }

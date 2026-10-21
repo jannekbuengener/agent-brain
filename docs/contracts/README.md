@@ -1,4 +1,4 @@
-# Gemeinsame Contracts — Slice 3
+# Gemeinsame Contracts — Slice 3 + Memory Architecture Hardening
 
 **Status:** `SLICE_3_SHARED_CONTRACTS`  
 **Issue:** [#15 — Shared Source / Index / Evidence Contracts](https://github.com/jannekbuengener/agent-brain/issues/15)
@@ -20,12 +20,15 @@ Sie ist bewusst **keine Runtime**: Die Contracts beschreiben Daten, Identität, 
 | `GraphEdge` | `graph-edge/v1` | gerichtete strukturelle Beziehung zwischen zwei Record-IDs |
 | `EvidenceRef` | `evidence-ref/v1` | Evidence-Identität und Beziehungen ohne Trust-/Resolver-Autorität |
 | `ClaimRef` | `claim-ref/v1` | Claim-Identität und Beziehungen ohne Resolution-/Scoring-Logik |
+| `TemporalEnvelope` | `temporal-envelope/v1` | Known-/Valid-Time plus optionales Storage-/Read-Snapshot-Metadatum |
+| `Provenance` | `provenance/v1` | strukturierte Quelle, optionaler SourceSpan und Ableitungs-Linie |
+| `ResolutionMeta` | `resolution-meta/v1` | Supersession-Links sowie getrenntes Source Trust / Confidence |
 
 Die kanonischen Versionsstrings stehen zusätzlich in `agent_brain.contracts.registry.CONTRACT_SCHEMAS`.
 
 ## Serialisierung und Kompatibilität
 
-Alle fachlichen v1-Typen besitzen `to_dict()` / `from_dict()`. Für deterministische JSON-Ausgabe steht `serialize_contract()` bereit; es verwendet die Portable Foundation für Canonical JSON.
+Alle fachlichen v1-Typen besitzen `to_dict()` / `from_dict()`. Für deterministische JSON-Ausgabe steht `serialize_contract()` bereit; es verwendet die Portable Foundation für Canonical JSON. Zeitwerte der #37-Contracts werden intern als naive UTC-Datetimes gehalten und als ISO-8601/RFC3339 mit `Z` serialisiert.
 
 Für v1 gilt:
 
@@ -42,10 +45,23 @@ Für v1 gilt:
 | #9 · Repository Ingestion | konsumiert Repository-Profile und produziert Source-/Artifact-/Index-/Graph-Daten |
 | #16 · Knowledge Build / Seed | persistiert bzw. rekonstruiert die Build-Ausgaben auf Basis derselben Schemas |
 | #7 · Retrieval | konsumiert Index-/Graph-Records; keine eigene konkurrierende Indexform |
-| #8 · Evidence / Decisions / Trust | konsumiert `EvidenceRef` / `ClaimRef` und ergänzt erst dort Resolution, Trust und Scoring |
+| #37 · Temporal / Provenance | besitzt Temporal-, Provenance- und Supersession-Grundsemantik; keine Resolver-Autorität |
+| #8 · Evidence / Decisions / Trust | konsumiert `EvidenceRef` / `ClaimRef` sowie #37-Contracts und ergänzt Resolver, Contradiction, Trust Summary und Scoring |
+| #11 · Memory Read | konsumiert #37-Temporal-/Provenance-/Supersession-Semantik für Freshness, Rediscovery und abgeleitete Read-Zustände |
 | #21 · State Migration Gate | verwendet die Schema-Grundlage für den kontrollierten State-Handoff |
 
 Ein Consumer-Adapter darf ein konkretes `RepositoryProfile` liefern. Produkt- oder Repository-spezifische Required Reads, Trading-Grenzen und Fachpolicy gehören nicht in diese Contract-Schicht.
+
+## Temporal-, Provenance- und Supersession-Semantik (#37)
+
+- `known_at` = wann Agent Brain einen Belief registriert/akzeptiert hat.
+- `valid_from` / `valid_until` = fachliche Realwelt-Gültigkeit; `valid_until` ist exklusiv und muss nach `valid_from` liegen.
+- `system_as_of` = optionales Storage-/Read-Snapshot-Metadatum; keine simulierte Fact-Zeit.
+- `SourceSpan` ist **0-based, end-exclusive, Unicode-Codepoint**.
+- `source_trust` beschreibt Vertrauen in die Quelle; `confidence` die Sicherheit der Extraktion/Aussage. Beide Werte sind unabhängig.
+- Supersession bleibt über Referenzen historisch rekonstruierbar; der Contract führt kein Last-Write-Wins aus.
+- `ResolutionState` (`CURRENT / STALE / SUPERSEDED / UNKNOWN`) ist ein read-side Typ. Der Zustand wird von #8/#11 abgeleitet und nicht in `ResolutionMeta` als Wahrheit gespeichert.
+- `EvidenceRef` und `ClaimRef` bleiben unverändert reference-only.
 
 ## Claire-Parity
 
@@ -69,4 +85,4 @@ Dieser Slice enthält absichtlich **nicht**:
 - produktive Agent-Memory-Writes,
 - Claire-/Trading-Policy.
 
-Der nächste lineare Slice ist [#6 — Context Package und Briefing Core](https://github.com/jannekbuengener/agent-brain/issues/6).
+Slice #15 bleibt die stabile Reference-Contract-Basis. #37 ergänzt darauf Temporal-/Provenance-/Supersession-Semantik, ohne `EvidenceRef` oder `ClaimRef` umzudefinieren.

@@ -62,6 +62,19 @@ Der produktneutrale Retrieval-Layer konsumiert die stabilen #15-Index-/Graph-Ver
 
 Implementierungsplan: [Hybrid Retrieval und Knowledge Reasoning](superpowers/plans/2026-10-21-hybrid-retrieval-knowledge-reasoning.md).
 
+## P0 #37 — Temporal / Provenance / Supersession (implementiert)
+
+Die bestehenden `EvidenceRef`-/`ClaimRef`-Typen bleiben reine Referenzen. Ergänzend stehen nun backend-neutrale Contracts für die Semantik bereit, die #8 und #11 gemeinsam benötigen:
+
+- `TemporalEnvelope`: `known_at`, optionale Realwelt-Gültigkeit (`valid_from` / `valid_until`) und optionales `system_as_of` als Storage-/Read-Snapshot-Metadatum.
+- `Provenance` + `SourceSpan`: strukturierte Quelle, optionale exakte 0-based/end-exclusive Unicode-Spans und Ableitungs-Linie.
+- `ResolutionMeta`: Supersession-Referenzen sowie getrennte `source_trust`-/`confidence`-Werte.
+- `ResolutionState`: read-side Enum; `CURRENT / STALE / SUPERSEDED / UNKNOWN` wird später abgeleitet und nicht als Wahrheit im Metadata-Contract gespeichert.
+
+Die Contracts enthalten keine SurrealDB-/Agent-Memory-Runtime, keine produktiven Writes, kein Last-Write-Wins und keinen Freshness-/Trust-Resolver.
+
+Runtime-/Storage-Inventar für #38: [SurrealDB Runtime Baseline — 2026-10-21](surrealdb/RUNTIME_BASELINE_2026-10-21.md).
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
@@ -124,4 +137,4 @@ Details: [State Transition](extraction/STATE_TRANSITION.md).
 
 ## Aktueller Arbeitsmodus
 
-**`SLICE_7_HYBRID_RETRIEVAL_KNOWLEDGE_REASONING — IMPLEMENTIERT`**. Repository-Ingestion (#9), Knowledge Build/Seed/Import (#16) und der produktneutrale Hybrid-Retrieval-Layer (#7) bilden jetzt die lineare Basis. Der nächste lineare Slice ist [#8 — Evidence, Decisions und Trust](https://github.com/jannekbuengener/agent-brain/issues/8); produktive SurrealDB-Read-Runtime bleibt davon getrennt in #10.
+**`SLICE_7_DONE / #37_TEMPORAL_PROVENANCE_IMPLEMENTED`**. #37 ist die gemeinsame Contract-Basis vor #8/#11. Nach #37 können #8 und #39 parallel arbeiten; #38 darf parallel ausschließlich read-only die reale SurrealDB-Runtime/Storage-Baseline erfassen. #10 konsumiert später #8 + #39 sowie die Evidence aus #38.
