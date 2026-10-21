@@ -49,6 +49,19 @@ Der deterministische Knowledge-Build, der neutrale Seed und der Snapshot-Import 
 - **Import:** `import_knowledge_snapshot` führt einen Snapshot atomar in einen importierenden Ziel-Store ein (Validation-First, keine Teil-Commits; identische Records werden übersprungen, geänderte aktualisiert, fehlende via Tombstone entfernt).
 - **Write-Grenze:** KB-Writes sind reproduzierbare Build-Artefakte und nicht mit produktiven Agent-Memory-Writes zu verwechseln; letztere bleiben im Epic `DEFER`.
 
+## Slice #7 — Hybrid Retrieval / Knowledge Reasoning (implementiert)
+
+Der produktneutrale Retrieval-Layer konsumiert die stabilen #15-Index-/Graph-Verträge und die reproduzierbaren #16-Knowledge-Artefakte. Die öffentliche Surface liegt unter `agent_brain.retrieval`.
+
+- **Candidate Collection:** `collect_candidates` dedupliziert `IndexRecord`-Eingänge und erzeugt stabil sortierte `RetrievalCandidate`-Werte.
+- **Hybrid Ranking:** `rank_candidates` kombiniert injizierte lexikalische/Graph-Signale, Source Priority und konservative Deferred-Faktoren deterministisch; jede Wertung erhält eine strukturierte `RankingExplanation`.
+- **Graph / Impact:** `compute_graph_signals`, `bounded_graph_traversal` und `annotate_impact` arbeiten in-memory auf `GraphEdge`-Verträgen. Es gibt keine DB-Annahme und keine Trust-/Decision-Autorität.
+- **Required Reads / Stop:** `resolve_retrieval_required_reads` reused den bestehenden `RequiredReadsProfile`-Resolver; `resolve_retrieval_stop` materialisiert `PolicyDecision` fail-conservativ als `RetrievalStop`.
+- **E2E:** `run_retrieval` liefert einen deterministischen `RetrievalResult`; neutrale Retrieval-Fixtures sind an die Provenance des #16-Seeds `tests/fixtures/knowledge/knowledge_snapshot.neutral.v1.json` gebunden.
+- **Grenzen:** Evidence-/Decision-/Trust-Semantik bleibt Slice #8; eine produktive SurrealDB-Read-Runtime bleibt Slice #10. Semantic/Vector-Signale sind bis dahin konservativ deferred, nicht implizit erfunden.
+
+Implementierungsplan: [Hybrid Retrieval und Knowledge Reasoning](superpowers/plans/2026-10-21-hybrid-retrieval-knowledge-reasoning.md).
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
@@ -76,9 +89,9 @@ Der deterministische Knowledge-Build, der neutrale Seed und der Snapshot-Import 
 2  Portable Foundation              #5   abgeschlossen
 3  Shared Contracts                 #15  abgeschlossen
 4  Context / Briefing               #6   abgeschlossen
-5  Repo Ingestion                    #9   abgeschlossen / aktuelle Code-Baseline
+5  Repo Ingestion                    #9   abgeschlossen
 6  Knowledge Build / Seed            #16  abgeschlossen
-7  Retrieval                         #7
+7  Retrieval                         #7   abgeschlossen
 8  Evidence / Trust                  #8
 9  SurrealDB Read                    #10
 10 Memory Read                       #11
@@ -111,4 +124,4 @@ Details: [State Transition](extraction/STATE_TRANSITION.md).
 
 ## Aktueller Arbeitsmodus
 
-**`SLICE_6_KNOWLEDGE_BUILD_SEED_IMPORT — IMPLEMENTIERT`**. Der produktneutrale, read-only Repository-Ingestionskern (#9) ist implementiert und liefert deterministische #15-Ausgaben; der deterministische Knowledge-Build, der neutrale Seed-Fixture und der Snapshot-Import (#16) sind darauf implementiert. Der nächste lineare Slice ist [#7 — Retrieval](https://github.com/jannekbuengener/agent-brain/issues/7).
+**`SLICE_7_HYBRID_RETRIEVAL_KNOWLEDGE_REASONING — IMPLEMENTIERT`**. Repository-Ingestion (#9), Knowledge Build/Seed/Import (#16) und der produktneutrale Hybrid-Retrieval-Layer (#7) bilden jetzt die lineare Basis. Der nächste lineare Slice ist [#8 — Evidence, Decisions und Trust](https://github.com/jannekbuengener/agent-brain/issues/8); produktive SurrealDB-Read-Runtime bleibt davon getrennt in #10.
