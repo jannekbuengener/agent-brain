@@ -135,9 +135,15 @@ flowchart TB
 
 ### Regel
 
-- **Knowledge-/Index-Build-Writes:** reproduzierbare Build-Artefakte; Slice [#16](https://github.com/jannekbuengener/agent-brain/issues/16).
-- **Produktive Agent-Memory-Writes:** bleiben in diesem Epic `DEFER`.
+- **Knowledge-/Index-Build-Writes:** reproduzierbare Build-Artefakte; Slice [#16](https://github.com/jannekbuengener/agent-brain/issues/16) ist implementiert.
+- **Produktive Agent-Memory-Writes:** bleiben in diesem Epic `DEFER`. KB-Writes ≠ Memory-Writes.
 - **Memory Read:** wird in Slice [#11](https://github.com/jannekbuengener/agent-brain/issues/11) extrahiert.
+
+### Umsetzung (Slice #6)
+
+- **Build:** `build_knowledge_snapshot` erzeugt aus #9-Ingestions-Ergebnissen einen stabilen `knowledge-snapshot/v1`-Snapshot (kanonische JSON-Serialisierung).
+- **Seed:** der committete neutrale Seed-Snapshot liegt unter `tests/fixtures/knowledge/knowledge_snapshot.neutral.v1.json` und entstammt dem Ingestion-Fixture unter `tests/fixtures/connectors/` (produktneutral, ohne Claire-/Trading-Bezug).
+- **Import:** `import_knowledge_snapshot` überführt einen Snapshot atomar in einen importierenden Ziel-Store — Validation-First, keine Teil-Commits; KB-Writes bleiben davon getrennt von Memory-Writes.
 
 ---
 
