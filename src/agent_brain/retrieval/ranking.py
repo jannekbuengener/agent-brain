@@ -35,17 +35,23 @@ _FACTOR_NAMES = (
 
 
 def _sanitize_score(value: float, field_name: str) -> float:
-    """NaN/Inf auf 0.0, ausserhalb [0,1] clampen."""
+    """Ungültige Ranking-Signale konservativ auf 0.0 setzen."""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return 0.0
     result = float(value)
-    if math.isnan(result) or math.isinf(result):
+    if not math.isfinite(result) or result < 0.0 or result > 1.0:
         return 0.0
-    if result < 0.0:
-        return 0.0
-    if result > 1.0:
-        return 1.0
     return result
+
+
+def _aggregate_score(value: float) -> float:
+    """Gültige Summen deterministisch auf den Result-Contract [0,1] begrenzen."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return 0.0
+    result = float(value)
+    if not math.isfinite(result):
+        return 0.0
+    return min(1.0, max(0.0, result))
 
 
 def _normalize_source_priority(
@@ -123,7 +129,6 @@ def rank_candidates(
         source_id = candidate.artifact_ref.source_id
         record_id = candidate.record_id
 
-        # lexical: precomputed Signal oder 0.0 (keine Embedding-Runtime)
         lexical_raw = _sanitize_score(
             lexical_signals.get(record_id, 0.0), "lexical.raw_value"
         )
@@ -136,7 +141,6 @@ def rank_candidates(
             fallback=lexical_missing,
         )
 
-        # semantic: keine Vector-Runtime in Task 3, immer konservativ 0.0
         semantic_factor = _build_factor(
             "semantic",
             0.0,
@@ -145,7 +149,6 @@ def rank_candidates(
             fallback=True,
         )
 
-        # graph: precomputed Signal oder 0.0 (keine Traversal in Task 3)
         graph_raw = _sanitize_score(
             graph_signals.get(record_id, 0.0), "graph.raw_value"
         )
@@ -158,7 +161,6 @@ def rank_candidates(
             fallback=graph_missing,
         )
 
-        # source_priority: aus SourcePriority normalisiert, unbekannt = 0.0
         sp_raw = _normalize_source_priority(source_priority, source_id)
         sp_missing = source_priority is None or source_priority.rank(source_id) is None
         source_priority_factor = _build_factor(
@@ -169,7 +171,6 @@ def rank_candidates(
             fallback=sp_missing,
         )
 
-        # evidence_provenance: keine Trust-Engine in Task 3, konservativ 0.0
         evidence_provenance_factor = _build_factor(
             "evidence_provenance",
             0.0,
@@ -186,21 +187,15 @@ def rank_candidates(
             evidence_provenance_factor,
         )
 
-        total_score = _sanitize_score(
-            sum(f.contribution for f in factors), "total_score"
-        )
+        total_score = _aggregate_score(sum(f.contribution for f in factors))
 
         explanation = RankingExplanation(
             schema_version=RANKING_EXPLANATION_SCHEMA,
             candidate_id=candidate.candidate_id,
             total_score=total_score,
             factors=factors,
-            missing_factors=tuple(
-                f.factor_name for f in factors if f.missing
-            ),
-            fallbacks=tuple(
-                f.factor_name for f in factors if f.fallback
-            ),
+            missing_factors=tuple(f.factor_name for f in factors if f.missing),
+            fallbacks=tuple(f.factor_name for f in factors if f.fallback),
             source_refs=(candidate.record_id,),
             graph_refs=(),
         )
@@ -216,10 +211,7 @@ def rank_candidates(
 
         ranked.append((ranked_candidate, explanation))
 
-    # Totaler deterministischer Sortierschluessel: (-score, record_id asc)
-    ranked.sort(
-        key=lambda item: (-item[0].score, item[0].record_id)
-    )
+    ranked.sort(key=lambda item: (-item[0].score, item[0].record_id))
     return tuple(ranked)
 
 
@@ -231,15 +223,10 @@ def build_retrieval_result(
     impact_applied: bool = False,
     limitations: tuple[str, ...] = (),
 ) -> object:
-    """Bau ein RetrievalResult aus dem gerankten Output.
-
-    Wird durch Task 6 (retriever.py Orchestrierung) vervollstaendigt.
-    """
+    """Bau ein RetrievalResult aus dem gerankten Output."""
     from agent_brain.retrieval.contract import RetrievalResult
 
-    total_score = _sanitize_score(
-        sum(exp.total_score for _, exp in ranked), "result.total_score"
-    )
+    total_score = _aggregate_score(sum(exp.total_score for _, exp in ranked))
 
     return RetrievalResult(
         schema_version=RETRIEVAL_RESULT_SCHEMA,
