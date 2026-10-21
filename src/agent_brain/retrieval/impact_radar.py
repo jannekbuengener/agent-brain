@@ -8,6 +8,7 @@ Claims und implementiert keine Stop-Policy (#8-/ #10-Grenze).
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 
 from agent_brain.contracts import GraphEdge
@@ -86,6 +87,6 @@ def _sanitize_signal(value: float, field_name: str = "signal_value") -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return 0.0
     result = float(value)
-    if result < 0.0 or result > 1.0:
+    if not math.isfinite(result) or result < 0.0 or result > 1.0:
         return 0.0
     return result
