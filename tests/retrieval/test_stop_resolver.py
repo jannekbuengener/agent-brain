@@ -66,6 +66,7 @@ def test_empty_reason_is_preserved() -> None:
     assert stop.allowed is False
     assert stop.reason == "policy_denied"
 
+
 def test_policy_exception_is_fail_closed_stop() -> None:
     hook = ExceptionHook()
     stop = resolve_retrieval_stop(
@@ -122,12 +123,16 @@ def test_no_wall_clock_in_stop_resolution() -> None:
 
 
 def test_no_runtime_or_host_dependency() -> None:
+    import inspect
+
     import agent_brain.retrieval.stop_resolver as mod
 
-    source = mod.__file__ or ""
-    assert "claire" not in source.lower()
-    assert "trading" not in source.lower()
-    assert "surrealdb" not in source.lower()
+    module_path = mod.__file__ or ""
+    assert "claire" not in module_path.lower()
+    assert "trading" not in module_path.lower()
+    assert "surrealdb" not in module_path.lower()
+
+    source = inspect.getsource(mod)
     assert "/home/" not in source
     assert "C:" not in source
 
