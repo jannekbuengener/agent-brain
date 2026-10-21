@@ -1,0 +1,56 @@
+{
+  "schema_version": "index-record/v1",
+  "records": [
+    {
+      "schema_version": "index-record/v1",
+      "record_id": "record-widget-module",
+      "record_type": "module",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-widget",
+        "source_id": "source-widgets",
+        "source_path": "src/widget.py",
+        "source_hash": "ab412d12295afd8254b4d01d9d016d95e7daff39678113dde8b74b0fa27d8b3f",
+        "revision": "abc123"
+      },
+      "content_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "attributes": {
+        "language": "python"
+      }
+    },
+    {
+      "schema_version": "index-record/v1",
+      "record_id": "record-widget-symbol-build",
+      "record_type": "symbol",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-widget",
+        "source_id": "source-widgets",
+        "source_path": "src/widget.py",
+        "source_hash": "ab412d12295afd8254b4d01d9d016d95e7daff39678113dde8b74b0fa27d8b3f",
+        "revision": "abc123"
+      },
+      "content_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "attributes": {
+        "name": "build_widget"
+      }
+    },
+    {
+      "schema_version": "index-record/v1",
+      "record_id": "record-docs-widget",
+      "record_type": "doc_section",
+      "source": {
+        "schema_version": "artifact-ref/v1",
+        "artifact_id": "artifact-docs",
+        "source_id": "source-widgets",
+        "source_path": "docs/widget.md",
+        "source_hash": "ce1cf0283e1398682672aa993f423c3d68f9d494830753eafb4b9d7bbca243d2",
+        "revision": "abc123"
+      },
+      "content_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "attributes": {
+        "language": "markdown"
+      }
+    }
+  ]
+}
