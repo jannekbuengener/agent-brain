@@ -229,7 +229,7 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 
 | Policy | Default |
 |---|---|
-| `QualityPolicy.default()` | `dimension_weights` = alle sieben Dimensionen `1.0`; `grade_bands` = `blocking < 0.30`, `watch < 0.50`, `weak < 0.70`, `good >= 0.70`; `severity_penalties` = `blocking 0.50`, `warning 0.25`, `info 0.0`; `dependency_confidence_threshold` = `0.5` |
+| `QualityPolicy.default()` | `dimension_weights` = alle sieben Dimensionen `1.0`; `grade_bands` = `blocking < 0.30`, `watch < 0.50`, `weak < 0.70`, `good >= 0.70`; `severity_penalties` = `blocking 0.50`, `warning 0.25`, `info 0.0`; `dependency_confidence_threshold` = `0.5`; `finding_exempt_statuses` = `("resolved", "refreshed", "replaced")` |
 | `TrustPolicy.default()` | `component_weights` = evidence/claims/decisions je `1.0`; `level_thresholds` = `strong 0.80`, `partial 0.50`; `required_components` = `("evidence", "claims", "decisions")` |
 | `FreshnessPolicy.default()` | `default_freshness_window_seconds` = `86400`; `exempt_statuses` = `("resolved", "refreshed", "replaced")` |
 | `ScopeDriftPolicy.default()` | `target_paths`/`allowed_domains`/`allowed_issues`/`forbidden_surfaces`/`protected_surface_types`/`write_like_operation_modes` = leer; `max_artifact_count` = `20`; `default_recommended_reads` = leer |
@@ -468,8 +468,7 @@ Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt 
 - [ ] RED: Genau sieben Dimensionen — `coverage`, `freshness`, `evidence`, `contradiction`, `dependency_confidence`, `decision_validity`, `scope_risk` — mit Score in `[0,1]`, Grade, Erklärung, `inputs_used`.
 - [ ] RED: Zähldimensionen = erfüllte Kriterien / verfügbare Kriterien; `dependency_confidence` zählt nur `GraphEdge.confidence >= QualityPolicy.dependency_confidence_threshold`.
 - [ ] RED: Invers-penalisierende Dimensionen nutzen `max(0, 1 - Σ policy.severity_penalties[severity])`; Report ohne aktive Findings ⇒ `1.0`; fehlender Report ⇒ Dimension **nicht verfügbar**.
-- [ ] RED: Ein Finding mit unbekanntem oder vorwärts-additivem Status gilt konservativ als aktiv, seine Severity-Penalty wird angewendet und die Warnung `unknown_finding_status` bleibt sichtbar; es wird nie still als resolved/exempt verworfen.
-- [ ] RED: Ein unbekannter `rule_type`, `stale_type` oder `drift_type` bleibt im Report sichtbar, wird nicht bewertet und erzeugt jeweils `unknown_type`; kein unbekannter Typ erhält eine Severity-Penalty oder einen positiven Beitrag. Diese drei Fälle sind getrennt vom unbekannten Finding-Status getestet.
+- [ ] RED: Ein Finding mit unbekanntem oder vorwärts-additivem Status gilt konservativ als aktiv, seine Severity-Penalty wird angewendet und die Warnung `unknown_finding_status` bleibt sichtbar; es wird nie still als resolved/exempt verworfen. **Findings mit `finding_exempt_status` ("resolved"|"refreshed"|"replaced") hingegen werden als exempt klassifiziert: ihre Severity-Penalty entfällt und das Finding wird aus dem aktiven Report-Set entfernt.** Diese Unterscheidung wird im Qualitäts-Report explizit mit `exempt: true` und `status: "resolved"/"refreshed"/"replaced"` dargestellt; unbekannter Status ohne Exempt-Flag bleibt konservativ aktiv und bestraft. Ein unbekannter `rule_type`, `stale_type` oder `drift_type` bleibt im Report sichtbar, wird nicht bewertet und erzeugt jeweils `unknown_type`; kein unbekannter Typ erhält eine Severity-Penalty oder einen positiven Beitrag. Diese drei Fälle sind getrennt vom unbekannten Finding-Status getestet.
 - [ ] RED: Fehlende Dimension wird ausgelassen und als Limitation sichtbar — **kein** neutraler `0.5`-Ersatz.
 - [ ] RED: Grade-Bänder kommen aus `QualityPolicy.default()`: `blocking < 0.30`, `watch < 0.50`, `weak < 0.70`, `good >= 0.70`.
 - [ ] RED: Eine Dimension mit Grade `blocking` senkt einen Gesamt-Grade `weak`/`good` auf `watch`; `blocking` bleibt `blocking`.
@@ -575,8 +574,38 @@ Jeder Eintrag ist einem Test in `tests/evidence/` zugeordnet und muss RED→GREE
 | Memory-Importe | `test_product_neutrality.py` |
 | Claire-/CDB-Importe | `test_product_neutrality.py` |
 | autoritätsähnliche Output-Felder | `test_no_authority_signals.py` |
+| keine Sentinel-Material in serialisiertem Output | `test_no_secrets.py` |
+
+## Task 8: Redaction / No-Secrets Verification
+
+**Files**
+- Create: `tests/evidence/test_no_secrets.py`
+- Modify: —
+- Test: `tests/evidence/test_no_secrets.py`
+
+**Test Requirements**
+- [ ] RED: Test injiziert ein Sentinel-Material (z. B. `REDACT_PLACEHOLDER="[REDACTED]"` oder ein GitHub-Token-Ähnliches) in Zusammenfassungen/Erklärungen/Referenzen/Limitationen/Empfehlungen/Metadaten öffentlicher serialisbarer Slice-8-Ergebnisse; Assertion: rohes Sentinel erscheint **niemals** in serialisiertem Output; unverfremdeter Text bleibt unverändert; Redaktion deterministisch; keine Autoritäts-Behauptungen im Output. Jede öffentliche serialisierbare Slice-8-Ergebnismenge wird geprüft, nicht nur einzelne Felder.
+- [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
+- [ ] GREEN: `test_no_secrets.py` grün; alle `tests/evidence/`-Tests grün.
 
 ## Validation Plan
+
+- `python -m pip install -e ".[dev]"`
+- `python -m ruff check .`
+- `python -m pytest tests/evidence/ -q`
+- `python -m pytest -q`
+- `git diff --check origin/main...HEAD`
+- Product-Neutrality-Scan (Wortliste + Import-Scan) grün
+- No-Network-/No-DB-Scope-Gate grün
+- Determinismus: zwei identische Läufe ⇒ identische Ergebnisse; Input-Reorder ⇒ identische Ergebnisse
+- Claire-Parity-Matrix gegen `docs/extraction/PARITY_GATES.md` (Slice-8-Gate) und `docs/extraction/COMPONENT_OWNERSHIP.md` (§ 2.7) vollständig abgebildet
+- AC-Mapping: alle 10 Live-ACs des Issue #8 mit Task- und Test-Evidenz belegt
+- Full diff review
+- Exact-head CI auf dem tatsächlichen PR-Head
+- Review Threads prüfen
+- Post-Merge CI
+
+**Keine erwartete Testanzahl hart codieren.**
 
 - `python -m pip install -e ".[dev]"`
 - `python -m ruff check .`
