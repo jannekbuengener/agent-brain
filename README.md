@@ -40,13 +40,13 @@ src/agent_brain/
 ├─ core/        # Portable Foundation
 ├─ contracts/   # Source / Index / Evidence Contracts
 ├─ context/     # Context Package / Required Reads / Explanation / Validation / Briefing
-├─ retrieval/   # noch ohne fachliche Runtime
+├─ retrieval/   # Hybrid Retrieval / Knowledge Reasoning (#7)
 ├─ memory/      # noch ohne fachliche Runtime
 ├─ surrealdb/   # noch ohne fachliche Runtime
 └─ connectors/  # read-only Repository Ingestion (Slice #9)
 ```
 
-Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Die gemeinsame Contract-Schicht definiert versionierte Repository-/Artifact-, Index-/Graph- und Evidence-/Claim-Typen. Die Context-Schicht baut darauf deterministische Packages, Required Reads, Self-Explanations, Validation Plans und Briefings auf. Die Connector-Schicht liest produktneutral profilierte lokale Repositories read-only und erzeugt die deterministischen #15-Ausgaben für den späteren Knowledge-Build.
+Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provenance-, Source-Priority-, Policy-Hook- und Redaction-Primitiven bereit. Die gemeinsame Contract-Schicht definiert versionierte Repository-/Artifact-, Index-/Graph-, Evidence-/Claim- sowie ergänzende Temporal-/Provenance-/Resolution-Metadaten-Typen. Die Context-Schicht baut darauf deterministische Packages, Required Reads, Self-Explanations, Validation Plans und Briefings auf. Die Connector-Schicht liest produktneutral profilierte lokale Repositories read-only und erzeugt die deterministischen #15-Ausgaben für den späteren Knowledge-Build.
 
 - Python: `>=3.12`
 - Packaging: `pyproject.toml` + `src`-Layout
@@ -81,6 +81,8 @@ Die operative Extraktion besteht aus **16 Slices (0–15)**:
 
 Slice 0 hat die Ownership- und State-Grenzen konkretisiert. Für tatsächlich vorhandenen SurrealDB-primary State existiert zusätzlich [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21).
 
+Der Architecture-Hardening-Track [#36](https://github.com/jannekbuengener/agent-brain/issues/36) ergänzt die lineare Roadmap: #37 kanonisiert Temporal-/Provenance-/Supersession-Semantik; #38 inventarisiert die reale SurrealDB-Runtime read-only; #39 definiert die Store-/Scope-Boundary; #40 bleibt ein später, nicht blockierender Agent-Memory-Benchmark.
+
 ## Wichtige Write-Trennung
 
 - **Knowledge-/Index-Build-Writes:** kontrolliert und reproduzierbar in Slice #16 vorgesehen.
@@ -102,4 +104,4 @@ Der externe Referenzindex trennt aktuell belegte Kern-/Sekundärreferenzen (`P0`
 
 ## Aktueller Status
 
-**`SLICE_5_REPOSITORY_INGESTION`** — Scaffold, Portable Foundation, gemeinsame Source-/Index-/Evidence-Contracts, der produktneutrale Context-/Briefing-Core und der read-only Repository-Ingestionskern bilden die technische Baseline. Der nächste lineare Slice ist [#16 — Knowledge Build / Seed / Import](https://github.com/jannekbuengener/agent-brain/issues/16).
+**`SLICE_7_DONE / #37_TEMPORAL_PROVENANCE_IMPLEMENTED`** — Knowledge Build (#16) und Hybrid Retrieval (#7) sind abgeschlossen. #37 ergänzt jetzt die backend-neutralen Temporal-/Provenance-/Supersession-Contracts. Danach können #8 (Evidence/Trust) und #39 (Store/Scope-Boundary) unabhängig auf dieser Semantik aufbauen; #38 bleibt die parallele read-only Runtime-Baseline.

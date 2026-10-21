@@ -1,4 +1,4 @@
-﻿"""Internal validation helpers shared by versioned Agent Brain contracts."""
+"""Internal validation helpers shared by versioned Agent Brain contracts."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-﻿"""Supersession and trust/confidence metadata without resolver authority."""
+"""Supersession and trust/confidence metadata without resolver authority."""
 
 from __future__ import annotations
 

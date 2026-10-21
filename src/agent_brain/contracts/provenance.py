@@ -1,4 +1,4 @@
-﻿"""Structured, backend-neutral provenance metadata contracts."""
+"""Structured, backend-neutral provenance metadata contracts."""
 
 from __future__ import annotations
 

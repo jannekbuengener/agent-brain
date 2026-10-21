@@ -1,4 +1,4 @@
-﻿"""Backend-neutral tri-temporal metadata contract."""
+"""Backend-neutral tri-temporal metadata contract."""
 
 from __future__ import annotations
 
