@@ -73,6 +73,8 @@ Die bestehenden `EvidenceRef`-/`ClaimRef`-Typen bleiben reine Referenzen. Ergän
 
 Die Contracts enthalten keine SurrealDB-/Agent-Memory-Runtime, keine produktiven Writes, kein Last-Write-Wins und keinen Freshness-/Trust-Resolver.
 
+Runtime-/Storage-Inventar für #38: [SurrealDB Runtime Baseline — 2026-10-21](surrealdb/RUNTIME_BASELINE_2026-10-21.md).
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
