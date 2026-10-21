@@ -268,3 +268,37 @@ Die ursprünglichen Gaps A–E sind in **Roadmap v2** auf Planungsebene geschlos
 - GAP E → #15 definiert `EvidenceRef`/`ClaimRef`; #8 resolvt/scored später.
 
 Offen bleibt bewusst nur **WATCH F**: bestehender persistierter Claire-State wird in Slice #0 klassifiziert.
+
+---
+
+## 10. Slice #7 — neutraler Hybrid-Retrieval-Datenfluss
+
+Slice #7 arbeitet auf den bereits stabilen #15-Verträgen und reproduzierbaren #16-Artefakten. Die produktive SurrealDB-Read-Runtime ist **nicht** Teil dieses Flows; sie bleibt Slice #10. Evidence-/Decision-/Trust-Auflösung bleibt Slice #8.
+
+```mermaid
+flowchart LR
+    SNAP["#16 KnowledgeSnapshot\nProvenance / Seed"] --> IDX["IndexRecord"]
+    SNAP --> EDGE["GraphEdge"]
+    IDX --> COLLECT["Candidate Collection"]
+    EDGE --> GS["Graph Signals\nbounded / deterministic"]
+    COLLECT --> RANK["Hybrid Ranking\n+ Explanation"]
+    GS --> RANK
+    RANK --> IMPACT["Impact Radar\nannotation only"]
+    RR["RequiredReadsProfile"] --> RRES["Required Reads Resolver"]
+    RRES --> POLICY["PolicyHook / PolicyDecision"]
+    POLICY --> STOP["RetrievalStop\nfail-conservative"]
+    IMPACT --> RESULT["RetrievalResult"]
+    STOP --> RESULT
+
+    RESULT -. "#8 später" .-> EVIDENCE["Evidence / Decisions / Trust"]
+    RESULT -. "#10 später" .-> SURREAL["SurrealDB Read Runtime"]
+```
+
+### Laufzeitgrenzen
+
+- `agent_brain.retrieval` benötigt weder Claire-Import noch Trading-/Live-Go-Logik.
+- Candidate Collection, Ranking, Graph-Signale und Impact Radar sind in-memory und deterministisch.
+- Fehlende/ungültige Ranking-Signale erzeugen keinen positiven Beitrag; Semantic/Vector und Evidence-Provenance bleiben bis zu ihren eigenen Slices konservativ `0.0`.
+- Required Reads bleiben profilgesteuert; produkt- oder Claire-spezifische Pfade gehören in Adapter/Profile, nicht in den generischen Core.
+- `PolicyDecision(allowed=False)` wird als konservativer Retrieval-Stop materialisiert, ohne Produkt-/Execution-Autorität zu beanspruchen.
+- Die neutralen Retrieval-Fixtures sind über Source-Refs/-Hashes an `tests/fixtures/knowledge/knowledge_snapshot.neutral.v1.json` gebunden und beweisen die reproduzierbare #16→#7-Testkette.
