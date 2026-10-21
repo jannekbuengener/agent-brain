@@ -35,15 +35,18 @@
 
 ## Review Focus
 
-Die fünf maßgeblichen Failure Classes — jede ist einem konkreten Task-Test zugeordnet:
+Die acht maßgeblichen Failure Classes — jede ist einem konkreten Task-Test zugeordnet:
 
-1. **Cross-Provenance-Konflikt ohne Last-Write-Wins** → Task 4, `tests/evidence/test_cross_provenance_conflict.py`: zwei Kandidaten derselben `evidence_id` mit unterschiedlicher `provenance.source_ref` bleiben beide in der Resolution sichtbar, es existiert kein Gewinner-Feld, der Zustand ist `UNKNOWN`, und ein expliziter Supersession-Link verhindert den Falschkonflikt.
-2. **`system_as_of` versehentlich als Fact-Zeit** → Task 5, `tests/evidence/test_temporal_semantics.py`: ein `system_as_of` vor `known_at` darf `STALE`/`UNKNOWN` nicht auslösen; `FreshnessReport` führt `system_as_of` ausschließlich als Snapshot-Metadatum.
-3. **`source_trust`/`confidence` versehentlich gekoppelt** → Task 7, `tests/evidence/test_source_trust_confidence_separation.py`: Änderung von `source_trust` ändert `confidence_assessment` und `composite_score` nicht (und umgekehrt).
-4. **Dangling/cyclic Supersession** → Task 3, `tests/evidence/test_supersession_semantics.py`: hängendes `superseded_by_ref` ⇒ `UNKNOWN` + Warnung `broken_supersession_chain`, keine stille Rückstufung auf `current`; Supersession-Zyklus terminiert und erzeugt keine Endlosschleife.
-5. **Fehlende Signale erzeugen künstlich positive Quality/Trust** → Task 6/7, `tests/evidence/test_conservative_defaults.py`: fehlende Dimensionen werden ausgelassen (nicht `0.5`), fehlende Trust-Komponente deckelt auf `partial`, fehlende Evidence erzeugt nie `strong`/`sufficient`.
+1. **Cross-Provenance-Konflikt ohne Last-Write-Wins** → Task 2 erkennt und exponiert die Konfliktgruppen; Task 4 fixiert die vollständige Matrix in `tests/evidence/test_cross_provenance_conflict.py` und materialisiert das blockierende Finding. Dieselbe logische ID kollidiert bei unterschiedlichem `provenance.source_ref` **oder** unterschiedlichem nicht-leerem `provenance.source_hash`; gleicher Ref + gleicher nicht-leerer Hash kollidiert nicht; eine explizite Supersession-Beziehung verhindert den Falschkonflikt. Fehlt mindestens ein Hash, bleibt die Identität konservativ unbestimmt: alle Kandidaten bleiben sichtbar, es gibt kein Gewinner-Feld und ohne Supersession wird die Gruppe als `cross_provenance_conflict` materialisiert. Task 2/4 berechnen keinen `ResolutionState`; ausschließlich Task 5 leitet daraus `ResolutionState.UNKNOWN` mit `reason_code = cross_provenance_conflict` ab.
+2. **Type-B-Typen ohne eindeutigen Owner oder vor ihrer Erzeugung konsumiert** → Tasks 1/4/5, `tests/evidence/test_evidence_contracts.py`, `test_contradiction.py`, `test_freshness.py`, `test_scope_drift.py`: jeder interne Typ ist genau einem Modul und Creation Task zugeordnet, vor dem ersten Consumer getestet und trägt keine `schema_version`.
+3. **Policy-Gewichte fälschlich auf `[0,1]` begrenzt** → Task 1 sowie Task 6/7, `tests/evidence/test_evidence_contracts.py`, `test_quality.py`, `test_trust.py`: Gewichte sind endlich und `>= 0.0`; `2.0, 1.0, 1.0` ist gültig und ergibt ein deterministisches gewichtetes Mittel. Scores, Thresholds, Grade-Band-Grenzen, Severity-Penalties und Confidence-Werte bleiben in `[0,1]`.
+4. **`system_as_of` versehentlich als Fact-Zeit** → Task 5, `tests/evidence/test_temporal_semantics.py`: ein `system_as_of` vor `known_at` darf `STALE`/`UNKNOWN` nicht auslösen; `FreshnessReport` führt `system_as_of` ausschließlich als Snapshot-Metadatum.
+5. **`source_trust`/`confidence` versehentlich gekoppelt** → Task 7, `tests/evidence/test_source_trust_confidence_separation.py`: Änderung von `source_trust` ändert `confidence_assessment` und `composite_score` nicht (und umgekehrt).
+6. **Dangling/cyclic Supersession** → Task 3 und Task 5, `tests/evidence/test_supersession_semantics.py`, `test_resolution_state_derivation.py`: Task 3 verarbeitet und erklärt die Kette, berechnet aber keinen allgemeinen `ResolutionState`; Task 5 leitet ein hängendes `superseded_by_ref` als `UNKNOWN` + `broken_supersession_chain` ab. Zyklen terminieren ohne Endlosschleife.
+7. **`ResolutionState` an mehreren Stellen abgeleitet** → Task 5, `tests/evidence/test_resolution_state_derivation.py`: Task 1 definiert nur `ResolutionStateEntry`, Task 2 erkennt Beziehungen/Konfliktgruppen ohne Zeitbewertung, Task 3 verarbeitet Supersession-Ketten und Task 4 materialisiert Konflikt-Findings. Die vollständige Präzedenz `UNKNOWN > SUPERSEDED > STALE > CURRENT` inklusive `not_yet_known`, `not_yet_valid`, `validity_window_closed`, `broken_supersession_chain` und `cross_provenance_conflict` gehört ausschließlich `freshness.py`.
+8. **Fehlende Signale erzeugen künstlich positive Quality/Trust** → Task 6/7, `tests/evidence/test_conservative_defaults.py`: fehlende Dimensionen werden ausgelassen (nicht `0.5`), fehlende Trust-Komponente deckelt auf `partial`, fehlende Evidence erzeugt nie `strong`/`sufficient`.
 
-Weitere Review-Punkte: die `ResolutionState`-Präzedenz muss in Task 5 exakt `UNKNOWN > SUPERSEDED > STALE > CURRENT` sein; der Resolver darf unter keinen Umständen Zeit auswerten; alle Default-Zahlen müssen in Policies oder RuleSets auffindbar und nirgends im Algorithmus verteilt sein.
+Weitere Review-Punkte: der Resolver darf unter keinen Umständen Zeit auswerten; alle Default-Zahlen müssen in Policies oder RuleSets auffindbar und nirgends im Algorithmus verteilt sein; `QualityPolicy.default().dependency_confidence_threshold` bleibt `0.5`.
 
 ## Exact File Map
 
@@ -52,12 +55,12 @@ Weitere Review-Punkte: die `ResolutionState`-Präzedenz muss in Task 5 exakt `UN
 | Datei | Zweck |
 |---|---|
 | `src/agent_brain/evidence/__init__.py` | Öffentliche Surface (`__all__`) — Verhalten lives in den Modulen |
-| `src/agent_brain/evidence/contract.py` | Alle #8-Typ-A-Contracts (Overlays, Queries, Results, Policies), Fehlerfamilie, lokale Validatoren, Vokabulare |
+| `src/agent_brain/evidence/contract.py` | Alle #8-Typ-A-Contracts (Overlays, Queries, Results, Policies), Fehlerfamilie, lokale Validatoren, Vokabulare sowie die gemeinsamen Typ-B-Inputs `SourceState`, `ArtifactState`, `SurfaceState` |
 | `src/agent_brain/evidence/resolver.py` | `resolve_evidence`, `resolve_claims`, Cross-Provenance-Konflikterkennung |
 | `src/agent_brain/evidence/decisions.py` | `query_decision_history`, `build_decision_replay` |
-| `src/agent_brain/evidence/contradiction.py` | `ContradictionRule`, `ContradictionRuleSet`, `detect_contradictions` |
-| `src/agent_brain/evidence/freshness.py` | `evaluate_freshness`, `ResolutionState`-Ableitung, `build_scope_drift_blocking`-freier Teil |
-| `src/agent_brain/evidence/scope_drift.py` | `detect_scope_drift`, `build_scope_drift_blocking` |
+| `src/agent_brain/evidence/contradiction.py` | Typ-B-Inputs `ContradictionBundle`, `ContradictionRule`, `ContradictionRuleSet`; `detect_contradictions` |
+| `src/agent_brain/evidence/freshness.py` | Typ-B-Input `FreshnessBundle`; `evaluate_freshness`; einziger Ort der vollständigen `ResolutionState`-Ableitung |
+| `src/agent_brain/evidence/scope_drift.py` | Typ-B-Input `ScopeDriftBundle`; `detect_scope_drift`, `build_scope_drift_blocking` |
 | `src/agent_brain/evidence/quality.py` | `score_quality` |
 | `src/agent_brain/evidence/trust.py` | `build_trust_summary` |
 | `tests/fixtures/evidence/evidence_claims.neutral.v1.json` | Neutrale EvidenceRef/ClaimRef/EvidenceState/ClaimState-Menge |
@@ -67,6 +70,21 @@ Weitere Review-Punkte: die `ResolutionState`-Präzedenz muss in Task 5 exakt `UN
 | `tests/fixtures/evidence/scope_drift.neutral.v1.json` | Scope-Drift-Bundle |
 | `tests/fixtures/evidence/quality_signals.neutral.v1.json` | Resultobjekte der Stufen 1–3 als Quality-/Trust-Input |
 | `tests/fixtures/evidence/claire_parity_policy.v1.json` | **Einzige** Fundstelle Claire-spezifischer Zahlen |
+
+### Type-B-Ownership und Creation Order
+
+| Typ-B-Typ | Einziger Owner / Creation Task | Erster Consumer | Verbindlicher Inhalt / Grenze |
+|---|---|---|---|
+| `SourceState` | `contract.py` / Task 1 | Task 5 (`FreshnessBundle`) | gemeinsamer, validierter Source-Value-Type; `frozen=True`, `slots=True`; keine `schema_version`, keine externe Public Surface |
+| `ArtifactState` | `contract.py` / Task 1 | Task 5 (`FreshnessBundle`, `ScopeDriftBundle`) | gemeinsamer, validierter Artifact-Value-Type; `frozen=True`, `slots=True`; keine `schema_version`, keine externe Public Surface |
+| `SurfaceState` | `contract.py` / Task 1 | Task 5 (`ScopeDriftBundle`), danach Task 6 | gemeinsamer, validierter Surface-Value-Type; `frozen=True`, `slots=True`; keine `schema_version`, keine externe Public Surface |
+| `ContradictionBundle` | `contradiction.py` / Task 4 | Task 4 (`detect_contradictions`) | typisierte `ClaimRef`/`ClaimState`, `EvidenceRef`/`EvidenceState`, `DecisionRecord` und Stage-1-Resultate; kein untypisiertes Fremd-Dict |
+| `ContradictionRule` | `contradiction.py` / Task 4 | Task 4 (`ContradictionRuleSet`) | immutable Regel samt purem Detector; keine `schema_version` |
+| `ContradictionRuleSet` | `contradiction.py` / Task 4 | Task 4 (`detect_contradictions`) | immutable, validierte Regelmenge; keine `schema_version` |
+| `FreshnessBundle` | `freshness.py` / Task 5 | Task 5 (`evaluate_freshness`) | erwartete Dependency-Edges, aktuell beobachtete Edge-IDs, Temporal-/State-Inputs und Conflict-/Resolution-Inputs für die vollständige `ResolutionState`-Ableitung |
+| `ScopeDriftBundle` | `scope_drift.py` / Task 5 | Task 5 (`detect_scope_drift`) | nur deklarierte/beobachtete Scope-Fakten und opake `authorization_refs`; keine Autorisierungsvalidierung |
+
+Jeder Typ-B-Typ wird in seinem Creation Task vor dem ersten Fachconsumer erzeugt und getestet. Kein Typ-B-Typ ist ein versionierter Schema-Contract oder Teil der externen Public Surface.
 
 ### Modify
 
@@ -84,7 +102,7 @@ Weitere Review-Punkte: die `ResolutionState`-Präzedenz muss in Task 5 exakt `UN
 
 | Datei | Verantwortung |
 |---|---|
-| `test_evidence_contracts.py` | Typ-A-Contracts: Schema-Validierung, Versionierung, `to_dict`/`from_dict`, fail-closed, keine #37-Duplikation, kein persistiertes `resolution_state` |
+| `test_evidence_contracts.py` | Typ-A-Contracts: Schema-Validierung, Versionierung, `to_dict`/`from_dict`, fail-closed, keine #37-Duplikation, kein persistiertes `resolution_state`; Task-1-Typ-B-Inputs ohne Schema-/Public-Surface |
 | `test_resolution.py` | `resolve_evidence` / `resolve_claims`: Zuordnung, unresolved refs, orphan overlays, konservatives Missing-Evidence, kein Freshness-Scoring, stabile Sortierung |
 | `test_cross_provenance_conflict.py` | Konfliktgruppen, kein Gewinner, kein Last-Write-Wins |
 | `test_decision_history.py` | Buckets, Ketten, Cycle, dangling refs, bekannte ID-Mengen |
@@ -211,6 +229,8 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 
 `dependency_confidence_threshold = 0.5` ist eine Planentscheidung, die die Spec offenlässt: konservativer, generischer Wert; Claire nutzte ein String-Vokabular (`high/medium/low/unknown`) und wird ausschließlich über die Parity-Policy abgebildet.
 
+Für `QualityPolicy.dimension_weights` und `TrustPolicy.component_weights` gilt einheitlich: jeder Wert muss endlich und `>= 0.0` sein; Werte über `1.0` sind als relative Gewichte ausdrücklich zulässig. Die `[0,1]`-Grenze gilt weiterhin für Scores, Thresholds, Grade-Band-Grenzen, Severity-Penalties und Confidence-Werte.
+
 ## AC-Mapping (alle 10 ACs)
 
 | AC | Source Behavior | Agent-Brain Component | Input | Output | RED Test | GREEN Evidence | Negative Control | Parity Evidence | Deferred Dependency |
@@ -271,19 +291,22 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 
 **Interfaces**
 - Consumes: `EvidenceRef`, `ClaimRef`, `TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`, `require_compatible_version`, `serialize_contract`, `canonical_hash`
-- Produces: `EvidenceState`, `ClaimState`, `DecisionRecord`, `EvidenceQuery`, `ClaimQuery`, `DecisionQuery`, `DecisionReplayQuery`, `TrustRequest`, `EvidenceResolution`, `ClaimResolution`, `DecisionHistoryResult`, `DecisionReplay`, `ContradictionFinding`, `ContradictionScanResult`, `StaleFinding`, `ResolutionStateEntry`, `FreshnessReport`, `ScopeDriftFinding`, `ScopeDriftReport`, `ScopeDriftBlocking`, `QualityDimensionScore`, `QualityAssessment`, `TrustSummary`, `QualityPolicy`, `TrustPolicy`, `FreshnessPolicy`, `ScopeDriftPolicy`, `EvidenceResolutionPolicy`, `ClaimResolutionPolicy`, `EvidenceError` + 7 Unterklassen, alle Vokabulare
+- Produces: `EvidenceState`, `ClaimState`, `DecisionRecord`, `EvidenceQuery`, `ClaimQuery`, `DecisionQuery`, `DecisionReplayQuery`, `TrustRequest`, `EvidenceResolution`, `ClaimResolution`, `DecisionHistoryResult`, `DecisionReplay`, `ContradictionFinding`, `ContradictionScanResult`, `StaleFinding`, `ResolutionStateEntry`, `FreshnessReport`, `ScopeDriftFinding`, `ScopeDriftReport`, `ScopeDriftBlocking`, `QualityDimensionScore`, `QualityAssessment`, `TrustSummary`, `QualityPolicy`, `TrustPolicy`, `FreshnessPolicy`, `ScopeDriftPolicy`, `EvidenceResolutionPolicy`, `ClaimResolutionPolicy`, `SourceState`, `ArtifactState`, `SurfaceState`, `EvidenceError` + 7 Unterklassen, alle Vokabulare
 
 - [ ] RED: Schema-Familie und Major-Version jedes Typ-A-Contracts werden fail-closed abgelehnt (`require_compatible_version`).
 - [ ] RED: `to_dict()`/`from_dict()`-Roundtrip erhält alle Felder; `from_dict` ignoriert unbekannte additive v1-Felder.
 - [ ] RED: Overlays enthalten **kein** eigenes `known_at`/`valid_from`/`valid_until`/`system_as_of`/`source_trust`/`confidence`/`supersedes_ref`/`superseded_by_ref`/`source_hashes`-Feld; `Confidence`/`source_trust` stehen ausschließlich in `ResolutionMeta`.
-- [ ] RED: Kein #8-Contract führt ein Feld namens `resolution_state`; `ResolutionState` wird ausschließlich als **Wert** in `ResolutionStateEntry` verwendet.
+- [ ] RED: Kein #8-Overlay oder persistierbarer Input-Contract führt ein Feld namens `resolution_state`. Task 1 definiert nur die Resultform `ResolutionStateEntry`; ihr Feld `resolution_state` wird erst in Task 5 abgeleitet und ist keine gespeicherte Wahrheit.
 - [ ] RED: `EvidenceState`/`ClaimState`/`DecisionRecord` sind `frozen=True, slots=True`; Mutation wirft `FrozenInstanceError`.
+- [ ] RED: `SourceState`, `ArtifactState` und `SurfaceState` werden in Task 1 als gemeinsame interne Value/Input Types erzeugt, sind validiert sowie `frozen=True, slots=True`, besitzen keine `schema_version`/`to_dict`/`from_dict`-Schema-Surface und werden nicht über die externe Public Surface exportiert.
 - [ ] RED: `to_dict()` liefert JSON-sichere Primitive (Datetimes via #37-Serialisierung, Tupel als Listen).
 - [ ] RED: `QualityPolicy.default()` liefert die in [Policy-Defaults](#policy-defaults-alle-zahlen-ausschließlich-hier) fixierten Zahlen; keine andere Policy führt score-relevante Zahlen.
 - [ ] RED: Policy-Mappings werden read-only materialisiert (`MappingProxyType`); Änderungsversuch wirft.
-- [ ] RED: `QualityPolicy` mit Gewicht außerhalb `[0,1]` oder Band außerhalb `[0,1]` wirft `QualityError`; `TrustPolicy` analog `TrustError`.
+- [ ] RED: `QualityPolicy` und `TrustPolicy` validieren Gewichte identisch als **endlich und `>= 0.0`**: `-0.1`, `NaN`, `+Inf` und `-Inf` schlagen fail-closed fehl; einzelne Gewichte `0.0`, `1.0` und `2.0` sind erlaubt. Scores, Thresholds, Grade-Band-Grenzen, Severity-Penalties und Confidence-Werte bleiben endlich und in `[0,1]`.
+- [ ] RED: Sind für eine konkrete Aggregation alle verfügbaren Gewichte `0.0`, wird kein Mittelwert erfunden und nicht durch null geteilt; die Komponente/Dimension bleibt unverfügbar und erzeugt eine sichtbare Limitation.
+- [ ] RED: Die gemeinsame deterministische Weighted-Mean-Mechanik wird bereits im Policy-Contracttest mit Gewichten `2.0, 1.0, 1.0` festgezurrt; Task 6 und Task 7 belegen anschließend die identische Berechnung über `QualityPolicy` bzw. `TrustPolicy` in den Fachresultaten.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
-- [ ] GREEN: `contract.py` mit allen Typen, lokalen Validatoren (`_required_text`, `_optional_text`, `_text_tuple`, `_non_negative_int`, `_positive_int`, `_score`, `_normalize_utc_datetime`) und `to_dict`/`from_dict`.
+- [ ] GREEN: `contract.py` mit allen Typen, lokalen Validatoren (`_required_text`, `_optional_text`, `_text_tuple`, `_non_negative_int`, `_positive_int`, `_score`, `_non_negative_finite_weight`, `_normalize_utc_datetime`), der gemeinsamen deterministischen Weighted-Mean-Mechanik und `to_dict`/`from_dict`.
 - [ ] GREEN: `__init__.py` mit Modul-Docstring und zunächst leerem `__all__` (Surface-Export folgt in Task 8).
 - [ ] Test: `test_evidence_contracts.py` fokussiert grün.
 - [ ] Task-Suite (`tests/evidence/`) komplett grün.
@@ -300,7 +323,7 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 
 **Interfaces**
 - Consumes: `EvidenceRef`, `ClaimRef`, `EvidenceState`, `ClaimState`, `EvidenceQuery`, `ClaimQuery`, `EvidenceResolutionPolicy`, `ClaimResolutionPolicy`
-- Produces: `resolve_evidence(...) -> EvidenceResolution`, `resolve_claims(...) -> ClaimResolution`
+- Produces: `resolve_evidence(...) -> EvidenceResolution`, `resolve_claims(...) -> ClaimResolution` einschließlich deterministischer `conflicting_evidence_ids`/`conflicting_claim_ids`
 
 - [ ] RED: `resolve_claims` löst `ClaimRef.evidence_refs` gegen bekannte `EvidenceRef.evidence_id` auf; nicht auflösbare Refs erscheinen in `unresolved_evidence_refs`.
 - [ ] RED: Claim mit Status `supported`/`weakly_supported` ohne auflösbare Evidence erscheint in `missing_evidence_claim_ids`.
@@ -310,6 +333,7 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 - [ ] RED: Kein Ergebnis enthält `stale_evidence_ids`, `by_freshness` oder eine Alters-/Ablaufbewertung; die Resolver-Signaturen haben **kein** `as_of`.
 - [ ] RED: Query-Modi matchen exakt; Substring-Match ist ausgeschlossen (`scope`/`source` treffen keine Präfixe).
 - [ ] RED: Sortierung ist stabil über `temporal.known_at` + ID; undatierte Records stehen hinten; umgekehrte Eingabereihenfolge ändert das Ergebnis nicht.
+- [ ] RED: Der Resolver erkennt Beziehungen und Cross-Provenance-Konfliktgruppen, hält alle Kandidaten sichtbar und wählt keinen Gewinner; er berechnet weder Zeit noch `ResolutionState`. Die vollständigen `source_ref`/`source_hash`/`None`/Supersession-Fälle werden in Task 4 eingefroren.
 - [ ] RED: Unbekannter Query-Modus, `limit` außerhalb `1..10000`, fehlender Pflicht-Selektor und Record ohne `evidence_id`/`claim_id` schlagen fail-closed fehl (`ResolutionError`).
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
 - [ ] GREEN: `resolver.py` mit deterministischer Normalisierung, Overlay-Indexierung, Auflösung, Buckets, Warnungen und Limitations.
@@ -339,6 +363,7 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 - [ ] RED: `build_decision_replay` ist deterministisch; `decision_chain_hash` ist über `canonical_hash` gebildet und **schließt `as_of` aus** — zwei Replays mit unterschiedlichem `as_of` bei gleicher Datenlage sind hashgleich.
 - [ ] RED: Replay ist erklärend: `authorization_implied` ist immer `False`, `authorization_refs` werden nur durchgereicht, `limitations` ist nicht leer.
 - [ ] RED: Sichtbarkeit und historischer Status bleiben getrennt: ein nicht sichtbarer Nachfolger ändert den Bucket nicht, er erzeugt die Sichtbarkeitswarnung.
+- [ ] RED: Decision History verarbeitet und erklärt Supersession-Ketten, berechnet aber keinen allgemeinen `ResolutionState`; die vollständige Ableitung bleibt Task 5 vorbehalten.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
 - [ ] GREEN: `decisions.py` mit Normalisierung, Sortierung, Kettenaufbau, Bucketing, Replay-Aufbau, Hash und Explainability.
 - [ ] Test: `test_decision_history.py`, `test_decision_replay.py`, `test_supersession_semantics.py` fokussiert grün.
@@ -351,27 +376,32 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 
 **Files**
 - Create: `src/agent_brain/evidence/contradiction.py`
-- Modify: `src/agent_brain/evidence/resolver.py` (Konfliktgruppen-Erkennung), `src/agent_brain/evidence/contract.py` (nur falls `ContradictionBundle` die Stage-1-Resultate aufnehmen muss)
+- Modify: — (`resolver.py` exponiert die Konfliktgruppen bereits seit Task 2)
 - Test: `tests/evidence/test_contradiction.py`, `tests/evidence/test_cross_provenance_conflict.py`
 
 **Interfaces**
-- Consumes: `ClaimRef`, `ClaimState`, `EvidenceRef`, `EvidenceState`, `DecisionRecord`, `EvidenceResolution`, `ClaimResolution`, `ContradictionBundle`, `ContradictionRuleSet`
-- Produces: `ContradictionRule`, `ContradictionRuleSet`, `default_contradiction_rule_set()`, `detect_contradictions(...) -> ContradictionScanResult`
+- Consumes: `ClaimRef`, `ClaimState`, `EvidenceRef`, `EvidenceState`, `DecisionRecord`, `EvidenceResolution`, `ClaimResolution`
+- Produces: `ContradictionBundle`, `ContradictionRule`, `ContradictionRuleSet`, `default_contradiction_rule_set()`, `detect_contradictions(...) -> ContradictionScanResult`
 
-- [ ] RED: Kandidaten derselben `evidence_id` mit unterschiedlicher `provenance.source_ref` **und** ohne Supersession-Beziehung ergeben eine Konfliktgruppe; alle Kandidaten bleiben in der Resolution sichtbar, es existiert kein Gewinner-Feld.
+- [ ] RED: `ContradictionBundle`, `ContradictionRule` und `ContradictionRuleSet` werden zu Beginn von Task 4 als validierte, immutable Typ-B-Typen (`frozen=True, slots=True`, keine `schema_version`) erzeugt und getestet. Das Bundle enthält typisiert die benötigten `ClaimRef`/`ClaimState`, `EvidenceRef`/`EvidenceState`, `DecisionRecord` und Stage-1-Resultate; ein untypisiertes Fremd-Dict wird fail-closed abgelehnt.
+- [ ] RED — CASE A: Kandidaten derselben logischen `evidence_id`/`claim_id` mit unterschiedlicher `provenance.source_ref` und ohne Supersession-Beziehung ergeben eine Konfliktgruppe.
+- [ ] RED — CASE B: Kandidaten derselben logischen ID mit gleichem `source_ref`, aber unterschiedlichen **nicht-leeren** `source_hash`-Werten und ohne Supersession-Beziehung ergeben eine Konfliktgruppe.
+- [ ] RED — CASE C: Gleicher `source_ref` und gleicher nicht-leerer `source_hash` ergeben keinen Cross-Provenance-Konflikt.
+- [ ] RED — CASE D: Unterschiedlicher `source_ref` oder `source_hash` mit expliziter Supersession-Beziehung ergibt keinen Cross-Provenance-Konflikt; die Supersession-Kette bleibt sichtbar.
+- [ ] RED — CASE E: Fehlt `source_hash` bei einem oder beiden Kandidaten derselben logischen ID, wird Gleichheit nicht erfunden: ohne Supersession bleibt die Gruppe konservativ ein `cross_provenance_conflict`; alle Kandidaten bleiben sichtbar, es gibt kein implizites Last-Write-Wins.
+- [ ] RED: In jedem Konfliktfall bleiben alle Kandidaten in der Resolution sichtbar; es existiert kein Gewinner-Feld.
 - [ ] RED: `conflicting_evidence_ids` bzw. `conflicting_claim_ids` weisen die Gruppen aus.
-- [ ] RED: Besteht eine explizite Supersession-Beziehung, entsteht **kein** Konflikt (der Vorgänger ist superseded, nicht konfliktär).
-- [ ] RED: Gleicher `provenance.source_ref` und gleicher `source_hash` ⇒ kein Konflikt.
 - [ ] RED: `cross_provenance_conflict` wird als Finding mit Severity `blocking` materialisiert und in `blocking_count` gezählt.
+- [ ] RED: Task 4 berechnet **keinen** `ResolutionState` und importiert keine vollständige State-Ableitung; er liefert nur Konfliktgruppen/Marker und das blockierende Finding als Input für Task 5.
 - [ ] RED: `claim_vs_evidence` (disputed/invalidated ⇒ blocking, stale ⇒ warning) und `decision_vs_evidence` (`requires_evidence=True` ohne auflösbare bzw. nur schwache Evidence) und `stale_decision_vs_new_evidence` treffen die in der Spec fixierten Severity-/Confidence-Werte.
 - [ ] RED: Finding-IDs sind `canonical_hash(...)[:16]`, über Input-Reihenfolge stabil und eindeutig.
 - [ ] RED: Die Detektorfunktionen enthalten **keine** Severity-/Confidence-Literale; alle Werte kommen aus der injizierten Regel. Ein AST-/Quelltext-Scan belegt das.
 - [ ] RED: `detect_contradictions` mit ungültigem Bundle schlägt fail-closed fehl (`ContradictionError`); jeder Finding trägt `detected_at` aus `as_of`.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
-- [ ] GREEN: `resolver.py` (Konflikterkennung), `contradiction.py` (RuleSet, Default-Regeln, Detektoren, Findings, Report).
+- [ ] GREEN: `contradiction.py` materialisiert die in Task 2 erkannten Konfliktgruppen über typisiertes Bundle, RuleSet, Default-Regeln, Findings und Report; keine `ResolutionState`-Ableitung.
 - [ ] Test: `test_contradiction.py`, `test_cross_provenance_conflict.py` fokussiert grün; Task-2-Suite bleibt grün.
 - [ ] Ruff gesamt grün.
-- [ ] Diff prüfen: nur `resolver.py`, `contradiction.py`, Testdateien.
+- [ ] Diff prüfen: nur `contradiction.py` + Testdateien.
 - [ ] Commit: `feat: add slice 8 contradiction detection and conflict materialization`
 
 ### Task 5: Freshness + Scope Drift
@@ -382,12 +412,15 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 - Test: `tests/evidence/test_freshness.py`, `tests/evidence/test_resolution_state_derivation.py`, `tests/evidence/test_temporal_semantics.py`, `tests/evidence/test_scope_drift.py`
 
 **Interfaces**
-- Consumes: `TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`, `GraphEdge`, `EvidenceRef`, `EvidenceState`, `DecisionRecord`, `FreshnessBundle`, `ScopeDriftBundle`, `FreshnessPolicy`, `ScopeDriftPolicy`
-- Produces: `evaluate_freshness(...) -> FreshnessReport`, `detect_scope_drift(...) -> ScopeDriftReport`, `build_scope_drift_blocking(...) -> ScopeDriftBlocking`
+- Consumes: `TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`, `GraphEdge`, `EvidenceRef`, `EvidenceState`, `DecisionRecord`, `SourceState`, `ArtifactState`, `SurfaceState`, Konfliktgruppen/-Findings aus Task 4, `FreshnessPolicy`, `ScopeDriftPolicy`
+- Produces: `FreshnessBundle`, `ScopeDriftBundle`, `evaluate_freshness(...) -> FreshnessReport`, `detect_scope_drift(...) -> ScopeDriftReport`, `build_scope_drift_blocking(...) -> ScopeDriftBlocking`
 
+- [ ] RED: `FreshnessBundle` wird in `freshness.py` vor `evaluate_freshness` als validierter, immutable Typ-B-Typ (`frozen=True, slots=True`, keine `schema_version`) erzeugt. Es enthält explizit erwartete Dependency-Edges, aktuell beobachtete Edge-IDs, Temporal-/State-Inputs sowie Conflict-Marker/Resolution-Inputs für die vollständige `ResolutionState`-Ableitung.
+- [ ] RED: `ScopeDriftBundle` wird in `scope_drift.py` vor `detect_scope_drift` als validierter, immutable Typ-B-Typ (`frozen=True, slots=True`, keine `schema_version`) erzeugt. Es enthält ausschließlich deklarierte/beobachtete Scope-Fakten und opake `authorization_refs`; es validiert oder interpretiert keine Autorisierung.
 - [ ] RED: `evaluate_freshness` wertet `valid_until <= as_of` ⇒ Stale-Finding `validity_window_closed` aus.
 - [ ] RED: `system_as_of` löst **kein** Stale-Finding aus und wird nur als Snapshot-Metadatum geführt; ein `system_as_of` vor `known_at` ändert kein Ergebnis.
 - [ ] RED: `known_at > as_of` ⇒ `UNKNOWN`/`not_yet_known`; `valid_from > as_of` ⇒ `UNKNOWN`/`not_yet_valid`; `valid_until <= as_of` ⇒ `STALE`/`validity_window_closed`; bekanntes Supersession-Ziel ⇒ `SUPERSEDED`; unbekanntes Ziel ⇒ `UNKNOWN`/`broken_supersession_chain`; Konflikt ⇒ `UNKNOWN`/`cross_provenance_conflict`; sonst ⇒ `CURRENT`.
+- [ ] RED: `freshness.py` ist der **einzige** Ort der vollständigen `ResolutionState`-Ableitung. Task 1 definiert nur den Result-Container `ResolutionStateEntry`; Task 2 erkennt Beziehungen/Konfliktgruppen ohne Zeitbewertung; Task 3 verarbeitet Supersession-Ketten; Task 4 materialisiert Konflikt-Findings.
 - [ ] RED: Präzedenz ist `UNKNOWN > SUPERSEDED > STALE > CURRENT` (Doppelkonditionen-Fälle explizit getestet).
 - [ ] RED: Fehlendes `valid_from`/`valid_until` erzeugt **keine** Stale-Behauptung, sondern eine sichtbare Limitation.
 - [ ] RED: `dependency_edge_no_longer_observed` entsteht ausschließlich aus der Differenz erwarteter vs. aktuell beobachteter Edge-IDs; `GraphEdge.confidence` und `GraphEdge.inferred` sind **keine** Staleness-Proxies.
@@ -397,7 +430,7 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 - [ ] RED: Fehlende Autorisierungsreferenz ⇒ Finding `write_intent_without_authorization_ref` bzw. `write_mode_without_authorization_ref`; vorhandene Referenz ⇒ **kein** positives Autorisierungsfeld, nur das Finding entfällt.
 - [ ] RED: `ScopeDriftBlocking` enthält nur `blocking`, `blocking_count`, `summary`, Artefakte, Findings, generische `recommended_actions`/`recommended_next_reads` — kein `operator_action`, keine `anti_actions`, kein autoritätsbehauptendes Feld.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
-- [ ] GREEN: `freshness.py` (Stale-Findings, `ResolutionState`-Ableitung als private Helper, Report), `scope_drift.py` (Drift-Findings, Blocking-Ausgabe).
+- [ ] GREEN: `freshness.py` (`FreshnessBundle`, Stale-Findings, vollständige `ResolutionState`-Ableitung als private Helper, Report), `scope_drift.py` (`ScopeDriftBundle`, Drift-Findings, Blocking-Ausgabe).
 - [ ] Test: alle vier Testdateien fokussiert grün; Task-3-Suite bleibt grün.
 - [ ] Ruff gesamt grün.
 - [ ] Diff prüfen: nur `freshness.py`, `scope_drift.py`, Testdateien.
@@ -421,7 +454,7 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 - [ ] RED: Grade-Bänder kommen aus `QualityPolicy.default()`: `blocking < 0.30`, `watch < 0.50`, `weak < 0.70`, `good >= 0.70`.
 - [ ] RED: Eine Dimension mit Grade `blocking` senkt einen Gesamt-Grade `weak`/`good` auf `watch`; `blocking` bleibt `blocking`.
 - [ ] RED: NaN/Inf-Scores erzeugen keinen positiven Beitrag (Wert `0.0`, Warnung `non_finite_score`).
-- [ ] RED: Gewichte sind gleich gewichtet; eine injizierte Policy ändert Gewichte ⇒ Ergebnis ändert sich ⇒ die Gewichte liegen in der Policy, nicht im Code.
+- [ ] RED: Gewichte sind standardmäßig gleich gewichtet; eine injizierte Policy mit relativen Gewichten `2.0, 1.0, 1.0` ist gültig und liefert das deterministisch erwartete gewichtete Mittel. Damit liegen die Gewichte in der Policy, nicht im Code.
 - [ ] RED: Ein Quelltext-/AST-Scan belegt: keine score-relevante Zahl im Scoring-Algorithmus.
 - [ ] RED: Freshness wird aus dem `FreshnessReport` **konsumiert**, nicht neu berechnet.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
@@ -444,6 +477,7 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 
 - [ ] RED: Genau drei Komponenten — `evidence`, `claims`, `decisions`; **keine** Memory-Komponente, kein `memory_component_enabled`, kein Memory-Import.
 - [ ] RED: `composite_score` = gewichtetes Mittel der verfügbaren Komponenten; Gewichte aus `TrustPolicy` (Default: je `1.0`).
+- [ ] RED: Eine injizierte `TrustPolicy` mit relativen Gewichten `2.0, 1.0, 1.0` ist gültig und liefert dasselbe deterministische Weighted-Mean-Verhalten wie die in Task 1 festgezurrte Mechanik.
 - [ ] RED: `trust_level` ∈ `strong`/`partial`/`insufficient`; Schwellen aus `TrustPolicy.default()` (`strong 0.80`, `partial 0.50`).
 - [ ] RED: Fehlende Pflichtkomponente ⇒ höchstens `partial`; alle fehlen ⇒ `insufficient`; `TrustPolicy.required_components` defaultet auf alle drei.
 - [ ] RED: Blocking Findings (blocking-missing Evidence, missing/disputed/invalidated Claims, unaufgelöste Decision-Refs, blockierende Contradiction-/Scope-Findings) erzwingen `insufficient` und bleiben sichtbar.
@@ -475,12 +509,12 @@ Ablieferung: `FreshnessReport.resolution_states: tuple[ResolutionStateEntry, ...
 - [ ] RED: Produktneutralitäts-Scan über alle Core-Module: keine Produkt-/Markt-/Freigabe-/Umgebungsbegriffe, keine Env-Präfixe, keine Claire-/Anbieter-/Produktnamen, keine Host-Pfade.
 - [ ] RED: Import-Scan: kein DB-/Netzwerk-Client, kein SurrealQL, kein `urllib`/`requests`/`httpx`/`socket`, kein `subprocess`, kein Memory-Import, kein `agent_brain.core.time`-Import in `agent_brain.evidence`.
 - [ ] RED: Kein autoritätsbehauptendes Resultfeld (Liste: `approved`, `approved_by`, `go`, `go_token`, `live_go`, `human_go`, `trading_allowed`, `authorization_granted`, `permission_granted`, `release_approved`, `execution_allowed`).
-- [ ] RED: `test_public_surface.py` prüft `__all__` exakt gegen das in Task 1 definierte Inventar; jeder Typ ist importierbar und trägt bei Typ A `schema_version`.
+- [ ] RED: `test_public_surface.py` prüft `__all__` exakt gegen das öffentliche Typ-A-/Funktions-Inventar; jeder öffentliche Typ ist importierbar und trägt bei Typ A `schema_version`. Die Typ-B-Inputs werden modulnah getestet und nicht über die externe Public Surface exportiert.
 - [ ] RED: `test_claire_parity_policy.py` lädt `tests/fixtures/evidence/claire_parity_policy.v1.json`, injiziert die Policy und belegt, dass der neutrale Mechanismus die veröffentlichten Claire-Werte reproduziert (Grade-Bänder, Severity-Penalties, Trust-Level). Die Fixture ist die einzige Fundstelle Claire-spezifischer Zahlen im Repo-Teilbaum.
 - [ ] RED belegen: fokussierter Test schlägt erwartet fehl (Assertion/Exception), kein Import- oder Syntaxfehler.
 - [ ] GREEN: `__init__.py` exportiert die stabile Surface; Fixtures committed; Doku in `docs/START_HIER.md`, `docs/DATENFLUESSE.md` (Slice-8-Datenfluss) und `docs/contracts/README.md` (Producer-/Consumer-Richtung) ergänzt.
 - [ ] Test: gesamte `tests/evidence/`-Suite grün; Volle Suite grün.
-- [ ] Finale Gates: `python -m pip install -e ".[dev]"`, `python -m ruff check .`, `python -m pytest tests/evidence/ -q`, `python -m pytest -q`, `git diff --check`.
+- [ ] Finale Gates: `python -m pip install -e ".[dev]"`, `python -m ruff check .`, `python -m pytest tests/evidence/ -q`, `python -m pytest -q`, `git diff --check origin/main...HEAD`.
 - [ ] Diff prüfen: nur `src/agent_brain/evidence/**`, `tests/evidence/**`, `tests/fixtures/evidence/**` und die drei Doku-Dateien.
 - [ ] Commit: `feat: complete neutral slice 8 evidence and trust pipeline`
 
@@ -497,12 +531,15 @@ Jeder Eintrag ist einem Test in `tests/evidence/` zugeordnet und muss RED→GREE
 | orphan Overlays (State ohne Ref) | `test_resolution.py` |
 | fehlerhafte Schemata (falsche Familie, falsche Major-Version) | `test_evidence_contracts.py` |
 | `NaN`, `+Inf`, `-Inf` in Scores | `test_quality.py`, `test_conservative_defaults.py` |
+| negative oder nicht-endliche Policy-Gewichte | `test_evidence_contracts.py` |
+| relative Policy-Gewichte `0.0`, `1.0`, `2.0` und Weighted Mean `2/1/1` | `test_evidence_contracts.py`, `test_quality.py`, `test_trust.py` |
 | fehlende Zeitstempel | `test_temporal_semantics.py` |
 | zukünftiges `known_at` | `test_resolution_state_derivation.py` |
 | ungültiges Gültigkeitsfenster (`valid_until <= valid_from`) | bereits durch #37 fail-closed — `test_temporal_semantics.py` belegt, dass #8 die Ableitung **nicht** umgeht |
 | dangling Supersession | `test_supersession_semantics.py` |
 | Supersession-Zyklus | `test_supersession_semantics.py` |
-| Cross-Provenance-Konflikte | `test_cross_provenance_conflict.py` |
+| Cross-Provenance-Konflikte durch unterschiedlichen `source_ref` oder unterschiedlichen nicht-leeren `source_hash` | `test_cross_provenance_conflict.py` |
+| fehlender `source_hash` auf einer oder beiden Seiten ohne Supersession | `test_cross_provenance_conflict.py` |
 | unbekannter Status | `test_conservative_defaults.py` |
 | fehlende Policy | `test_scope_drift.py` (`ScopeDriftPolicy` Pflicht), `test_quality.py` (Default greift) |
 | versteckte Wall Clock | `test_product_neutrality.py` (kein Clock-Import, kein `now()`-Aufruf) |
@@ -520,7 +557,7 @@ Jeder Eintrag ist einem Test in `tests/evidence/` zugeordnet und muss RED→GREE
 - `python -m ruff check .`
 - `python -m pytest tests/evidence/ -q`
 - `python -m pytest -q`
-- `git diff --check`
+- `git diff --check origin/main...HEAD`
 - Product-Neutrality-Scan (Wortliste + Import-Scan) grün
 - No-Network-/No-DB-Scope-Gate grün
 - Determinismus: zwei identische Läufe ⇒ identische Ergebnisse; Input-Reorder ⇒ identische Ergebnisse
