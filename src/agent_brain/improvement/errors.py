@@ -21,3 +21,7 @@ class InvalidImprovementScope(ImprovementValidationError):
 
 class ImprovementIdentityAmbiguous(ImprovementValidationError):
     """Root-cause identity cannot be determined without guessing."""
+
+
+class ImprovementProjectionConflict(ImprovementStoreError):
+    """Projection vault contains manual edits that would be overwritten."""
