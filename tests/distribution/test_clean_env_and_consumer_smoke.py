@@ -8,6 +8,7 @@ from pathlib import Path
 def test_clean_environment_installs_exact_wheel_without_repo_path(
     built_wheel: Path,
     distribution_env,
+    package_version: str,
     tmp_path: Path,
 ) -> None:
     python = distribution_env.create_venv(tmp_path / "clean-venv")
@@ -30,7 +31,7 @@ print(json.dumps({
         text=True,
     )
     payload = json.loads(completed.stdout.strip())
-    assert payload["version"] == "0.1.0"
+    assert payload["version"] == package_version
     assert payload["is_site_packages"] is True
     assert "agent-brain-wt-17" not in payload["module_path"]
 
@@ -38,15 +39,16 @@ print(json.dumps({
 def test_neutral_consumer_smoke_against_pinned_wheel(
     built_wheel: Path,
     distribution_env,
+    package_version: str,
     tmp_path: Path,
 ) -> None:
     python = distribution_env.create_venv(tmp_path / "consumer-venv")
     distribution_env.install_wheel(python, built_wheel)
     distribution_env.install_path(python, distribution_env.consumer_root)
 
-    result = distribution_env.run_consumer_smoke(python, "0.1.0")
-    assert result["pinned_version"] == "0.1.0"
-    assert result["installed_version"] == "0.1.0"
+    result = distribution_env.run_consumer_smoke(python, package_version)
+    assert result["pinned_version"] == package_version
+    assert result["installed_version"] == package_version
     assert result["compatible"] is True
     assert "agent_brain.distribution" in result["public_modules"]
 
