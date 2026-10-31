@@ -258,8 +258,8 @@ def test_v1_pilot_blackboard_loop(tmp_path: Path) -> None:
         schema_version=IMPROVEMENT_WORK_REF_SCHEMA,
         kind=WorkRefKind.GITHUB_PULL_REQUEST,
         repository_ref="jannekbuengener/agent-brain",
-        ref="PILOT-PR",
-        url="https://github.com/jannekbuengener/agent-brain/pull/PILOT-PR",
+        ref="62",
+        url="https://github.com/jannekbuengener/agent-brain/pull/62",
         linked_at=datetime(2026, 10, 31, 18, 40, tzinfo=UTC),
     )
     current = management.link_pull_request(
