@@ -224,9 +224,15 @@ def test_duplicate_observation_id_with_new_idempotency_key_rejected() -> None:
 
 
 def test_memory_and_knowledge_modules_remain_without_generic_write_api() -> None:
+    # #39 introduces read-only MemoryStore/KnowledgeStore ports on memory.
+    # They must never grow a generic write/remember surface.
     assert not hasattr(memory_module, "remember")
-    assert not hasattr(memory_module, "MemoryStore")
-    assert not hasattr(knowledge_module, "KnowledgeStore")
+    assert not hasattr(memory_module, "write")
     assert not hasattr(knowledge_module, "write")
+    assert not hasattr(knowledge_module, "remember")
+    assert hasattr(memory_module, "MemoryStore")
+    assert hasattr(memory_module, "KnowledgeStore")
+    memory_module.assert_read_only_store(memory_module.InMemoryMemoryStore())
+    memory_module.assert_read_only_store(memory_module.InMemoryKnowledgeStore())
     assert not hasattr(InMemoryImprovementObservationStore, "remember")
     assert "brain.write" not in dir(InMemoryImprovementObservationStore)
