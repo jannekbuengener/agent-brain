@@ -94,6 +94,39 @@ def _conflict_groups(states: Sequence[EvidenceState | ClaimState]) -> tuple[tupl
     return tuple(groups)
 
 
+def _resolution_meta_samples(
+    *,
+    matched_ids: Sequence[str],
+    state_index: dict[str, list],
+) -> tuple[tuple[float, ...], tuple[float, ...], int, int]:
+    source_trust_values: list[float] = []
+    confidence_values: list[float] = []
+    source_trust_not_evaluated = 0
+    confidence_not_evaluated = 0
+    for entity_id in matched_ids:
+        overlays = state_index.get(entity_id, [])
+        overlay = overlays[0] if overlays else None
+        if overlay is None:
+            source_trust_not_evaluated += 1
+            confidence_not_evaluated += 1
+            continue
+        meta = overlay.resolution_meta
+        if meta.source_trust is not None:
+            source_trust_values.append(meta.source_trust)
+        else:
+            source_trust_not_evaluated += 1
+        if meta.confidence is not None:
+            confidence_values.append(meta.confidence)
+        else:
+            confidence_not_evaluated += 1
+    return (
+        tuple(source_trust_values),
+        tuple(confidence_values),
+        source_trust_not_evaluated,
+        confidence_not_evaluated,
+    )
+
+
 def _match_evidence(
     evidence: EvidenceRef,
     state: EvidenceState | None,
@@ -161,6 +194,7 @@ def resolve_evidence(
             break
 
     conflicting = _conflict_groups(states)
+    trust_samples = _resolution_meta_samples(matched_ids=tuple(matched), state_index=state_index)
     return EvidenceResolution(
         schema_version=EVIDENCE_RESOLUTION_SCHEMA,
         matched_evidence_ids=tuple(matched),
@@ -169,6 +203,10 @@ def resolve_evidence(
         conflicting_evidence_ids=conflicting,
         warnings=tuple(sorted(set(warnings))),
         limitations=tuple(limitations),
+        source_trust_values=trust_samples[0],
+        confidence_values=trust_samples[1],
+        source_trust_not_evaluated_count=trust_samples[2],
+        confidence_not_evaluated_count=trust_samples[3],
     )
 
 
@@ -253,6 +291,7 @@ def resolve_claims(
             break
 
     conflicting = _conflict_groups(states)
+    trust_samples = _resolution_meta_samples(matched_ids=tuple(matched), state_index=state_index)
     return ClaimResolution(
         schema_version=CLAIM_RESOLUTION_SCHEMA,
         matched_claim_ids=tuple(matched),
@@ -264,4 +303,8 @@ def resolve_claims(
         conflicting_claim_ids=conflicting,
         warnings=tuple(sorted(set(warnings))),
         limitations=tuple(limitations),
+        source_trust_values=trust_samples[0],
+        confidence_values=trust_samples[1],
+        source_trust_not_evaluated_count=trust_samples[2],
+        confidence_not_evaluated_count=trust_samples[3],
     )

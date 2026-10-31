@@ -17,26 +17,29 @@ def test_trust_summary_has_separate_assessments() -> None:
 
 def test_changing_source_trust_does_not_change_confidence_assessment() -> None:
     refs = (evidence_ref("evidence-1"),)
-    high_trust = resolve_evidence(
-        evidence=refs,
-        states=(
-            evidence_state(
-                resolution=resolution_meta(source_trust=0.9, confidence=0.4),
-            ),
-        ),
+    high_state = evidence_state(
+        resolution=resolution_meta(source_trust=0.9, confidence=0.4),
     )
-    low_trust = resolve_evidence(
-        evidence=refs,
-        states=(
-            evidence_state(
-                resolution=resolution_meta(source_trust=0.1, confidence=0.4),
-            ),
-        ),
+    low_state = evidence_state(
+        resolution=resolution_meta(source_trust=0.1, confidence=0.4),
     )
+    high_trust = resolve_evidence(evidence=refs, states=(high_state,))
+    low_trust = resolve_evidence(evidence=refs, states=(low_state,))
     request = TrustRequest(schema_version="trust-request/v1", scope="scope")
-    high = build_trust_summary(request=request, evidence_resolution=high_trust)
-    low = build_trust_summary(request=request, evidence_resolution=low_trust)
+    high = build_trust_summary(
+        request=request,
+        evidence_resolution=high_trust,
+        evidence_states=(high_state,),
+    )
+    low = build_trust_summary(
+        request=request,
+        evidence_resolution=low_trust,
+        evidence_states=(low_state,),
+    )
     assert high.confidence_assessment == low.confidence_assessment
     assert high.source_trust_assessment != low.source_trust_assessment
-    # Neither assessment contributes to composite_score as a collapsed blend.
+    assert high.source_trust_assessment["mean"] == 0.9
+    assert low.source_trust_assessment["mean"] == 0.1
+    assert high.confidence_assessment["mean"] == 0.4
+    # Separate assessments must not collapse into / alter composite_score.
     assert high.composite_score == low.composite_score

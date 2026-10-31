@@ -61,27 +61,74 @@ def _component_score_decisions(history: DecisionHistoryResult | None) -> float |
     return len(history.current_decision_ids) / total
 
 
-def _collect_trust_values(
-    evidence_resolution: EvidenceResolution | None,
-    claim_resolution: ClaimResolution | None,
-    decision_history: DecisionHistoryResult | None,
+def _assessment(values: list[float], not_evaluated: int) -> Mapping[str, object]:
+    payload: dict[str, object] = {
+        "evaluated_count": len(values),
+        "not_evaluated_count": not_evaluated,
+    }
+    if values:
+        payload["mean"] = sum(values) / len(values)
+        payload["min"] = min(values)
+        payload["max"] = max(values)
+    return MappingProxyType(payload)
+
+
+def _collect_from_metas(
+    metas: list[object],
 ) -> tuple[Mapping[str, object], Mapping[str, object]]:
+    """Collect independent source_trust / confidence stats from ResolutionMeta."""
     source_trust_values: list[float] = []
     confidence_values: list[float] = []
-    # Trust/confidence are reported separately and do not affect composite score.
+    source_trust_missing = 0
+    confidence_missing = 0
+    for meta in metas:
+        source_trust = getattr(meta, "source_trust", None)
+        confidence = getattr(meta, "confidence", None)
+        if source_trust is None:
+            source_trust_missing += 1
+        else:
+            source_trust_values.append(float(source_trust))
+        if confidence is None:
+            confidence_missing += 1
+        else:
+            confidence_values.append(float(confidence))
+    # Reported separately; never collapsed into composite_score.
     return (
-        MappingProxyType(
-            {
-                "evaluated_count": len(source_trust_values),
-                "not_evaluated_count": 0,
-            }
-        ),
-        MappingProxyType(
-            {
-                "evaluated_count": len(confidence_values),
-                "not_evaluated_count": 0,
-            }
-        ),
+        _assessment(source_trust_values, source_trust_missing),
+        _assessment(confidence_values, confidence_missing),
+    )
+
+
+def _collect_trust_values(
+    *,
+    evidence_resolution: EvidenceResolution | None = None,
+    claim_resolution: ClaimResolution | None = None,
+    evidence_states: tuple[object, ...] = (),
+    claim_states: tuple[object, ...] = (),
+    decisions: tuple[object, ...] = (),
+) -> tuple[Mapping[str, object], Mapping[str, object]]:
+    if evidence_states or claim_states or decisions:
+        metas: list[object] = []
+        for state in (*evidence_states, *claim_states, *decisions):
+            meta = getattr(state, "resolution_meta", None)
+            if meta is not None:
+                metas.append(meta)
+        return _collect_from_metas(metas)
+
+    source_trust_values: list[float] = []
+    confidence_values: list[float] = []
+    source_trust_missing = 0
+    confidence_missing = 0
+    for resolution in (evidence_resolution, claim_resolution):
+        if resolution is None:
+            continue
+        source_trust_values.extend(resolution.source_trust_values)
+        confidence_values.extend(resolution.confidence_values)
+        source_trust_missing += resolution.source_trust_not_evaluated_count
+        confidence_missing += resolution.confidence_not_evaluated_count
+    return (
+        _assessment(source_trust_values, source_trust_missing),
+        _assessment(confidence_values, confidence_missing),
     )
 
 
@@ -96,6 +143,9 @@ def build_trust_summary(
     scope_drift: ScopeDriftReport | None = None,
     quality: QualityAssessment | None = None,
     policy: TrustPolicy | None = None,
+    evidence_states: tuple[object, ...] = (),
+    claim_states: tuple[object, ...] = (),
+    decisions: tuple[object, ...] = (),
 ) -> TrustSummary:
     if not isinstance(request, TrustRequest):
         raise TrustError("request must be a TrustRequest")
@@ -175,9 +225,11 @@ def build_trust_summary(
             evidence_sufficiency = "partial"
 
     source_trust_assessment, confidence_assessment = _collect_trust_values(
-        evidence_resolution,
-        claim_resolution,
-        decision_history,
+        evidence_resolution=evidence_resolution,
+        claim_resolution=claim_resolution,
+        evidence_states=evidence_states,
+        claim_states=claim_states,
+        decisions=decisions,
     )
     assessed_at = quality.scored_at if quality is not None else None
 

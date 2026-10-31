@@ -17,11 +17,9 @@ def test_cross_provenance_conflict_group() -> None:
     )
     result = resolve_evidence(evidence=refs, states=states)
     assert result.conflicting_evidence_ids
-    # No winner field / no silent collapse to a single state.
     assert not hasattr(result, "winning_evidence_id")
-    assert "evidence-1" in {
-        eid for group in result.conflicting_evidence_ids for eid in group
-    } or any("evidence-1" in str(group) for group in result.conflicting_evidence_ids)
+    flattened = {eid for group in result.conflicting_evidence_ids for eid in group}
+    assert "evidence-1" in flattened
 
 
 def test_cross_provenance_conflict_materialized_as_blocking_finding() -> None:
@@ -33,7 +31,7 @@ def test_cross_provenance_conflict_materialized_as_blocking_finding() -> None:
     resolution = resolve_evidence(evidence=refs, states=states)
     scan = detect_contradictions(
         bundle=ContradictionBundle(
-            evidence_refs=refs,
+            evidence=refs,
             evidence_states=states,
             evidence_resolution=resolution,
         ),

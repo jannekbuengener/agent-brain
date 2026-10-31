@@ -40,6 +40,10 @@ class EvidenceResolution:
     conflicting_evidence_ids: tuple[tuple[str, ...], ...]
     warnings: tuple[str, ...]
     limitations: tuple[str, ...]
+    source_trust_values: tuple[float, ...] = ()
+    confidence_values: tuple[float, ...] = ()
+    source_trust_not_evaluated_count: int = 0
+    confidence_not_evaluated_count: int = 0
 
     def __post_init__(self) -> None:
         require_compatible_version(
@@ -62,6 +66,10 @@ class EvidenceResolution:
             "by_status": {key: list(value) for key, value in self.by_status.items()},
             "by_strength": {key: list(value) for key, value in self.by_strength.items()},
             "conflicting_evidence_ids": [list(group) for group in self.conflicting_evidence_ids],
+            "source_trust_values": list(self.source_trust_values),
+            "confidence_values": list(self.confidence_values),
+            "source_trust_not_evaluated_count": self.source_trust_not_evaluated_count,
+            "confidence_not_evaluated_count": self.confidence_not_evaluated_count,
             "warnings": list(self.warnings),
             "limitations": list(self.limitations),
         }
@@ -79,6 +87,10 @@ class ClaimResolution:
     conflicting_claim_ids: tuple[tuple[str, ...], ...]
     warnings: tuple[str, ...]
     limitations: tuple[str, ...]
+    source_trust_values: tuple[float, ...] = ()
+    confidence_values: tuple[float, ...] = ()
+    source_trust_not_evaluated_count: int = 0
+    confidence_not_evaluated_count: int = 0
 
     def __post_init__(self) -> None:
         require_compatible_version(
@@ -99,6 +111,10 @@ class ClaimResolution:
             "missing_evidence_claim_ids": list(self.missing_evidence_claim_ids),
             "unresolved_evidence_refs": list(self.unresolved_evidence_refs),
             "conflicting_claim_ids": [list(group) for group in self.conflicting_claim_ids],
+            "source_trust_values": list(self.source_trust_values),
+            "confidence_values": list(self.confidence_values),
+            "source_trust_not_evaluated_count": self.source_trust_not_evaluated_count,
+            "confidence_not_evaluated_count": self.confidence_not_evaluated_count,
             "warnings": list(self.warnings),
             "limitations": list(self.limitations),
         }
