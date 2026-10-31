@@ -760,11 +760,11 @@ class ImprovementObservation:
 
 __all__ = [
     "ALLOWED_LIFECYCLE_TRANSITIONS",
-    "DedupeRelationKind",
     "IMPROVEMENT_MERGE_LINEAGE_SCHEMA",
     "IMPROVEMENT_OBSERVATION_SCHEMA",
     "IMPROVEMENT_SCHEMA",
     "IMPROVEMENT_WORK_REF_SCHEMA",
+    "DedupeRelationKind",
     "Improvement",
     "ImprovementLifecycle",
     "ImprovementMergeLineage",
