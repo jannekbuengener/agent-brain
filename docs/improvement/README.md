@@ -42,9 +42,19 @@ Adapters:
 - Weak similarity → `RELATED` (**no** auto-merge)
 - Merge requires explicit actor/reason/evidence lineage
 
+## Management Port (#52)
+
+`ImprovementManagementPort` / `InMemoryImprovementManagementPort`:
+
+- `set_priority`, `transition_lifecycle`, `merge_improvements`
+- `link_work_item`, `link_pull_request`, `record_verification`
+- Actor must be `role=improvement-board-manager`
+- Optimistic `expected_revision` conflicts fail closed
+- ObservationStore still has none of these methods
+
 ## Non-goals
 
-- kein Management Port (#52) — Merge-Aufruf bleibt capability-gated
-- kein CLI/MCP (#50)
+- kein CLI/MCP (#50) in this package surface yet
 - keine Memory-/Knowledge-Write-Freigabe
 - semantische Ähnlichkeit allein darf niemals auto-mergen
+- keine GitHub Issue Create Authority in Agent Brain (Workforce #51)
