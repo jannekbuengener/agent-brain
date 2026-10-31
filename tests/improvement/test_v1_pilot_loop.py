@@ -37,7 +37,6 @@ from agent_brain.improvement.projection import (
     compute_source_hash,
 )
 
-
 PILOT_SKILLS = (
     "cursor-meta-epic-executor",
     "cloudflare-one",
