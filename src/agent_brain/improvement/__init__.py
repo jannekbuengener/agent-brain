@@ -14,6 +14,13 @@ from agent_brain.improvement.errors import (
     ImprovementValidationError,
     InvalidImprovementScope,
 )
+from agent_brain.improvement.management import (
+    ImprovementManagementPort,
+    InMemoryImprovementManagementPort,
+    ManagementActor,
+    board_manager_actor,
+    github_issue_work_ref,
+)
 from agent_brain.improvement.memory import InMemoryImprovementObservationStore
 from agent_brain.improvement.ports import (
     ImprovementObservationStore,
@@ -25,15 +32,20 @@ __all__ = [
     "DedupeAssessment",
     "DedupeSignal",
     "ImprovementIdentityAmbiguous",
+    "ImprovementManagementPort",
     "ImprovementObservationStore",
     "ImprovementStoreError",
     "ImprovementStoreUnavailable",
     "ImprovementValidationError",
+    "InMemoryImprovementManagementPort",
     "InMemoryImprovementObservationStore",
     "InvalidImprovementScope",
+    "ManagementActor",
     "SqliteImprovementObservationStore",
     "SubmitObservationResult",
     "assess_observation",
+    "board_manager_actor",
+    "github_issue_work_ref",
     "merge_improvements",
     "relate_improvements",
 ]
