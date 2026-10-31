@@ -60,6 +60,13 @@ Capability-gated gateway (`ImprovementProtocolGateway`) + CLI (`python -m agent_
 - Management tools default-deny unless `improvement_management_write`
 - Host-neutral `tool_schemas()` — no MCP runtime dependency; Slice #12 stays untouched
 - `capability_readback()` exposes READ / OBSERVATION_WRITE / MANAGEMENT_WRITE
+- CLI `project` — read-only Markdown export from SQLite (`improvement_read`, requires `--generated-at`)
+
+## V1 Pilot Harness
+
+`tests/improvement/test_v1_pilot_loop.py` belegt den Pilot-Loop (3 Skills, 10 Improvements,
+≥20 Observations, concurrent writers, Dedup, Authority, VERIFIED, Projection, CLI export)
+für Meta-Epic `agent-workforce#54` / Pilot `agent-workforce#52`.
 
 ## Markdown / Obsidian Projection (#51)
 
