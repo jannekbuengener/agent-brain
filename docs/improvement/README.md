@@ -52,9 +52,18 @@ Adapters:
 - Optimistic `expected_revision` conflicts fail closed
 - ObservationStore still has none of these methods
 
+## Protocol Surface (#50)
+
+Capability-gated gateway (`ImprovementProtocolGateway`) + CLI (`python -m agent_brain.improvement.cli`):
+
+- Observation tools require `improvement_observation_write` / reads require `improvement_read`
+- Management tools default-deny unless `improvement_management_write`
+- Host-neutral `tool_schemas()` — no MCP runtime dependency; Slice #12 stays untouched
+- `capability_readback()` exposes READ / OBSERVATION_WRITE / MANAGEMENT_WRITE
+
 ## Non-goals
 
-- kein CLI/MCP (#50) in this package surface yet
 - keine Memory-/Knowledge-Write-Freigabe
 - semantische Ähnlichkeit allein darf niemals auto-mergen
 - keine GitHub Issue Create Authority in Agent Brain (Workforce #51)
+- private ChatGPT-MCP is never a repo dependency
