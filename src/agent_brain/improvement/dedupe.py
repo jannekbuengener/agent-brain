@@ -112,14 +112,14 @@ def assess_observation(
     # Similarity scoring intentionally ignores root_cause_key tokens: differing
     # keys already failed exact identity, and including them would hide strong
     # symptom/recommendation overlap that still must not auto-merge.
-    obs_tokens = _tokens(" ".join([observation.observation, observation.recommendation]))
+    obs_tokens = _tokens(f"{observation.observation} {observation.recommendation}")
     best: tuple[float, Improvement, str] | None = None
     for candidate in candidates:
         if candidate.skill_id != observation.skill_id:
             continue
         score = _jaccard(
             obs_tokens,
-            _tokens(" ".join([candidate.summary, candidate.recommendation])),
+            _tokens(f"{candidate.summary} {candidate.recommendation}"),
         )
         if best is None or score > best[0]:
             best = (score, candidate, "token_jaccard")
