@@ -5,6 +5,8 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
+import agent_brain.knowledge as knowledge_module
+import agent_brain.memory as memory_module
 from agent_brain.contracts.improvement import (
     IMPROVEMENT_OBSERVATION_SCHEMA,
     ImprovementLifecycle,
@@ -18,8 +20,6 @@ from agent_brain.improvement import (
     InMemoryImprovementObservationStore,
     InvalidImprovementScope,
 )
-import agent_brain.knowledge as knowledge_module
-import agent_brain.memory as memory_module
 
 
 def _observation(
