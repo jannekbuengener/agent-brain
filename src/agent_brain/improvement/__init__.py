@@ -9,6 +9,7 @@ from agent_brain.improvement.dedupe import (
 )
 from agent_brain.improvement.errors import (
     ImprovementIdentityAmbiguous,
+    ImprovementProjectionConflict,
     ImprovementStoreError,
     ImprovementStoreUnavailable,
     ImprovementValidationError,
@@ -26,6 +27,12 @@ from agent_brain.improvement.ports import (
     ImprovementObservationStore,
     SubmitObservationResult,
 )
+from agent_brain.improvement.projection import (
+    PROJECTION_VERSION,
+    ImprovementMarkdownProjection,
+    ProjectionExportResult,
+    compute_source_hash,
+)
 from agent_brain.improvement.protocol import (
     ImprovementCapability,
     ImprovementProtocolGateway,
@@ -37,12 +44,15 @@ from agent_brain.improvement.protocol import (
 from agent_brain.improvement.sqlite import SqliteImprovementObservationStore
 
 __all__ = [
+    "PROJECTION_VERSION",
     "DedupeAssessment",
     "DedupeSignal",
     "ImprovementCapability",
     "ImprovementIdentityAmbiguous",
     "ImprovementManagementPort",
+    "ImprovementMarkdownProjection",
     "ImprovementObservationStore",
+    "ImprovementProjectionConflict",
     "ImprovementProtocolGateway",
     "ImprovementStoreError",
     "ImprovementStoreUnavailable",
@@ -51,6 +61,7 @@ __all__ = [
     "InMemoryImprovementObservationStore",
     "InvalidImprovementScope",
     "ManagementActor",
+    "ProjectionExportResult",
     "ProtocolCaller",
     "ProtocolDenied",
     "SqliteImprovementObservationStore",
@@ -58,6 +69,7 @@ __all__ = [
     "assess_observation",
     "board_manager_actor",
     "capability_readback",
+    "compute_source_hash",
     "github_issue_work_ref",
     "merge_improvements",
     "relate_improvements",
