@@ -96,89 +96,88 @@ class SqliteImprovementObservationStore:
             raise TypeError("observation must be an ImprovementObservation")
         self._ensure_available()
 
-        with self._lock:
-            with self._connect() as conn:
-                conn.execute("BEGIN IMMEDIATE")
-                try:
-                    existing = conn.execute(
-                        "SELECT payload, improvement_id FROM observations WHERE idempotency_key = ?",
-                        (observation.idempotency_key,),
-                    ).fetchone()
-                    if existing is not None:
-                        stored_obs = ImprovementObservation.from_dict(
-                            json.loads(existing["payload"])
-                        )
-                        improvement = self._load_improvement(conn, existing["improvement_id"])
-                        conn.execute("COMMIT")
-                        return SubmitObservationResult(
-                            observation=stored_obs,
-                            improvement=improvement,
-                            created_new_observation=False,
-                            created_new_improvement=False,
-                        )
-
-                    improvement_id, root_cause_key = self._resolve_identity(conn, observation)
-                    bound = (
-                        observation
-                        if observation.improvement_id == improvement_id
-                        and observation.root_cause_key == root_cause_key
-                        else replace(
-                            observation,
-                            improvement_id=improvement_id,
-                            root_cause_key=root_cause_key,
-                        )
+        with self._lock, self._connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            try:
+                existing = conn.execute(
+                    "SELECT payload, improvement_id FROM observations WHERE idempotency_key = ?",
+                    (observation.idempotency_key,),
+                ).fetchone()
+                if existing is not None:
+                    stored_obs = ImprovementObservation.from_dict(
+                        json.loads(existing["payload"])
                     )
-
-                    current_row = conn.execute(
-                        "SELECT payload FROM improvements WHERE improvement_id = ?",
-                        (improvement_id,),
-                    ).fetchone()
-                    created_new_improvement = current_row is None
-                    if created_new_improvement:
-                        improvement = self._new_improvement_from_observation(
-                            bound, improvement_id, root_cause_key
-                        )
-                        conn.execute(
-                            "INSERT INTO improvements(improvement_id, payload) VALUES (?, ?)",
-                            (improvement_id, serialize_contract(improvement.to_dict())),
-                        )
-                    else:
-                        current = Improvement.from_dict(json.loads(current_row["payload"]))
-                        if current.skill_id != bound.skill_id:
-                            raise InvalidImprovementScope(
-                                "observation skill_id does not match existing improvement"
-                            )
-
-                    dup_id = conn.execute(
-                        "SELECT 1 FROM observations WHERE observation_id = ?",
-                        (bound.observation_id,),
-                    ).fetchone()
-                    if dup_id is not None:
-                        raise ImprovementValidationError(
-                            f"observation_id already exists: {bound.observation_id}"
-                        )
-
-                    conn.execute(
-                        "INSERT INTO observations(observation_id, improvement_id, idempotency_key, payload) "
-                        "VALUES (?, ?, ?, ?)",
-                        (
-                            bound.observation_id,
-                            improvement_id,
-                            bound.idempotency_key,
-                            serialize_contract(bound.to_dict()),
-                        ),
-                    )
-                    improvement = self._refresh_aggregate(conn, improvement_id)
+                    improvement = self._load_improvement(conn, existing["improvement_id"])
                     conn.execute("COMMIT")
                     return SubmitObservationResult(
-                        observation=bound,
+                        observation=stored_obs,
                         improvement=improvement,
-                        created_new_observation=True,
-                        created_new_improvement=created_new_improvement,
+                        created_new_observation=False,
+                        created_new_improvement=False,
                     )
-                except Exception:
-                    conn.execute("ROLLBACK")
-                    raise
+
+                improvement_id, root_cause_key = self._resolve_identity(conn, observation)
+                bound = (
+                    observation
+                    if observation.improvement_id == improvement_id
+                    and observation.root_cause_key == root_cause_key
+                    else replace(
+                        observation,
+                        improvement_id=improvement_id,
+                        root_cause_key=root_cause_key,
+                    )
+                )
+
+                current_row = conn.execute(
+                    "SELECT payload FROM improvements WHERE improvement_id = ?",
+                    (improvement_id,),
+                ).fetchone()
+                created_new_improvement = current_row is None
+                if created_new_improvement:
+                    improvement = self._new_improvement_from_observation(
+                        bound, improvement_id, root_cause_key
+                    )
+                    conn.execute(
+                        "INSERT INTO improvements(improvement_id, payload) VALUES (?, ?)",
+                        (improvement_id, serialize_contract(improvement.to_dict())),
+                    )
+                else:
+                    current = Improvement.from_dict(json.loads(current_row["payload"]))
+                    if current.skill_id != bound.skill_id:
+                        raise InvalidImprovementScope(
+                            "observation skill_id does not match existing improvement"
+                        )
+
+                dup_id = conn.execute(
+                    "SELECT 1 FROM observations WHERE observation_id = ?",
+                    (bound.observation_id,),
+                ).fetchone()
+                if dup_id is not None:
+                    raise ImprovementValidationError(
+                        f"observation_id already exists: {bound.observation_id}"
+                    )
+
+                conn.execute(
+                    "INSERT INTO observations(observation_id, improvement_id, idempotency_key, payload) "
+                    "VALUES (?, ?, ?, ?)",
+                    (
+                        bound.observation_id,
+                        improvement_id,
+                        bound.idempotency_key,
+                        serialize_contract(bound.to_dict()),
+                    ),
+                )
+                improvement = self._refresh_aggregate(conn, improvement_id)
+                conn.execute("COMMIT")
+                return SubmitObservationResult(
+                    observation=bound,
+                    improvement=improvement,
+                    created_new_observation=True,
+                    created_new_improvement=created_new_improvement,
+                )
+            except Exception:
+                conn.execute("ROLLBACK")
+                raise
 
     def get_improvement(self, improvement_id: str) -> Improvement | None:
         self._ensure_available()
