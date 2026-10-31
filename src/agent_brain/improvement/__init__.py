@@ -12,6 +12,7 @@ from agent_brain.improvement.ports import (
     ImprovementObservationStore,
     SubmitObservationResult,
 )
+from agent_brain.improvement.sqlite import SqliteImprovementObservationStore
 
 __all__ = [
     "ImprovementIdentityAmbiguous",
@@ -21,5 +22,6 @@ __all__ = [
     "ImprovementValidationError",
     "InMemoryImprovementObservationStore",
     "InvalidImprovementScope",
+    "SqliteImprovementObservationStore",
     "SubmitObservationResult",
 ]

@@ -19,7 +19,10 @@ ImprovementObservationStore
   find_candidates()      # exact/scoped lookup; no auto-merge
 ```
 
-In-Memory Adapter: `InMemoryImprovementObservationStore` (Fixture/Contract-Tests). Persistenzwahl ist #48.
+Adapters:
+
+- `InMemoryImprovementObservationStore` — Fixture/Contract-Tests (#47)
+- `SqliteImprovementObservationStore` — durable stdlib SQLite adapter (#48; see [`STORAGE_DECISION.md`](STORAGE_DECISION.md))
 
 ## Invarianten
 
