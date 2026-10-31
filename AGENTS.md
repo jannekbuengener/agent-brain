@@ -49,7 +49,7 @@ Niedrigere Quellen dürfen höhere, aktuellere Quellen nicht überschreiben.
 - Layout: `src/agent_brain/`
 - Slice 1 hat keine Runtime-Dependencies.
 - `core`, `retrieval`, `memory`, `surrealdb` und `connectors` sind zunächst nur Modulgrenzen, keine vorgezogenen fachlichen APIs.
-- Version `0.0.0` ist ein Scaffold-Platzhalter; Distribution/Versionierung wird in Slice #17 kanonisiert.
+- Version-Quelle: `pyproject.toml` `[project].version` (kanonisiert in #17); Runtime über `agent_brain.__version__` / `importlib.metadata`. Git-Tag-Konvention: `v{version}`.
 
 ## Entwicklung und Validierung
 
