@@ -1,12 +1,5 @@
 """Evidence, decisions, and trust pipeline (Slice 8)."""
 
-from agent_brain.evidence.contradiction import (
-    ContradictionBundle,
-    ContradictionRule,
-    ContradictionRuleSet,
-    default_contradiction_rule_set,
-    detect_contradictions,
-)
 from agent_brain.evidence.contract import (
     CLAIM_RESOLUTION_POLICY_SCHEMA,
     CLAIM_RESOLUTION_SCHEMA,
@@ -88,6 +81,13 @@ from agent_brain.evidence.contract import (
     TrustRequest,
     TrustSummary,
     compute_weighted_mean,
+)
+from agent_brain.evidence.contradiction import (
+    ContradictionBundle,
+    ContradictionRule,
+    ContradictionRuleSet,
+    default_contradiction_rule_set,
+    detect_contradictions,
 )
 from agent_brain.evidence.decisions import build_decision_replay, query_decision_history
 from agent_brain.evidence.freshness import FreshnessBundle, evaluate_freshness

@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from agent_brain.evidence import build_decision_replay
 from agent_brain.evidence.contract import DecisionReplayQuery
 from tests.evidence.conftest import decision_record
+
 
 def test_decision_replay_authorization_implied_false():
     replay = build_decision_replay(

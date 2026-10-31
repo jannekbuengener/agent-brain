@@ -1,6 +1,8 @@
 from datetime import datetime
+
 from agent_brain.evidence import detect_contradictions
 from agent_brain.evidence.contradiction import ContradictionBundle, default_contradiction_rule_set
+
 
 def test_contradiction_default_rules_present():
     assert default_contradiction_rule_set().rules

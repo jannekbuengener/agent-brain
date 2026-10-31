@@ -34,6 +34,6 @@ PUBLIC_NAMES = {
 
 
 def test_context_package_exports_slice_4_public_surface() -> None:
-    assert PUBLIC_NAMES <= set(context.__all__)
+    assert set(context.__all__) >= PUBLIC_NAMES
     for name in PUBLIC_NAMES:
         assert hasattr(context, name)

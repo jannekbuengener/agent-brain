@@ -8,7 +8,6 @@ from datetime import datetime
 from types import MappingProxyType
 
 from agent_brain.contracts import ClaimRef, EvidenceRef
-
 from agent_brain.evidence.contract import (
     CLAIM_RESOLUTION_SCHEMA,
     EVIDENCE_RESOLUTION_SCHEMA,
@@ -41,7 +40,7 @@ def _sort_key(
 def _index_states(states: Sequence[EvidenceState | ClaimState]) -> dict[str, list]:
     grouped: dict[str, list] = defaultdict(list)
     for state in states:
-        entity_id = getattr(state, "evidence_id", None) or getattr(state, "claim_id")
+        entity_id = getattr(state, "evidence_id", None) or state.claim_id
         grouped[str(entity_id)].append(state)
     return grouped
 
@@ -49,14 +48,12 @@ def _index_states(states: Sequence[EvidenceState | ClaimState]) -> dict[str, lis
 def _supersession_linked(a_meta, b_meta, a_id: str, b_id: str) -> bool:
     if a_meta.supersedes_ref == b_id or a_meta.superseded_by_ref == b_id:
         return True
-    if b_meta.supersedes_ref == a_id or b_meta.superseded_by_ref == a_id:
-        return True
-    return False
+    return bool(b_meta.supersedes_ref == a_id or b_meta.superseded_by_ref == a_id)
 
 
 def _provenance_conflict(a: EvidenceState | ClaimState, b: EvidenceState | ClaimState) -> bool:
-    a_id = getattr(a, "evidence_id", None) or getattr(a, "claim_id")
-    b_id = getattr(b, "evidence_id", None) or getattr(b, "claim_id")
+    a_id = getattr(a, "evidence_id", None) or a.claim_id
+    b_id = getattr(b, "evidence_id", None) or b.claim_id
     if _supersession_linked(a.resolution_meta, b.resolution_meta, a_id, b_id):
         return False
     a_ref = a.provenance.source_ref
@@ -67,15 +64,13 @@ def _provenance_conflict(a: EvidenceState | ClaimState, b: EvidenceState | Claim
         return True
     if a_hash and b_hash and a_hash != b_hash:
         return True
-    if not a_hash or not b_hash:
-        return True
-    return False
+    return bool(not a_hash or not b_hash)
 
 
 def _conflict_groups(states: Sequence[EvidenceState | ClaimState]) -> tuple[tuple[str, ...], ...]:
     by_id: dict[str, list[EvidenceState | ClaimState]] = defaultdict(list)
     for state in states:
-        entity_id = getattr(state, "evidence_id", None) or getattr(state, "claim_id")
+        entity_id = getattr(state, "evidence_id", None) or state.claim_id
         by_id[str(entity_id)].append(state)
     groups: list[tuple[str, ...]] = []
     for entity_id, candidates in sorted(by_id.items()):
@@ -90,7 +85,7 @@ def _conflict_groups(states: Sequence[EvidenceState | ClaimState]) -> tuple[tupl
             if conflict:
                 break
         if conflict:
-            groups.append(tuple(sorted({getattr(item, "evidence_id", None) or getattr(item, "claim_id") for item in candidates})))
+            groups.append(tuple(sorted({getattr(item, "evidence_id", None) or item.claim_id for item in candidates})))
     return tuple(groups)
 
 
@@ -164,7 +159,7 @@ def resolve_evidence(
     limitations = list(_DEFAULT_LIMITATIONS)
     state_index = _index_states(states)
     known_ids = {item.evidence_id for item in evidence}
-    for entity_id, overlays in state_index.items():
+    for entity_id in state_index:
         if entity_id not in known_ids:
             warnings.append(f"orphan_evidence_state:{entity_id}")
 
@@ -247,7 +242,7 @@ def resolve_claims(
     evidence_ids = {item.evidence_id for item in evidence}
     state_index = _index_states(states)
     known_claim_ids = {item.claim_id for item in claims}
-    for entity_id, overlays in state_index.items():
+    for entity_id in state_index:
         if entity_id not in known_claim_ids:
             warnings.append(f"orphan_claim_state:{entity_id}")
 

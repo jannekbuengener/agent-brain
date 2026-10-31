@@ -6,9 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from agent_brain.contracts import ResolutionState
-
 from agent_brain.core.canonical import canonical_hash
-
 from agent_brain.evidence.contract import (
     FRESHNESS_REPORT_SCHEMA,
     RESOLUTION_STATE_ENTRY_SCHEMA,

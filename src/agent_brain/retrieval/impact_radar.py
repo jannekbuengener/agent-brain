@@ -58,7 +58,7 @@ def annotate_impact(
         raise TypeError("candidates must contain RetrievalCandidate values")
     if graph_signals is not None and not isinstance(graph_signals, Mapping):
         raise TypeError("graph_signals must be a mapping when present")
-    if edges is not None and not isinstance(edges, (tuple, list)) or not all(
+    if (edges is not None and not isinstance(edges, (tuple, list))) or not all(
         isinstance(item, GraphEdge) for item in edges
     ):
         raise TypeError("edges must contain GraphEdge values")

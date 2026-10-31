@@ -6,7 +6,6 @@ from collections.abc import Mapping, Sequence
 from datetime import datetime
 
 from agent_brain.core.canonical import canonical_hash
-
 from agent_brain.evidence.contract import (
     DECISION_HISTORY_RESULT_SCHEMA,
     DECISION_REPLAY_SCHEMA,

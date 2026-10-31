@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
+
 from agent_brain.evidence.contract import QualityPolicy, TrustPolicy
+
 
 def test_claire_parity_policy_fixture_values():
     path = Path("tests/fixtures/evidence/claire_parity_policy.v1.json")

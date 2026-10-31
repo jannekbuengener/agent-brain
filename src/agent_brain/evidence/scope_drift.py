@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from agent_brain.core.canonical import canonical_hash
-
 from agent_brain.evidence.contract import (
     SCOPE_DRIFT_BLOCKING_SCHEMA,
     SCOPE_DRIFT_FINDING_SCHEMA,

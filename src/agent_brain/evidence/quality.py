@@ -7,7 +7,6 @@ from collections.abc import Sequence
 from datetime import datetime
 
 from agent_brain.contracts import GraphEdge
-
 from agent_brain.evidence.contract import (
     QUALITY_ASSESSMENT_SCHEMA,
     QUALITY_DIMENSION_SCORE_SCHEMA,

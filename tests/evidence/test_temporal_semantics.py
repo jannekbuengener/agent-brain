@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from agent_brain.evidence import evaluate_freshness
 from agent_brain.evidence.freshness import FreshnessBundle
 from tests.evidence.conftest import evidence_state, temporal
+
 
 def test_system_as_of_does_not_force_stale():
     state = evidence_state(

@@ -7,10 +7,12 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from agent_brain.contracts import ResolutionState
-from agent_brain.contracts._validation import format_utc_datetime
+from agent_brain.contracts._validation import (
+    format_utc_datetime,
+    normalize_utc_datetime,
+    parse_utc_datetime,
+)
 from agent_brain.contracts.versioning import require_compatible_version
-
-from agent_brain.contracts._validation import normalize_utc_datetime, parse_utc_datetime
 from agent_brain.evidence._shared import (
     FINDING_STATUSES,
     QUALITY_GRADES,

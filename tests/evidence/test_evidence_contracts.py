@@ -1,7 +1,10 @@
 from dataclasses import FrozenInstanceError
+
 import pytest
+
 from agent_brain.evidence.contract import QualityPolicy, compute_weighted_mean
 from tests.evidence.conftest import evidence_state
+
 
 def test_evidence_state_frozen():
     state = evidence_state()

@@ -7,11 +7,11 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from agent_brain.core.canonical import canonical_hash
-
 from agent_brain.evidence.contract import (
     CONTRADICTION_FINDING_SCHEMA,
     CONTRADICTION_SCAN_RESULT_SCHEMA,
     CONTRADICTION_TYPES,
+    SEVERITY_LEVELS,
     ClaimResolution,
     ClaimState,
     ContradictionError,
@@ -20,7 +20,6 @@ from agent_brain.evidence.contract import (
     DecisionRecord,
     EvidenceResolution,
     EvidenceState,
-    SEVERITY_LEVELS,
 )
 
 _DEFAULT_LIMITATIONS = (

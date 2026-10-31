@@ -1011,21 +1011,40 @@ class ClaimResolutionPolicy:
         )
 
 
-from agent_brain.evidence.contract_results import (  # noqa: E402
-    ClaimResolution as ClaimResolution,
-    ContradictionFinding as ContradictionFinding,
-    ContradictionScanResult as ContradictionScanResult,
-    DecisionHistoryResult as DecisionHistoryResult,
-    DecisionReplay as DecisionReplay,
-    EvidenceResolution as EvidenceResolution,
-    FreshnessReport as FreshnessReport,
-    QualityAssessment as QualityAssessment,
-    QualityDimensionScore as QualityDimensionScore,
-    ResolutionStateEntry as ResolutionStateEntry,
-    ScopeDriftBlocking as ScopeDriftBlocking,
-    ScopeDriftFinding as ScopeDriftFinding,
-    ScopeDriftReport as ScopeDriftReport,
-    StaleFinding as StaleFinding,
-    TrustSummary as TrustSummary,
+# Re-export result contracts so consumers can import from contract.py.
+from agent_brain.evidence.contract_results import (
+    ClaimResolution,
+    ContradictionFinding,
+    ContradictionScanResult,
+    DecisionHistoryResult,
+    DecisionReplay,
+    EvidenceResolution,
+    FreshnessReport,
+    QualityAssessment,
+    QualityDimensionScore,
+    ResolutionStateEntry,
+    ScopeDriftBlocking,
+    ScopeDriftFinding,
+    ScopeDriftReport,
+    StaleFinding,
+    TrustSummary,
 )
+
+__all__ = [
+    "ClaimResolution",
+    "ContradictionFinding",
+    "ContradictionScanResult",
+    "DecisionHistoryResult",
+    "DecisionReplay",
+    "EvidenceResolution",
+    "FreshnessReport",
+    "QualityAssessment",
+    "QualityDimensionScore",
+    "ResolutionStateEntry",
+    "ScopeDriftBlocking",
+    "ScopeDriftFinding",
+    "ScopeDriftReport",
+    "StaleFinding",
+    "TrustSummary",
+]
 

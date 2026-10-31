@@ -42,7 +42,7 @@ def resolve_retrieval_stop(
 
     try:
         decision = policy_hook.evaluate(context)
-    except Exception as exc:  # noqa: BLE001 — fail-conservative stop
+    except Exception as exc:
         return RetrievalStop(
             schema_version=RETRIEVAL_STOP_SCHEMA,
             stop_id=f"stop_{operation}",

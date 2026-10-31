@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from agent_brain.evidence import detect_scope_drift
 from agent_brain.evidence.contract import ScopeDriftPolicy
 from agent_brain.evidence.scope_drift import ScopeDriftBundle
+
 
 def test_scope_drift_path_out_of_scope():
     report = detect_scope_drift(

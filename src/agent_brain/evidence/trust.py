@@ -197,16 +197,12 @@ def build_trust_summary(
             )
 
     trust_level = "insufficient"
-    if blocking_findings:
-        trust_level = "insufficient"
-    elif composite is None:
+    if blocking_findings or composite is None:
         trust_level = "insufficient"
     elif composite >= policy.level_thresholds["strong"] and not missing_required:
         trust_level = "strong"
     elif composite >= policy.level_thresholds["partial"]:
         trust_level = "partial"
-    else:
-        trust_level = "partial" if not missing_required else "partial"
     if missing_required and trust_level == "strong":
         trust_level = "partial"
     if missing_required and composite is None:
