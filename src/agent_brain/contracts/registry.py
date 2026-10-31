@@ -5,6 +5,12 @@ from __future__ import annotations
 from types import MappingProxyType
 
 from agent_brain.contracts.evidence import CLAIM_REF_SCHEMA, EVIDENCE_REF_SCHEMA
+from agent_brain.contracts.improvement import (
+    IMPROVEMENT_MERGE_LINEAGE_SCHEMA,
+    IMPROVEMENT_OBSERVATION_SCHEMA,
+    IMPROVEMENT_SCHEMA,
+    IMPROVEMENT_WORK_REF_SCHEMA,
+)
 from agent_brain.contracts.index import GRAPH_EDGE_SCHEMA, INDEX_RECORD_SCHEMA
 from agent_brain.contracts.provenance import PROVENANCE_SCHEMA
 from agent_brain.contracts.repository import (
@@ -27,6 +33,10 @@ CONTRACT_SCHEMAS = MappingProxyType(
         "temporal-envelope": TEMPORAL_ENVELOPE_SCHEMA,
         "provenance": PROVENANCE_SCHEMA,
         "resolution-meta": RESOLUTION_META_SCHEMA,
+        "improvement": IMPROVEMENT_SCHEMA,
+        "improvement-observation": IMPROVEMENT_OBSERVATION_SCHEMA,
+        "improvement-merge-lineage": IMPROVEMENT_MERGE_LINEAGE_SCHEMA,
+        "improvement-work-ref": IMPROVEMENT_WORK_REF_SCHEMA,
     }
 )
 
