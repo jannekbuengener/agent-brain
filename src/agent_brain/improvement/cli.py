@@ -135,7 +135,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit("payload must be a JSON object")
     try:
         result = gateway.invoke(caller, args.tool, **payload)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - CLI boundary
         print(serialize_contract({"error": type(exc).__name__, "message": str(exc)}), file=sys.stderr)
         return 2
     print(serialize_contract(result_to_dict(result)))
