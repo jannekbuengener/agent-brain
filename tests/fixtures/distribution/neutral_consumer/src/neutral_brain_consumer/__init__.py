@@ -26,6 +26,13 @@ CONSUMER_EXPECTED_EXPORTS: dict[str, tuple[str, ...]] = {
     "agent_brain.contracts": ("EvidenceRef", "ClaimRef", "require_compatible_version"),
     "agent_brain.core": ("canonical_hash", "SourcePriority"),
     "agent_brain.memory": ("MemoryStore", "MemoryScope", "MemoryReadService"),
+    "agent_brain.protocol": (
+        "ProtocolGateway",
+        "ProtocolRequest",
+        "ProtocolResponse",
+        "invoke",
+        "PROTOCOL_SCHEMA",
+    ),
 }
 
 

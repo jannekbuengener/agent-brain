@@ -76,3 +76,5 @@ def test_live_public_surface_snapshot_includes_distribution() -> None:
     assert "__version__" in snapshot.symbols_for("agent_brain")
     assert "PinSpec" in snapshot.symbols_for("agent_brain.distribution")
     assert "MemoryReadService" in snapshot.symbols_for("agent_brain.memory")
+    assert "ProtocolGateway" in snapshot.symbols_for("agent_brain.protocol")
+    assert "invoke" in snapshot.symbols_for("agent_brain.protocol")
