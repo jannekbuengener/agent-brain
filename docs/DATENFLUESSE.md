@@ -137,7 +137,7 @@ flowchart TB
 
 - **Knowledge-/Index-Build-Writes:** reproduzierbare Build-Artefakte; Slice [#16](https://github.com/jannekbuengener/agent-brain/issues/16) ist implementiert.
 - **Produktive Agent-Memory-Writes:** bleiben in diesem Epic `DEFER`. KB-Writes ≠ Memory-Writes.
-- **Memory Read:** wird in Slice [#11](https://github.com/jannekbuengener/agent-brain/issues/11) extrahiert.
+- **Memory Read:** Slice [#11](https://github.com/jannekbuengener/agent-brain/issues/11) — fail-closed Read/Recall/Rediscovery unter `agent_brain.memory.read` (Freshness, TTL, Supersession, Live-State, Scope Isolation).
 
 ### Umsetzung (Slice #6)
 
