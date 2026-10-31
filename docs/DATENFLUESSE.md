@@ -290,8 +290,21 @@ flowchart LR
     IMPACT --> RESULT["RetrievalResult"]
     STOP --> RESULT
 
-    RESULT -. "#8 später" .-> EVIDENCE["Evidence / Decisions / Trust"]
+    RESULT --> EVIDENCE["#8 Evidence / Decisions / Trust"]
     RESULT -. "#10 später" .-> SURREAL["SurrealDB Read Runtime"]
+```
+
+## 8. Slice #8 — Evidence / Decisions / Trust Pipeline
+
+```mermaid
+flowchart TD
+    REFS["#15 EvidenceRef / ClaimRef\n+#37 Overlays"] --> RES["resolve_evidence / resolve_claims"]
+    RES --> DEC["query_decision_history / build_decision_replay"]
+    RES --> INT["Integrity: contradiction / freshness / scope drift"]
+    DEC --> INT
+    INT --> QUAL["score_quality"]
+    QUAL --> TRUST["build_trust_summary"]
+    TRUST --> OUT["Explainability + limitations\n(assessment only)"]
 ```
 
 ### Laufzeitgrenzen

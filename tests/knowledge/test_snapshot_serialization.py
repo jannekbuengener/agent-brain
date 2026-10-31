@@ -15,6 +15,10 @@ from agent_brain.connectors.ingestion import (
 from agent_brain.contracts import ArtifactRef, IndexRecord, RepositorySource
 from agent_brain.core.time import FixedClock
 from agent_brain.knowledge.builder import build_knowledge_snapshot
+from agent_brain.knowledge.serialization import (
+    parse_knowledge_snapshot,
+    serialize_knowledge_snapshot,
+)
 
 FIXED_TIME = datetime(2026, 1, 1, 12, 0, 0)
 
@@ -163,9 +167,3 @@ def test_parse_rejects_bad_manifest_entries() -> None:
 
     with pytest.raises(ValueError, match="source_ref"):
         parse_knowledge_snapshot(payload)
-
-
-from agent_brain.knowledge.serialization import (
-    parse_knowledge_snapshot,
-    serialize_knowledge_snapshot,
-)

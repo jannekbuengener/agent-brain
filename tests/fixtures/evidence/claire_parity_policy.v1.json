@@ -1,0 +1,21 @@
+{
+  "quality_policy": {
+    "grade_bands": {
+      "blocking": 0.30,
+      "watch": 0.50,
+      "weak": 0.70,
+      "good": 0.70
+    },
+    "severity_penalties": {
+      "blocking": 0.50,
+      "warning": 0.25,
+      "info": 0.0
+    }
+  },
+  "trust_policy": {
+    "level_thresholds": {
+      "strong": 0.80,
+      "partial": 0.50
+    }
+  }
+}
