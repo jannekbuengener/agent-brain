@@ -52,7 +52,6 @@ Adapters:
 - Optimistic `expected_revision` conflicts fail closed
 - ObservationStore still has none of these methods
 
-<<<<<<< Updated upstream
 ## Protocol Surface (#50)
 
 Capability-gated gateway (`ImprovementProtocolGateway`) + CLI (`python -m agent_brain.improvement.cli`):
@@ -61,7 +60,7 @@ Capability-gated gateway (`ImprovementProtocolGateway`) + CLI (`python -m agent_
 - Management tools default-deny unless `improvement_management_write`
 - Host-neutral `tool_schemas()` — no MCP runtime dependency; Slice #12 stays untouched
 - `capability_readback()` exposes READ / OBSERVATION_WRITE / MANAGEMENT_WRITE
-=======
+
 ## Markdown / Obsidian Projection (#51)
 
 `ImprovementMarkdownProjection.export()` schreibt eine **read-only**, deterministische
@@ -86,15 +85,11 @@ Obsidian (oder anderer Markdown-Client) = Human UI
 - **kein** Write-back / Import-API in V1
 
 Details: [`PROJECTION.md`](PROJECTION.md)
->>>>>>> Stashed changes
 
 ## Non-goals
 
 - keine Memory-/Knowledge-Write-Freigabe
 - semantische Ähnlichkeit allein darf niemals auto-mergen
 - keine GitHub Issue Create Authority in Agent Brain (Workforce #51)
-<<<<<<< Updated upstream
 - private ChatGPT-MCP is never a repo dependency
-=======
 - keine bidirektionale Vault-Sync / Obsidian-Plugin-Pflicht (#51 V1)
->>>>>>> Stashed changes

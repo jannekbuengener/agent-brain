@@ -27,7 +27,12 @@ from agent_brain.improvement.ports import (
     ImprovementObservationStore,
     SubmitObservationResult,
 )
-<<<<<<< Updated upstream
+from agent_brain.improvement.projection import (
+    PROJECTION_VERSION,
+    ImprovementMarkdownProjection,
+    ProjectionExportResult,
+    compute_source_hash,
+)
 from agent_brain.improvement.protocol import (
     ImprovementCapability,
     ImprovementProtocolGateway,
@@ -35,13 +40,6 @@ from agent_brain.improvement.protocol import (
     ProtocolDenied,
     capability_readback,
     tool_schemas,
-=======
-from agent_brain.improvement.projection import (
-    PROJECTION_VERSION,
-    ImprovementMarkdownProjection,
-    ProjectionExportResult,
-    compute_source_hash,
->>>>>>> Stashed changes
 )
 from agent_brain.improvement.sqlite import SqliteImprovementObservationStore
 
@@ -53,11 +51,8 @@ __all__ = [
     "ImprovementManagementPort",
     "ImprovementMarkdownProjection",
     "ImprovementObservationStore",
-<<<<<<< Updated upstream
-    "ImprovementProtocolGateway",
-=======
     "ImprovementProjectionConflict",
->>>>>>> Stashed changes
+    "ImprovementProtocolGateway",
     "ImprovementStoreError",
     "ImprovementStoreUnavailable",
     "ImprovementValidationError",
@@ -65,22 +60,16 @@ __all__ = [
     "InMemoryImprovementObservationStore",
     "InvalidImprovementScope",
     "ManagementActor",
-<<<<<<< Updated upstream
-    "ProtocolCaller",
-    "ProtocolDenied",
-=======
     "PROJECTION_VERSION",
     "ProjectionExportResult",
->>>>>>> Stashed changes
+    "ProtocolCaller",
+    "ProtocolDenied",
     "SqliteImprovementObservationStore",
     "SubmitObservationResult",
     "assess_observation",
     "board_manager_actor",
-<<<<<<< Updated upstream
     "capability_readback",
-=======
     "compute_source_hash",
->>>>>>> Stashed changes
     "github_issue_work_ref",
     "merge_improvements",
     "relate_improvements",
