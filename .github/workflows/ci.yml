@@ -40,6 +40,7 @@ jobs:
         run: python -m ruff check .
 
       - name: Test
-        # Includes #17 distribution/version/pinning/consumer-contract gates
-        # under tests/distribution/ (wheel pin, upgrade/rollback, surface compat).
+        # Includes #17 distribution gates (tests/distribution/) and #12
+        # CLI/protocol gates (tests/protocol/, tests/cli/): installability,
+        # version parity, contract shape, consumer smoke, core-without-MCP.
         run: python -m pytest -q

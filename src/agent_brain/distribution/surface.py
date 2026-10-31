@@ -27,6 +27,7 @@ PUBLIC_PACKAGE_MODULES: tuple[str, ...] = (
     "agent_brain.knowledge",
     "agent_brain.surrealdb",
     "agent_brain.distribution",
+    "agent_brain.protocol",
 )
 
 

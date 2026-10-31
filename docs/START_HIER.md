@@ -113,6 +113,16 @@ Externe Consumer können Agent Brain über eine exakte Package-Version (`agent-b
 - Python-API: `agent_brain.distribution`
 - Neutraler Consumer-Smoke: `tests/fixtures/distribution/neutral_consumer/`
 
+## Slice #12 — CLI / Protocol Surface (implementiert)
+
+Agent Brain ist ohne Claire und ohne privaten MCP bedienbar. Die gemeinsame Application Surface liegt unter `agent_brain.protocol`; die CLI ist ein dünner Transport (`agent-brain` / `python -m agent_brain.cli`):
+
+- [Protocol README](protocol/README.md)
+- Operationen: `version`, `health`, `capabilities`, `context_read`, `retrieval`, `evidence`, `memory_read`, `surreal_read`
+- strukturierte Fehler, Health-/Capability-Readback, read-only Boundary
+- optionaler host-neutraler MCP-Adapter ohne SDK-Pflichtabhängigkeit
+- Neutraler Protocol-Consumer-Smoke: `tests/fixtures/protocol/neutral_protocol_consumer/`
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
