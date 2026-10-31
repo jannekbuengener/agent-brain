@@ -104,6 +104,15 @@ Der fail-closed Memory-Read-Pfad liegt unter `agent_brain.memory.read` und konsu
 - **Rediscovery:** `prove_cross_session_rediscovery` belegt scoped Cross-Session-Recall ohne Scope-Leakage.
 - **Grenzen:** keine produktiven Writes, kein zweiter Store-/Scope-/Provenance-Contract, Knowledge-Build bleibt `ArtifactKind.KNOWLEDGE_BUILD`.
 
+## Slice #11 — Distribution / Versionierung / Consumer Contract (implementiert)
+
+Externe Consumer können Agent Brain über eine exakte Package-Version (`agent-brain==X.Y.Z`) bzw. den passenden Git-Tag `vX.Y.Z` pinnen, Public-Surface-Kompatibilität prüfen sowie Upgrade/Rollback reproduzierbar ausführen:
+
+- [Distribution README](distribution/README.md)
+- [Consumer Contract](distribution/CONSUMER_CONTRACT.md)
+- Python-API: `agent_brain.distribution`
+- Neutraler Consumer-Smoke: `tests/fixtures/distribution/neutral_consumer/`
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
@@ -137,7 +146,7 @@ Der fail-closed Memory-Read-Pfad liegt unter `agent_brain.memory.read` und konsu
 8  Evidence / Trust                  #8   abgeschlossen
 9  SurrealDB Read                    #10  abgeschlossen (via #67)
 10 Memory Read                       #11  implementiert
-11 Distribution / Versionierung      #17
+11 Distribution / Versionierung      #17  implementiert
 12 CLI / Protocol                    #12
 13 Claire Cutover                    #13
 14 Parity / Dual Run                 #18

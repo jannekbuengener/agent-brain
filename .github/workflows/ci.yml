@@ -40,4 +40,6 @@ jobs:
         run: python -m ruff check .
 
       - name: Test
+        # Includes #17 distribution/version/pinning/consumer-contract gates
+        # under tests/distribution/ (wheel pin, upgrade/rollback, surface compat).
         run: python -m pytest -q

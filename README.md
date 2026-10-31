@@ -25,6 +25,7 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 - [Context Package und Briefing Core](docs/context/README.md)
 - [Repository Ingestion und Connectors](docs/connectors/README.md)
 - [Externe technische Referenzen](docs/external-docs/index.md)
+- [Distribution / Consumer Contract](docs/distribution/README.md)
 - [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
 - [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)

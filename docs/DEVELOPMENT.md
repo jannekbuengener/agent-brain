@@ -9,6 +9,8 @@ Diese Seite beschreibt die installierbare Repository-Baseline, die Portable Foun
 
 ## Frisch klonen und installieren
 
+Lokale Entwicklung (editable):
+
 ```bash
 git clone https://github.com/jannekbuengener/agent-brain.git
 cd agent-brain
@@ -21,6 +23,16 @@ Virtuelle Umgebung aktivieren und danach:
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
+
+Externe Consumer pinnen eine **exakte** Version und nutzen keinen `main`-Branch und keinen unversionierten lokalen Pfad:
+
+```bash
+python -m pip install "agent-brain==0.1.0"
+# oder immutable Git-Tag:
+python -m pip install "agent-brain @ git+https://github.com/jannekbuengener/agent-brain.git@v0.1.0"
+```
+
+Kanonische Version-Quelle: `pyproject.toml` `[project].version` (aktuell `0.1.0`). Runtime: `agent_brain.__version__`. Details: [distribution/CONSUMER_CONTRACT.md](distribution/CONSUMER_CONTRACT.md).
 
 ## Validierung
 
@@ -75,7 +87,7 @@ src/agent_brain/
 - externe Referenzen und ihre Live-Relevanz: [external-docs/index.md](external-docs/index.md)
 - Repository Ingestion / Connectors: [connectors/README.md](connectors/README.md) — read-only, produktneutrale lokale Ingestion und #15-Ausgaben.
 - Retrieval, Memory und SurrealDB-Verhalten folgen in ihren eigenen Slices.
-- Distribution, Versionierung und Consumer Contract werden erst in #17 festgelegt.
+- Distribution, Versionierung und Consumer Contract: [distribution/README.md](distribution/README.md) (#17).
 
 ## Tests und Fixtures
 
