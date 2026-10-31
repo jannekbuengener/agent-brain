@@ -23,8 +23,14 @@ Sie ist bewusst **keine Runtime**: Die Contracts beschreiben Daten, Identität, 
 | `TemporalEnvelope` | `temporal-envelope/v1` | Known-/Valid-Time plus optionales Storage-/Read-Snapshot-Metadatum |
 | `Provenance` | `provenance/v1` | strukturierte Quelle, optionaler SourceSpan und Ableitungs-Linie |
 | `ResolutionMeta` | `resolution-meta/v1` | Supersession-Links sowie getrenntes Source Trust / Confidence |
+| `Improvement` | `improvement/v1` | stabile Skill-Improvement-Identität (#46) |
+| `ImprovementObservation` | `improvement-observation/v1` | append-only Learning-/Evidence-Event (#46) |
+| `ImprovementMergeLineage` | `improvement-merge-lineage/v1` | auditierte Merge-Historie (#46) |
+| `ImprovementWorkRef` | `improvement-work-ref/v1` | Zeiger auf GitHub Issue/PR/Verification (#46) |
 
 Die kanonischen Versionsstrings stehen zusätzlich in `agent_brain.contracts.registry.CONTRACT_SCHEMAS`.
+
+Improvement-Domain-Details und das Mapping zum Workforce Finding Contract: [`IMPROVEMENT_CONTRACT.md`](IMPROVEMENT_CONTRACT.md).
 
 ## Serialisierung und Kompatibilität
 

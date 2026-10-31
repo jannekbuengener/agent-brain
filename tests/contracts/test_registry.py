@@ -12,6 +12,10 @@ EXPECTED_SCHEMAS = {
     "temporal-envelope": "temporal-envelope/v1",
     "provenance": "provenance/v1",
     "resolution-meta": "resolution-meta/v1",
+    "improvement": "improvement/v1",
+    "improvement-observation": "improvement-observation/v1",
+    "improvement-merge-lineage": "improvement-merge-lineage/v1",
+    "improvement-work-ref": "improvement-work-ref/v1",
 }
 
 
@@ -30,3 +34,13 @@ def test_contract_package_exports_memory_hardening_types() -> None:
     assert contracts.SourceSpan.__name__ == "SourceSpan"
     assert contracts.ResolutionMeta.__name__ == "ResolutionMeta"
     assert contracts.ResolutionState.__name__ == "ResolutionState"
+
+
+def test_contract_package_exports_improvement_types() -> None:
+    assert contracts.Improvement.__name__ == "Improvement"
+    assert contracts.ImprovementObservation.__name__ == "ImprovementObservation"
+    assert contracts.ImprovementLifecycle.__name__ == "ImprovementLifecycle"
+    assert contracts.build_improvement_id(
+        skill_id="demo-skill",
+        root_cause_key="demo-cause",
+    ) == "improvement:demo-skill:demo-cause"
