@@ -33,10 +33,18 @@ Adapters:
 5. Observation Writer besitzt keine Management-Methoden (`set_priority`, `transition_lifecycle`, `merge_improvements`, Work-Item-/Verification-Links).
 6. Unavailable Backend → `ImprovementStoreUnavailable`.
 
+## Dedupe (#49)
+
+`assess_observation()` / `merge_improvements()` / `relate_improvements()`:
+
+- Exact `root_cause_key` → `EXACT_IDENTITY` (auto-attach allowed)
+- Strong textual similarity → `POSSIBLE_DUPLICATE` (**no** auto-merge)
+- Weak similarity → `RELATED` (**no** auto-merge)
+- Merge requires explicit actor/reason/evidence lineage
+
 ## Non-goals
 
-- kein Storage-Backend (#48)
-- kein Dedupe-Merge (#49)
-- kein Management Port (#52)
+- kein Management Port (#52) — Merge-Aufruf bleibt capability-gated
 - kein CLI/MCP (#50)
 - keine Memory-/Knowledge-Write-Freigabe
+- semantische Ähnlichkeit allein darf niemals auto-mergen
