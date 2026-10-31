@@ -93,6 +93,17 @@ Backend-neutrale, read-only Store-Ports und ein typisierter, fail-closed `Memory
 - Keine Write-/Remember-/Consolidate-Surface; produktive Agent-Memory-Writes bleiben `DEFER`.
 - Native SurrealDB-Read-Runtime bleibt #10 und implementiert diese Ports, ohne sie neu zu definieren.
 
+## Slice #10 / #11 — Memory Read / Recall / Rediscovery (implementiert)
+
+Der fail-closed Memory-Read-Pfad liegt unter `agent_brain.memory.read` und konsumiert unverändert #39 (`MemoryStore` / `MemoryScope`) sowie #37 (`TemporalEnvelope` / `Provenance` / `ResolutionMeta` / `ResolutionState`):
+
+- **Recall:** `MemoryReadService` lädt scoped Records, reichert sie über `MemoryEntryCatalog` an und leitet `CURRENT / STALE / SUPERSEDED / UNKNOWN` ab.
+- **Provenance-Gate:** fehlende Evidence-/Lineage-Metadaten → nicht belastbar (`MISSING_METADATA != TRUSTED`).
+- **TTL / Freshness:** `ttl_seconds`, `valid_from` / `valid_until` und Supersession; Boundary-Cases getestet.
+- **Live-State:** optionale Claims werden gegen injizierte Live-Checker revalidiert; GitHub-/Repo-Live gewinnen immer; unavailable ≠ confirmed.
+- **Rediscovery:** `prove_cross_session_rediscovery` belegt scoped Cross-Session-Recall ohne Scope-Leakage.
+- **Grenzen:** keine produktiven Writes, kein zweiter Store-/Scope-/Provenance-Contract, Knowledge-Build bleibt `ArtifactKind.KNOWLEDGE_BUILD`.
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
@@ -123,9 +134,9 @@ Backend-neutrale, read-only Store-Ports und ein typisierter, fail-closed `Memory
 5  Repo Ingestion                    #9   abgeschlossen
 6  Knowledge Build / Seed            #16  abgeschlossen
 7  Retrieval                         #7   abgeschlossen
-8  Evidence / Trust                  #8   implementiert (Slice 8 Pipeline)
-9  SurrealDB Read                    #10
-10 Memory Read                       #11
+8  Evidence / Trust                  #8   abgeschlossen
+9  SurrealDB Read                    #10  abgeschlossen (via #67)
+10 Memory Read                       #11  implementiert
 11 Distribution / Versionierung      #17
 12 CLI / Protocol                    #12
 13 Claire Cutover                    #13
