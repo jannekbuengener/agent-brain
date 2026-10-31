@@ -62,6 +62,14 @@ Der produktneutrale Retrieval-Layer konsumiert die stabilen #15-Index-/Graph-Ver
 
 Implementierungsplan: [Hybrid Retrieval und Knowledge Reasoning](superpowers/plans/2026-10-21-hybrid-retrieval-knowledge-reasoning.md).
 
+## Slice #8 — Evidence / Decisions / Trust (implementiert)
+
+- **Paket:** `agent_brain.evidence` — fünfstufige, gerichtete Pipeline Resolution → Decisions → Integrity → Quality → Trust.
+- **Contracts:** konsumiert unverändert #15 (`EvidenceRef` / `ClaimRef`) und #37 (`TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`); Slice-8-Overlays und Policies liegen in `agent_brain.evidence.contract`.
+- **Zeit:** nur Stufe 3 (`evaluate_freshness`, `detect_scope_drift`, `detect_contradictions`) nutzt explizites `as_of`; `ResolutionState` wird ausschließlich in `freshness.py` abgeleitet.
+- **Tests:** `tests/evidence/` mit neutralen Fixtures unter `tests/fixtures/evidence/`.
+- **Plan:** [Evidence, Decisions und Trust](superpowers/plans/2026-10-21-evidence-decisions-trust.md).
+
 ## P0 #37 — Temporal / Provenance / Supersession (implementiert)
 
 Die bestehenden `EvidenceRef`-/`ClaimRef`-Typen bleiben reine Referenzen. Ergänzend stehen nun backend-neutrale Contracts für die Semantik bereit, die #8 und #11 gemeinsam benötigen:
@@ -105,7 +113,7 @@ Runtime-/Storage-Inventar für #38: [SurrealDB Runtime Baseline — 2026-10-21](
 5  Repo Ingestion                    #9   abgeschlossen
 6  Knowledge Build / Seed            #16  abgeschlossen
 7  Retrieval                         #7   abgeschlossen
-8  Evidence / Trust                  #8
+8  Evidence / Trust                  #8   implementiert (Slice 8 Pipeline)
 9  SurrealDB Read                    #10
 10 Memory Read                       #11
 11 Distribution / Versionierung      #17
