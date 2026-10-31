@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import textwrap
+import tomllib
 import venv
 from dataclasses import dataclass
 from pathlib import Path
@@ -96,13 +98,15 @@ class DistributionEnv:
             pyproject.write_text("".join(updated), encoding="utf-8")
             builder = work / "src" / "agent_brain" / "knowledge" / "builder.py"
             builder_text = builder.read_text(encoding="utf-8")
-            builder.write_text(
-                builder_text.replace(
-                    'DEFAULT_TOOL_VERSION = "agent-brain/0.1.0"',
-                    f'DEFAULT_TOOL_VERSION = "agent-brain/{version}"',
-                ),
-                encoding="utf-8",
+            updated_builder, count = re.subn(
+                r'DEFAULT_TOOL_VERSION = "agent-brain/[^"]+"',
+                f'DEFAULT_TOOL_VERSION = "agent-brain/{version}"',
+                builder_text,
+                count=1,
             )
+            if count != 1:
+                raise RuntimeError("failed to rewrite DEFAULT_TOOL_VERSION in builder.py")
+            builder.write_text(updated_builder, encoding="utf-8")
 
         out = dist_dir / "wheels"
         out.mkdir(parents=True, exist_ok=True)
@@ -148,7 +152,19 @@ def distribution_env() -> DistributionEnv:
     return DistributionEnv(consumer_root=CONSUMER_ROOT)
 
 
+def declared_package_version(repo_root: Path) -> str:
+    with (repo_root / "pyproject.toml").open("rb") as handle:
+        return tomllib.load(handle)["project"]["version"]
+
+
 @pytest.fixture
-def built_wheel(repo_root: Path, tmp_path: Path) -> Path:
+def package_version(repo_root: Path) -> str:
+    return declared_package_version(repo_root)
+
+
+@pytest.fixture
+def built_wheel(repo_root: Path, tmp_path: Path, package_version: str) -> Path:
     env = DistributionEnv(consumer_root=CONSUMER_ROOT)
-    return env.build_wheel(repo_root, tmp_path / "agent-brain-dist", version="0.1.0")
+    return env.build_wheel(
+        repo_root, tmp_path / "agent-brain-dist", version=package_version
+    )

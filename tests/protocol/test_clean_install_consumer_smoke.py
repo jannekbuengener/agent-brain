@@ -27,6 +27,7 @@ def protocol_distribution_env() -> DistributionEnv:
 def test_clean_env_cli_after_wheel_install(
     built_wheel: Path,
     protocol_distribution_env: DistributionEnv,
+    package_version: str,
     tmp_path: Path,
 ) -> None:
     python = protocol_distribution_env.create_venv(tmp_path / "cli-venv")
@@ -40,7 +41,7 @@ def test_clean_env_cli_after_wheel_install(
     )
     payload = json.loads(completed.stdout)
     assert payload["ok"] is True
-    assert payload["data"]["agent_brain_version"] == "0.1.0"
+    assert payload["data"]["agent_brain_version"] == package_version
 
     # Console script entry point from packaging.
     script_probe = textwrap.dedent(
@@ -59,7 +60,7 @@ def test_clean_env_cli_after_wheel_install(
         text=True,
     )
     script_payload = json.loads(completed.stdout.strip())
-    assert script_payload["data"]["agent_brain_version"] == "0.1.0"
+    assert script_payload["data"]["agent_brain_version"] == package_version
 
     # No Claire dependency markers in installed protocol/cli surface.
     neutrality = textwrap.dedent(
@@ -91,6 +92,7 @@ def test_clean_env_cli_after_wheel_install(
 def test_neutral_protocol_consumer_smoke(
     built_wheel: Path,
     protocol_distribution_env: DistributionEnv,
+    package_version: str,
     tmp_path: Path,
 ) -> None:
     python = protocol_distribution_env.create_venv(tmp_path / "protocol-consumer-venv")
@@ -98,10 +100,10 @@ def test_neutral_protocol_consumer_smoke(
     protocol_distribution_env.install_path(python, PROTOCOL_CONSUMER_ROOT)
 
     script = textwrap.dedent(
-        """
+        f"""
         from neutral_protocol_consumer import smoke
         import json
-        print(json.dumps(smoke("0.1.0")))
+        print(json.dumps(smoke({package_version!r})))
         """
     )
     completed = subprocess.run(
@@ -111,8 +113,8 @@ def test_neutral_protocol_consumer_smoke(
         text=True,
     )
     result = json.loads(completed.stdout.strip())
-    assert result["installed_version"] == "0.1.0"
-    assert result["cli_version"] == "0.1.0"
+    assert result["installed_version"] == package_version
+    assert result["cli_version"] == package_version
     assert result["context_ok"] is True
     assert "context_read" in result["available_capabilities"]
     assert result["failure_code"] in {"capability_unavailable", "invalid_scope"}

@@ -6,7 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from tests.distribution.conftest import CONSUMER_ROOT, DistributionEnv
+from tests.distribution.conftest import (
+    CONSUMER_ROOT,
+    DistributionEnv,
+    declared_package_version,
+)
 
 
 @pytest.fixture
@@ -15,6 +19,13 @@ def distribution_env() -> DistributionEnv:
 
 
 @pytest.fixture
-def built_wheel(repo_root: Path, tmp_path: Path) -> Path:
+def package_version(repo_root: Path) -> str:
+    return declared_package_version(repo_root)
+
+
+@pytest.fixture
+def built_wheel(repo_root: Path, tmp_path: Path, package_version: str) -> Path:
     env = DistributionEnv(consumer_root=CONSUMER_ROOT)
-    return env.build_wheel(repo_root, tmp_path / "agent-brain-dist", version="0.1.0")
+    return env.build_wheel(
+        repo_root, tmp_path / "agent-brain-dist", version=package_version
+    )
