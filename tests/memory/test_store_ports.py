@@ -268,13 +268,13 @@ def test_port_signatures_have_no_backend_sdk_types() -> None:
 
 def test_assert_read_only_rejects_write_surface() -> None:
     class BadStore:
-        async def query(self, query: KnowledgeQuery):  # noqa: ANN201
+        async def query(self, query: KnowledgeQuery):
             raise NotImplementedError
 
-        async def get_snapshot(self, snapshot_ref: str):  # noqa: ANN201
+        async def get_snapshot(self, snapshot_ref: str):
             raise NotImplementedError
 
-        async def health(self):  # noqa: ANN201
+        async def health(self):
             raise NotImplementedError
 
         async def remember(self, item: object) -> None:

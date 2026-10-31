@@ -12,6 +12,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
+
 from agent_brain.contracts.versioning import require_compatible_version
 from agent_brain.knowledge.snapshot import KnowledgeSnapshot
 from agent_brain.memory.errors import InvalidMemoryScope, MemoryBoundaryError
