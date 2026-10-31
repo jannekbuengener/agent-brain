@@ -1,7 +1,9 @@
 # SurrealDB Runtime Baseline — 2026-10-21
 
 **Issue:** #38
-**Status:** `BASELINE_CAPTURED / DB_RUNTIME_UNAVAILABLE`
+**Status:** `SUPERSEDED_FOR_RUNTIME — see RUNTIME_BASELINE_2026-10-31.md`
+
+> Historische Offline-Baseline. Die DB-backed Nachzüge (Docker Scratch, Server 3.0.4, Schema/VERSION) stehen in `docs/surrealdb/RUNTIME_BASELINE_2026-10-31.md`.
 
 ## Zweck
 
