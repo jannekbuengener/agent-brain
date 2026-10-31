@@ -83,6 +83,16 @@ Die Contracts enthalten keine SurrealDB-/Agent-Memory-Runtime, keine produktiven
 
 Runtime-/Storage-Inventar für #38: [SurrealDB Runtime Baseline — 2026-10-21](surrealdb/RUNTIME_BASELINE_2026-10-21.md).
 
+## P1 #39 — KnowledgeStore / MemoryStore / MemoryScope (implementiert)
+
+Backend-neutrale, read-only Store-Ports und ein typisierter, fail-closed `MemoryScope` liegen unter `agent_brain.memory`:
+
+- `KnowledgeStore` / `MemoryStore` als Protocols ohne SurrealDB- oder Agent-Memory-SDK-Typen.
+- `MemoryScope` verlangt explizite Kind-/Identitätsfelder; fehlender Scope ist niemals still global.
+- Fixture-/In-Memory- und Unavailable-Adapter trennen `UNAVAILABLE`, `EMPTY` und `ABSENT`.
+- Keine Write-/Remember-/Consolidate-Surface; produktive Agent-Memory-Writes bleiben `DEFER`.
+- Native SurrealDB-Read-Runtime bleibt #10 und implementiert diese Ports, ohne sie neu zu definieren.
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
