@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from typing import Sequence
+from collections.abc import Sequence
 
 from agent_brain.contracts.serialization import serialize_contract
 from agent_brain.improvement.protocol import (

@@ -7,10 +7,10 @@ tool schemas are host-neutral JSON descriptors for adapters to bind.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
+from agent_brain.contracts._validation import parse_utc_datetime
 from agent_brain.contracts.improvement import (
     IMPROVEMENT_OBSERVATION_SCHEMA,
     IMPROVEMENT_WORK_REF_SCHEMA,
@@ -248,11 +248,7 @@ class ImprovementProtocolGateway:
                 expected_revision=payload.get("expected_revision"),
             )
         if tool == "merge_improvements":
-            merged_at = payload["merged_at"]
-            if isinstance(merged_at, str):
-                merged_at = datetime.fromisoformat(merged_at.replace("Z", "+00:00")).replace(
-                    tzinfo=None
-                )
+            merged_at = parse_utc_datetime(payload["merged_at"], "merged_at")
             return self._management.merge_improvements(
                 str(payload["target_improvement_id"]),
                 payload["source_improvement_ids"],
@@ -333,11 +329,11 @@ def result_to_dict(value: object) -> object:
 __all__ = [
     "IMPROVEMENT_OBSERVATION_SCHEMA",
     "IMPROVEMENT_WORK_REF_SCHEMA",
+    "PROTOCOL_SCHEMA_VERSION",
     "ImprovementCapability",
     "ImprovementLifecycle",
     "ImprovementPriority",
     "ImprovementProtocolGateway",
-    "PROTOCOL_SCHEMA_VERSION",
     "ProtocolCaller",
     "ProtocolDenied",
     "capability_readback",
