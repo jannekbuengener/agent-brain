@@ -57,9 +57,7 @@ class ProjectionExportResult:
 
 def improvement_markdown_stem(improvement_id: str) -> str:
     """Stable filesystem-safe stem for an Improvement note."""
-    raw = improvement_id.strip()
-    if raw.startswith("improvement:"):
-        raw = raw[len("improvement:") :]
+    raw = improvement_id.strip().removeprefix("improvement:")
     slug = raw.replace(":", "--").replace("/", "--")
     slug = _UNSAFE_STEM_RE.sub("-", slug).strip("-._")
     return f"IMP-{slug}"

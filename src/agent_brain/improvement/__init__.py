@@ -44,6 +44,7 @@ from agent_brain.improvement.protocol import (
 from agent_brain.improvement.sqlite import SqliteImprovementObservationStore
 
 __all__ = [
+    "PROJECTION_VERSION",
     "DedupeAssessment",
     "DedupeSignal",
     "ImprovementCapability",
@@ -60,7 +61,6 @@ __all__ = [
     "InMemoryImprovementObservationStore",
     "InvalidImprovementScope",
     "ManagementActor",
-    "PROJECTION_VERSION",
     "ProjectionExportResult",
     "ProtocolCaller",
     "ProtocolDenied",
