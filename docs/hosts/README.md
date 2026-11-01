@@ -16,6 +16,7 @@ Siehe [hosts/README.md](../../hosts/README.md). Host-Dokumente **duplizieren** d
 
 ## Operations
 
+- [Finale #73-Abnahme und Nachweislücken](GOAL4_ACCEPTANCE.md)
 - [Upgrade / Rollback](UPGRADE_ROLLBACK.md)
 - [Troubleshooting](TROUBLESHOOTING.md)
 
