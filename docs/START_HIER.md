@@ -142,7 +142,18 @@ Gemeinsamer MCP-stdio-Transport und dünne Host-Adapter ohne Capability-Duplikat
 - Shared skill: `hosts/shared/skills/agent-brain-cdb-context/SKILL.md`
 - Host packages: `hosts/claude-code/`, `hosts/cursor/`, `hosts/opencode/`
 - Doku: [Host Surfaces](hosts/README.md)
-- Exit-Ziel: `LOCAL_HOST_SURFACES_GO` (Parent #73 bleibt offen; ChatGPT folgt später)
+- Delivery: `LOCAL_HOST_SURFACES_GO`; Parent #73 bleibt für die finale Host-Abnahme offen.
+
+## #73 Goal 3 / Goal 4 — ChatGPT und finale Host-Abnahme
+
+ChatGPT-Owner-Smokes für alle fünf Capabilities und `invalid_input` sind im
+[Goal-3-Abschluss](https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556040954)
+belegt: `CHATGPT_AGENT_BRAIN_APP_GO`. Der Release `0.3.4` / `v0.3.4` erzwingt
+UTF-8 im gemeinsamen stdio-Server; globale Encoding-Workarounds sind keine Voraussetzung.
+
+Die finale Vier-Host-Abnahme unter #73 bleibt davon getrennt. Automatisierte
+Transport-Parität ersetzt keinen echten Host-Smoke. Aktueller Nachweisstand:
+[Goal-4-Evidence](evidence/agent_brain_issue73_goal4.v1.json).
 
 ## Was Agent Brain später können soll
 

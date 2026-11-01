@@ -1,5 +1,10 @@
 # Briefing: Reparatur des synchronen stdio-Pfads (#73)
 
+Historischer Reparaturnachweis für `0.3.3` / PR #82. Der nachfolgende
+[Goal-3-Abschluss](https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556040954)
+belegt die erfolgreichen ChatGPT-Owner-Smokes und den zusätzlichen UTF-8-Fix
+aus PR #83 in `0.3.4`. Die folgenden damaligen Release-/Abnahmeaussagen sind historisch.
+
 ## Befund und Nachweis
 
 Der vom Owner gemeldete ChatGPT-Aufruf lief über `agent-brain-mcp` (stdio,

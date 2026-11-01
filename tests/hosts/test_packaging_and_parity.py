@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -60,7 +63,7 @@ ABS_PATH_PATTERNS = (
 
 # Shared realistic CDB task for cross-host semantic parity.
 SHARED_CDB_TASK = {
-    "task": "Änderung am CDB Context-/Architecture-Bereich: Required Reads und belegter Context",
+    "task": "Agent Brain Multi-Surface Plugin / GitHub Issue #73 / ChatGPT Integration",
 }
 
 
@@ -84,6 +87,12 @@ def _semantic_fields(body: dict) -> dict:
         if isinstance(data.get("profile"), dict)
         else None,
         "agent_brain_version": body.get("agent_brain_version"),
+        "protocol_schema": body.get("protocol_schema"),
+        "capability_contract": data.get("capability_contract"),
+        "profile": data.get("profile"),
+        "briefing": data.get("briefing"),
+        "required_reads": data.get("required_reads"),
+        "error": body.get("error"),
     }
 
 
@@ -253,3 +262,53 @@ def test_matrix_coverage_names() -> None:
         CDB_CONTEXT_REQUIRED_READS,
         CDB_CONTEXT_EVIDENCE,
     }
+
+
+@pytest.mark.parametrize("host", ["claude-code", "cursor", "opencode"])
+def test_registered_stdio_command_matches_shared_semantics(host: str, tmp_path: Path) -> None:
+    """Execute each packaged launch command; this is transport, not host UI evidence."""
+    configs = {
+        "claude-code": HOSTS / "claude-code/plugins/agent-brain/.mcp.json",
+        "cursor": HOSTS / "cursor/agent-brain/mcp.json",
+        "opencode": HOSTS / "opencode/opencode.agent-brain.mcp.example.json",
+    }
+    config = json.loads(configs[host].read_text(encoding="utf-8"))
+    if host == "opencode":
+        command = config["mcp"]["agent-brain"]["command"]
+    else:
+        registration = config["mcpServers"]["agent-brain"]
+        command = [registration["command"], *registration.get("args", [])]
+    executable = shutil.which(command[0])
+    assert executable, "install agent-brain so the packaged command resolves"
+    cases = [
+        (AGENT_BRAIN_HEALTH, {}),
+        (CDB_CONTEXT_BRIEFING, SHARED_CDB_TASK),
+        (CDB_CONTEXT_SEARCH, {"query": SHARED_CDB_TASK["task"]}),
+        (CDB_CONTEXT_REQUIRED_READS, SHARED_CDB_TASK),
+        (CDB_CONTEXT_EVIDENCE, {"claim": "Agent Brain Multi-Surface Plugin #73 erreichbar"}),
+        (CDB_CONTEXT_BRIEFING, {}),
+        (CDB_CONTEXT_SEARCH, {"query": "x", "scope": "   "}),
+        ("cdb_context.decision_history", {}),
+        (AGENT_BRAIN_HEALTH, {"contract_version": "incompatible/v99"}),
+        ("remember", {"text": "no mutation"}),
+    ]
+    requests = [
+        {"jsonrpc": "2.0", "id": index, "method": "tools/call",
+         "params": {"name": capability, "arguments": arguments}}
+        for index, (capability, arguments) in enumerate(cases)
+    ]
+    env = {key: value for key, value in os.environ.items()
+           if key not in {"PYTHONIOENCODING", "PYTHONUTF8", "PYTHONPATH"}}
+    result = subprocess.run(
+        [executable, *command[1:]],
+        input="".join(json.dumps(request, ensure_ascii=False) + "\n" for request in requests),
+        capture_output=True, text=True, encoding="utf-8", errors="strict",
+        cwd=tmp_path, env=env, timeout=30, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    responses = [json.loads(line) for line in result.stdout.splitlines()]
+    assert len(responses) == len(cases)
+    for index, ((capability, arguments), response) in enumerate(zip(cases, responses, strict=True)):
+        assert response["id"] == index
+        expected = _invoke_via_host_label(host, capability, arguments)
+        assert _semantic_fields(response["result"]["structuredContent"]) == _semantic_fields(expected)

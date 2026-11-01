@@ -1,0 +1,101 @@
+{
+  "schema_version": "agent-brain-issue73-goal4/v1",
+  "issue": 73,
+  "authority": "NO_NEW_AUTHORITY / EXECUTE_EXISTING_#73 / BOUNDED_DELIVERY_GOAL_4",
+  "observed_on": "2026-11-01",
+  "contract": "agent-brain-cdb-context-capability/v1",
+  "agent_brain_version": "0.3.4",
+  "git_tag": "v0.3.4",
+  "tag_object_sha": "72abd3367a674be44646ecfdf49cdac3ab8a3ba3",
+  "main_sha": "4362b417a5c4a9a079b152a58781dbdb99cbc5af",
+  "release_immutable": true,
+  "baseline_pr": 83,
+  "baseline_pr_ci": "https://github.com/jannekbuengener/agent-brain/actions/runs/41292426553",
+  "baseline_post_merge_ci": "https://github.com/jannekbuengener/agent-brain/actions/runs/41292538484",
+  "capabilities": ["health", "briefing", "search", "required_reads", "evidence"],
+  "task": "Agent Brain Multi-Surface Plugin / GitHub Issue #73 / ChatGPT Integration",
+  "automated_evidence": {
+    "release_baseline_full_suite": "659 passed; Python 3.14; exit 0; pytest temporary-link cleanup PermissionError after summary",
+    "expanded_full_suite": "662 passed; Python 3.14; exit 0; pytest temporary-link cleanup PermissionError after summary",
+    "expanded_capability_mcp_host_suite": "72 passed",
+    "ruff": "PASS",
+    "windows_cp1252_non_ascii_utf8": "PASS: existing test_stdio_reconfigures_non_utf8_host_streams_before_json_rpc",
+    "packaged_stdio_commands": "PASS: claude-code/cursor/opencode registrations executed in isolated CWD without PYTHONIOENCODING, PYTHONUTF8 or PYTHONPATH",
+    "four_host_labels": "PASS: same shared MCP implementation; labels are not independent host execution",
+    "semantic_comparison": [
+      "ok", "operation", "agent_brain_version", "protocol_schema", "capability_contract",
+      "profile including repository_identity and source_priority", "limitations",
+      "briefing including schema_version/scope_summary/guardrails/context_package_ref/required_reads/relevant_evidence",
+      "required_reads including identity and availability", "evidence_state", "confirmed", "error"
+    ],
+    "failure_cases": ["invalid_input", "invalid_scope", "capability_unavailable", "contract_version_mismatch", "unsupported_operation"],
+    "host_application_execution": false
+  },
+  "hosts": {
+    "chatgpt": {
+      "install": "PASS_OWNER_EVIDENCE",
+      "capabilities": "PASS_OWNER_EVIDENCE_ALL_FIVE",
+      "failure_semantics": "PASS_OWNER_INVALID_INPUT_AND_SHARED_SUITE",
+      "version": "0.3.4 transport regression plus prior owner host proof; not a new final-version host run",
+      "upgrade": "DOCUMENTED; host restart/reconnect not newly exercised",
+      "rollback": "DOCUMENTED; host restart/reconnect not newly exercised",
+      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556040954"
+    },
+    "claude_code": {
+      "install": "PRIOR_HOST_INSTALL plus current plugin validation tests",
+      "capabilities": "PASS_SHARED_TRANSPORT; real five-capability host run not recorded here",
+      "failure_semantics": "PASS_SHARED_TRANSPORT",
+      "version": "0.3.4 packaged launcher verified",
+      "approval": "auto-review rejected native Claude smoke because prompt and MCP results would be sent to external Claude service; explicit user approval pending",
+      "upgrade": "DOCUMENTED; shared plan tests only",
+      "rollback": "DOCUMENTED; shared plan tests only",
+      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6552770668"
+    },
+    "cursor": {
+      "install": "PACKAGING_PASS; fresh CLI discovery did not pass",
+      "capabilities": "PASS_SHARED_TRANSPORT; real host execution missing",
+      "failure_semantics": "PASS_SHARED_TRANSPORT",
+      "version": "0.3.4 packaged launcher verified",
+      "upgrade": "DOCUMENTED; shared plan tests only",
+      "rollback": "DOCUMENTED; shared plan tests only",
+      "host_discovery": "list-tools: MCP not approved; enable with --workspace: configuration not found",
+      "approval": "auto-review rejected enable from temporary CWD because possible persistent global Cursor approval; user approval pending"
+    },
+    "opencode": {
+      "install": "PRIOR_HOST_CONNECTED plus current MCP discovery test",
+      "capabilities": "PASS_SHARED_TRANSPORT; real five-capability host run not recorded here",
+      "failure_semantics": "PASS_SHARED_TRANSPORT",
+      "version": "0.3.4 packaged launcher verified",
+      "upgrade": "DOCUMENTED; shared plan tests only",
+      "rollback": "DOCUMENTED; shared plan tests only",
+      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6552770668"
+    }
+  },
+  "parity": {
+    "semantic": "PASS_SHARED_TRANSPORT",
+    "errors": "PASS_SHARED_TRANSPORT",
+    "limitations": "PASS_SHARED_TRANSPORT",
+    "version": "PASS_PACKAGED_STDIO_0.3.4",
+    "read_only": "PASS_SHARED_CONTRACT",
+    "actual_four_host_parity": "NOT_PROVEN"
+  },
+  "safety": {
+    "secrets": "PASS_SHARED_REGRESSION",
+    "prompt_injection": "PASS_EXISTING_BOUNDED_REGRESSION",
+    "no_mutation": "PASS_SHARED_REGRESSION"
+  },
+  "distribution": {
+    "install": "PASS_SHARED_CLEAN_WHEEL_TEST; fresh host application proof incomplete",
+    "upgrade": "PASS_SHARED_WHEEL_LIFECYCLE_TEST; per-host reconnect incomplete",
+    "rollback": "PASS_SHARED_WHEEL_LIFECYCLE_TEST; per-host reconnect incomplete"
+  },
+  "nonblocking_findings": {
+    "required_reads": "available=false / availability_not_provided without supplied availability",
+    "search": "empty candidates without supplied records is not confirmed absence",
+    "optional_backends": "knowledge/memory/surreal unavailable is allowed degraded state"
+  },
+  "blockers": ["BLOCKED_HOST_INSTALL", "BLOCKED_FINAL_ACCEPTANCE"],
+  "final_exit": "NOT_GRANTED",
+  "issue_state": "OPEN",
+  "closeout_comment": null
+}
