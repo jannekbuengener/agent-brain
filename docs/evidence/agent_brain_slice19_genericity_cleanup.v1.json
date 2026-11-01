@@ -3,22 +3,18 @@
   "source_issue": "agent-brain#19",
   "parent_meta_issue": "agent-brain#2",
   "predecessor_cleanup_authority": "Claire_de_Binare:docs/evidence/agent_brain_slice18_cleanup_go.v1.json",
-  "status": "IN_PROGRESS",
-  "exit_token": null,
+  "status": "PASS",
+  "exit_token": "GENERICITY_CLEANUP_GO",
   "agent_brain": {
-    "target_version": "0.2.1",
-    "target_tag": "v0.2.1",
-    "branch": "feat/issue-19-genericity-cleanup",
-    "notes": [
-      "SurrealDbReadSettings defaults neutralized to agent_brain/context",
-      "Claire inventory mapping remains via settings_from_runtime_truth / runtime_truth",
-      "Neutral protocol consumer covers version/capabilities/context/retrieval/evidence/memory/failure",
-      "AST runtime dependency gate under tests/genericity/"
-    ]
+    "version": "0.2.1",
+    "tag": "v0.2.1",
+    "commit": "f565508c7d0f39073e1253ffaf3a54ac72af1642",
+    "pr": "https://github.com/jannekbuengener/agent-brain/pull/77",
+    "post_merge_ci": "success"
   },
   "genericity": {
-    "neutral_consumer": "PASS_PENDING_MERGE",
-    "clean_environment": "PASS_PENDING_MERGE",
+    "neutral_consumer": "PASS",
+    "clean_environment": "PASS",
     "claire_runtime_dependencies": 0,
     "trading_runtime_dependencies": 0,
     "private_cdb_core_runtime_dependencies": 0,
@@ -35,6 +31,27 @@
   },
   "claire_cleanup": {
     "authority_rule": "remove only SAFE_TO_REMOVE from slice18 cleanup-go",
-    "pending": true
+    "pending": false,
+    "safe_to_remove_removed": [
+      "slice13_temporary_notes_in_cutover_doc"
+    ],
+    "safe_to_remove_retained": [
+      "duplicate_flat_artifact_helpers_if_any"
+    ],
+    "keep_for_now_retained": [
+      "claire_context_package_v2_builder",
+      "claire_surrealdb_mcp_context_tools",
+      "agent_brain_adapter_public_only"
+    ],
+    "compatibility_shims_retained": [
+      "legacy_context_path_facade",
+      "path_selection_dual_path"
+    ],
+    "cutover_default_flipped_to_agent_brain": true
+  },
+  "claire": {
+    "commit": "3a0ec267e6d8b365782d70dfe2346708a0b72562",
+    "pr": "https://github.com/jannekbuengener/Claire_de_Binare/pull/4619",
+    "pin": "0.2.1"
   }
 }
