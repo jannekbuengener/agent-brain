@@ -34,7 +34,7 @@ Keine zweite Versionsquelle.
 ## Schnellstart
 
 ```bash
-python -m pip install "agent-brain==0.2.1"
+python -m pip install "agent-brain==0.3.0"
 agent-brain version
 agent-brain health --json
 agent-brain capabilities --json
@@ -74,7 +74,8 @@ Strukturierte Codes: `invalid_input`, `invalid_scope`, `unsupported_operation`, 
 
 `agent_brain.protocol.tool_schemas` / `BrainMcpAdapter` sind host-neutral und benötigen kein MCP-SDK. Der Core bleibt ohne MCP installierbar und testbar. Privates ChatGPT-MCP ist ausgeschlossen.
 
-## Beziehung zu #13 / #17
+## Beziehung zu #13 / #17 / #73
 
 - #17 liefert Pinning und Version; #12 konsumiert sie.
 - #13 konsumiert diese Surface für den Claire-Cutover — ohne neue Interface-Architektur.
+- #73 Goal 1 (`agent_brain.capabilities` / `cdb_context`) mappt hostneutrale Capability-Namen auf diese Protocol Surface; siehe [Capability Docs](../capabilities/README.md).

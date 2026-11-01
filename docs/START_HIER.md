@@ -123,6 +123,17 @@ Agent Brain ist ohne Claire und ohne privaten MCP bedienbar. Die gemeinsame Appl
 - optionaler host-neutraler MCP-Adapter ohne SDK-Pflichtabhängigkeit
 - Neutraler Protocol-Consumer-Smoke: `tests/fixtures/protocol/neutral_protocol_consumer/`
 
+## #73 Goal 1 — cdb_context Capability Foundation (implementiert)
+
+Hostneutraler Capability Contract auf der bestehenden #12-Surface, ohne Host-Pakete:
+
+- [Capability Architecture](capabilities/README.md)
+- [cdb_context Contract](capabilities/CDB_CONTEXT_CONTRACT.md)
+- Python-API: `agent_brain.capabilities` / `invoke_capability(...)`
+- CDB-Profil isoliert unter `agent_brain.capabilities.cdb_context`
+- Shared Host Contract Suite: `tests/capabilities/test_host_contract_suite.py`
+- Exit-Ziel: `CDB_CONTEXT_CAPABILITY_FOUNDATION_GO` (Parent #73 bleibt offen)
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
