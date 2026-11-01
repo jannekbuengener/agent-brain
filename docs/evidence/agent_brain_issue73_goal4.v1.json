@@ -8,8 +8,9 @@
   "git_tag": "v0.3.4",
   "tag_object_sha": "72abd3367a674be44646ecfdf49cdac3ab8a3ba3",
   "main_sha": "4362b417a5c4a9a079b152a58781dbdb99cbc5af",
+  "main_sha_role": "immutable release/runtime baseline; evidence-only changes use evidence_base_main_sha",
   "evidence_base_main_sha": "c3c6b1989ce7bc6be21a2dd6d3425245e002ba33",
-  "latest_host_evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556415627",
+  "latest_host_evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556556881",
   "release_immutable": true,
   "baseline_pr": 83,
   "baseline_pr_ci": "https://github.com/jannekbuengener/agent-brain/actions/runs/41292426553",
@@ -31,7 +32,7 @@
       "required_reads including identity and availability", "evidence_state", "confirmed", "error"
     ],
     "failure_cases": ["invalid_input", "invalid_scope", "capability_unavailable", "contract_version_mismatch", "unsupported_operation"],
-    "host_application_execution": "Claude Code real five-capability smoke verified; other host status recorded separately"
+    "host_application_execution": "Claude Code and OpenCode real five-capability smokes verified; ChatGPT accepted owner evidence; Cursor blocked"
   },
   "hosts": {
     "chatgpt": {
@@ -60,8 +61,19 @@
         "evidence": "ok=true; NO_EVIDENCE; confirmed=false"
       },
       "contract_negotiation": "host initially guessed 1.0; server rejected contract_version_mismatch; host retried successfully with agent-brain-cdb-context-capability/v1",
-      "upgrade": "DOCUMENTED; shared plan tests only",
-      "rollback": "DOCUMENTED; shared plan tests only",
+      "upgrade": "PASS_REAL_CLAUDE_HOST_0.3.3_TO_0.3.4; new process; health and evidence",
+      "rollback": "PASS_REAL_CLAUDE_HOST_0.3.4_TO_0.3.3; new process; health and evidence",
+      "lifecycle": {
+        "installation": "exact tag snapshots built as wheels; isolated venv and portable MCP config; existing authenticated Claude installation",
+        "initial_session": "3ea6e6b5-3748-4981-aabd-2442752b2988",
+        "upgrade_session": "b402fe32-3d17-4850-ac6c-496ce180bbfc",
+        "rollback_session": "124a592c-6212-47b8-b70a-234fdc0a3952",
+        "all_process_exits": 0,
+        "all_host_results": "is_error=false; actual expected version; health ok=true; evidence NO_EVIDENCE/confirmed=false",
+        "total_cost_usd": 0.08656125,
+        "final_isolated_runtime": "restored to 0.3.4",
+        "encoding_env_workarounds": false
+      },
       "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556381157"
     },
     "cursor": {
@@ -76,27 +88,45 @@
       "host_blocker": "Windows Application Control blocked Cursor Agent native file_service.win32-x64-msvc.node before capability calls",
       "native_file_signature": "NotSigned; read-only Authenticode check; no policy changes",
       "host_agent_version_directory": "2026.08.25-3e8eec8",
-      "required_gate": "CURSOR_REAL_HOST_SMOKE_REQUIRED"
+      "required_gate": "CURSOR_REAL_HOST_SMOKE_REQUIRED",
+      "blocker_issue": "https://github.com/jannekbuengener/agent-brain/issues/86",
+      "owner_status": "Cursor currently not working; no real five-call host proof"
     },
     "opencode": {
-      "install": "PRIOR_HOST_CONNECTED plus current MCP discovery test",
-      "capabilities": "PASS_SHARED_TRANSPORT; real five-capability host run not recorded here",
-      "failure_semantics": "PASS_SHARED_TRANSPORT",
-      "version": "0.3.4 packaged launcher verified",
-      "host_version": "OpenCode 1.1.20",
-      "approval": "explicit user approval received for concrete test prompt and read-only MCP responses to OpenAI via openai/gpt-5.2",
+      "install": "PASS_OFFICIAL_OPENCODE_1.19.5_ISOLATED_INSTALL_AND_NATIVE_MCP",
+      "capabilities": "PASS_REAL_HOST_ALL_FIVE",
+      "failure_semantics": "PASS_REAL_HOST_INVALID_INPUT",
+      "version": "0.3.4 returned by all five real host calls",
+      "host_version": "OpenCode 1.19.5; isolated install, existing 1.1.20 unchanged",
+      "approval": "explicit user approval received for concrete test prompt and read-only MCP responses to OpenAI; provider unchanged across model compatibility correction",
+      "prior_attempts": [
+        "1.1.20: Token refresh failed: 401; resolved after owner login",
+        "1.1.20: gpt-5.2 and gpt-5.2-codex rejected by ChatGPT account",
+        "1.19.5: gpt-5.4-mini rejected by ChatGPT account"
+      ],
       "native_smoke": {
-        "session_id": "ses_e69766e34ffeFIAGDMm3dAEf4C",
-        "model": "openai/gpt-5.2",
+        "session_id": "ses_e696c44aaffeBPSxC4o0W4IMio",
+        "model": "openai/gpt-6.1-sol",
         "permission": "all deny; agent-brain* allow",
-        "exit_code": 1,
-        "error": "Token refresh failed: 401",
-        "capability_success_observed": false,
-        "next_action": "owner reauthenticate OpenCode with OpenAI"
+        "exit_code": 0,
+        "capability_success_observed": true,
+        "full_response_core_parity": "PASS: five successful responses and invalid_input response equal shared core for identical inputs",
+        "evidence_state": "NO_EVIDENCE",
+        "confirmed": false
       },
-      "upgrade": "DOCUMENTED; shared plan tests only",
-      "rollback": "DOCUMENTED; shared plan tests only",
-      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6552770668"
+      "upgrade": "PASS_REAL_OPENCODE_HOST_0.3.3_TO_0.3.4; new process; health and evidence",
+      "rollback": "PASS_REAL_OPENCODE_HOST_0.3.4_TO_0.3.3; new process; health and evidence",
+      "lifecycle": {
+        "installation": "exact tag snapshots built as wheels; isolated venv and portable MCP config; isolated official OpenCode 1.19.5; existing authenticated OpenAI account",
+        "initial_session": "ses_e696a7c01ffezNDtZTc3cybDUQ",
+        "upgrade_session": "ses_e696a16f5ffe8XANsR2x5z8v6e",
+        "rollback_session": "ses_e6969a967ffe8mSMcD4Brkow6I",
+        "all_process_exits": 0,
+        "all_host_results": "terminal stop; actual expected version; health ok=true; evidence NO_EVIDENCE/confirmed=false",
+        "final_isolated_runtime": "restored to 0.3.4",
+        "encoding_env_workarounds": false
+      },
+      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556540738"
     }
   },
   "parity": {
@@ -122,7 +152,7 @@
     "search": "empty candidates without supplied records is not confirmed absence",
     "optional_backends": "knowledge/memory/surreal unavailable is allowed degraded state"
   },
-  "blockers": ["BLOCKED_HOST_INSTALL", "BLOCKED_OPENCODE_AUTH", "BLOCKED_FINAL_ACCEPTANCE"],
+  "blockers": ["BLOCKED_HOST_INSTALL", "CURSOR_REAL_HOST_SMOKE_REQUIRED", "BLOCKED_FINAL_ACCEPTANCE"],
   "final_exit": "NOT_GRANTED",
   "issue_state": "OPEN",
   "closeout_comment": null
