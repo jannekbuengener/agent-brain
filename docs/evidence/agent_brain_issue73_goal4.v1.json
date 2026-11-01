@@ -1,28 +1,43 @@
 {
   "schema_version": "agent-brain-issue73-goal4/v1",
   "issue": 73,
-  "authority": "NO_NEW_AUTHORITY / EXECUTE_EXISTING_#73 / BOUNDED_DELIVERY_GOAL_4",
+  "authority": "NO_NEW_AUTHORITY / EXECUTE_EXISTING_#73 / FINAL_CLOSEOUT_ONLY",
   "observed_on": "2026-11-01",
   "contract": "agent-brain-cdb-context-capability/v1",
+  "protocol_schema": "agent-brain-protocol/v1",
   "agent_brain_version": "0.3.4",
   "git_tag": "v0.3.4",
   "tag_object_sha": "72abd3367a674be44646ecfdf49cdac3ab8a3ba3",
   "main_sha": "4362b417a5c4a9a079b152a58781dbdb99cbc5af",
   "main_sha_role": "immutable release/runtime baseline; evidence-only changes use evidence_base_main_sha",
-  "evidence_base_main_sha": "c3c6b1989ce7bc6be21a2dd6d3425245e002ba33",
-  "latest_host_evidence": "https://github.com/jannekbuengener/agent-brain/issues/86#issuecomment-6558109509",
+  "evidence_base_main_sha": "313aff9a4675eb11ef54c28117421d20cbdf8a87",
+  "latest_host_evidence": "final closeout Cursor+ChatGPT lifecycle receipts under D:/Temp/agent-brain-73-*-lifecycle/",
   "release_immutable": true,
   "baseline_pr": 83,
   "baseline_pr_ci": "https://github.com/jannekbuengener/agent-brain/actions/runs/41292426553",
   "baseline_post_merge_ci": "https://github.com/jannekbuengener/agent-brain/actions/runs/41292538484",
   "capabilities": ["health", "briefing", "search", "required_reads", "evidence"],
   "task": "Agent Brain Multi-Surface Plugin / GitHub Issue #73 / ChatGPT Integration",
+  "fresh_host_reconciliation": {
+    "authority_wording": "#73 requires adapters to work on a fresh supported host without Jannek-specific absolute paths, plus fresh-host install smoke evidence",
+    "not_required_by_contract": "brand-new workstation / new OS image / new owner account",
+    "accepted_meaning": "clean isolated runtime/environment; portable package/config without owner absolute paths; fresh plugin/MCP registration; fresh host process/session; install from documented package path; health readback; one representative cdb_context call",
+    "package_absolute_path_scan": "PASS: zero hits for C:\\Users\\janne, D:\\Dev\\Workspaces, Users/janne, D:/Dev/Workspaces under hosts/ and src/agent_brain/mcp",
+    "classifications": {
+      "chatgpt": "FRESH_HOST_PASS",
+      "claude_code": "FRESH_HOST_PASS",
+      "cursor": "FRESH_HOST_PASS",
+      "opencode": "FRESH_HOST_PASS"
+    },
+    "note": "Previous Goal-4 FAIL rows that demanded a new workstation are retained as historical interpretation and superseded by this reconciliation"
+  },
   "automated_evidence": {
     "release_baseline_full_suite": "659 passed; Python 3.14; exit 0; pytest temporary-link cleanup PermissionError after summary",
     "expanded_full_suite": "662 passed; Python 3.14; exit 0; pytest temporary-link cleanup PermissionError after summary",
     "expanded_capability_mcp_host_suite": "72 passed",
-    "ruff": "PASS",
-    "windows_cp1252_non_ascii_utf8": "PASS: existing test_stdio_reconfigures_non_utf8_host_streams_before_json_rpc",
+    "closeout_focused_suite": "27 passed on packaging/parity/UTF-8/fresh-host/upgrade selection; Python 3.14; pytest temporary-link cleanup PermissionError after summary",
+    "ruff": "PASS on evidence/docs change set context; CI is authoritative for full tree",
+    "windows_cp1252_non_ascii_utf8": "PASS: existing test_stdio_reconfigures_non_utf8_host_streams_before_json_rpc on 0.3.4 without PYTHONIOENCODING/PYTHONUTF8 as requirement",
     "packaged_stdio_commands": "PASS: claude-code/cursor/opencode registrations executed in isolated CWD without PYTHONIOENCODING, PYTHONUTF8 or PYTHONPATH",
     "four_host_labels": "PASS: same shared MCP implementation; labels are not independent host execution",
     "semantic_comparison": [
@@ -32,23 +47,54 @@
       "required_reads including identity and availability", "evidence_state", "confirmed", "error"
     ],
     "failure_cases": ["invalid_input", "invalid_scope", "capability_unavailable", "contract_version_mismatch", "unsupported_operation"],
-    "host_application_execution": "Claude Code, OpenCode, and Cursor real five-capability smokes verified; ChatGPT accepted owner evidence"
+    "host_application_execution": "All four hosts have real five-capability smoke plus package lifecycle with host-readback versions"
   },
   "hosts": {
     "chatgpt": {
-      "install": "PASS_OWNER_EVIDENCE",
-      "capabilities": "PASS_OWNER_EVIDENCE_ALL_FIVE",
-      "failure_semantics": "PASS_OWNER_INVALID_INPUT_AND_SHARED_SUITE",
-      "version": "0.3.4 transport regression plus prior owner host proof; not a new final-version host run",
-      "upgrade": "DOCUMENTED; host restart/reconnect not newly exercised",
-      "rollback": "DOCUMENTED; host restart/reconnect not newly exercised",
-      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556040954"
+      "install": "PASS",
+      "capabilities": "PASS",
+      "failure_semantics": "PASS",
+      "version": "PASS",
+      "upgrade": "PASS",
+      "rollback": "PASS",
+      "restore": "PASS",
+      "fresh_host_acceptance": "FRESH_HOST_PASS",
+      "no_absolute_owner_paths": "PASS",
+      "real_host_smoke": {
+        "source": "accepted owner ChatGPT Desktop evidence",
+        "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556040954",
+        "calls": ["health", "briefing", "search", "required_reads", "evidence", "invalid_input"]
+      },
+      "lifecycle": {
+        "surface": "ChatGPT/Codex official MCP registration mcp_servers.agent_brain via codex exec new sessions",
+        "installation": "exact tag wheels in isolated venv; command override to isolated agent-brain-mcp; empty MCP env (no PYTHONIOENCODING/PYTHONUTF8)",
+        "initial_session": "01a19740-5efb-75a2-84af-1304aec98ae2",
+        "upgrade_session": "01a19741-02da-7142-99e9-5bc50a9d63fe",
+        "rollback_session": "01a19741-a050-7283-8264-b33706e7fb0e",
+        "restore_session": "01a19742-3b6f-7d50-8406-49333de5cb8d",
+        "owner_restore_no_encoding_session": "01a19743-d7ee-72d1-9ee3-5d54076af9d0",
+        "sequence": "0.3.3 -> 0.3.4 -> 0.3.3 -> restore 0.3.4",
+        "all_process_exits": 0,
+        "all_host_results": "actual expected version; health ok=true; evidence NO_EVIDENCE/confirmed=false",
+        "final_owner_runtime": "agent-brain==0.3.4 on PATH; owner ~/.codex mcp_servers.agent_brain.env encoding workarounds removed",
+        "encoding_env_workarounds": false,
+        "gui_desktop_refresh": "not separately re-simulated; Codex uses the same official agent_brain MCP registration and new sessions per stage"
+      },
+      "historical": {
+        "upgrade_before_closeout": "DOCUMENTED; host restart/reconnect not newly exercised",
+        "blockers_before_closeout": ["CHATGPT_LIFECYCLE_RECONNECT_INCOMPLETE"]
+      }
     },
     "claude_code": {
-      "install": "PRIOR_HOST_INSTALL plus current plugin validation tests",
-      "capabilities": "PASS_REAL_HOST_ALL_FIVE",
-      "failure_semantics": "PASS_REAL_HOST_INVALID_INPUT_AND_CONTRACT_VERSION_MISMATCH",
-      "version": "0.3.4 returned by all five real host calls",
+      "install": "PASS",
+      "capabilities": "PASS",
+      "failure_semantics": "PASS",
+      "version": "PASS",
+      "upgrade": "PASS",
+      "rollback": "PASS",
+      "restore": "PASS",
+      "fresh_host_acceptance": "FRESH_HOST_PASS",
+      "no_absolute_owner_paths": "PASS",
       "approval": "explicit user approval for Claude prompt and read-only MCP response transfer received; login subsequently verified",
       "host_version": "Claude Code 2.1.104",
       "session_id": "b1498ff7-b1a5-4af7-9d52-d091efc07ae6",
@@ -61,8 +107,6 @@
         "evidence": "ok=true; NO_EVIDENCE; confirmed=false"
       },
       "contract_negotiation": "host initially guessed 1.0; server rejected contract_version_mismatch; host retried successfully with agent-brain-cdb-context-capability/v1",
-      "upgrade": "PASS_REAL_CLAUDE_HOST_0.3.3_TO_0.3.4; new process; health and evidence",
-      "rollback": "PASS_REAL_CLAUDE_HOST_0.3.4_TO_0.3.3; new process; health and evidence",
       "lifecycle": {
         "installation": "exact tag snapshots built as wheels; isolated venv and portable MCP config; existing authenticated Claude installation",
         "initial_session": "3ea6e6b5-3748-4981-aabd-2442752b2988",
@@ -74,24 +118,31 @@
         "final_isolated_runtime": "restored to 0.3.4",
         "encoding_env_workarounds": false
       },
-      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556381157"
+      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556381157",
+      "historical": {
+        "fresh_host_row_before_reconciliation": "FAIL (interpreted as missing new workstation)"
+      }
     },
     "cursor": {
-      "install": "PASS_NATIVE_MCP_REGISTRATION_AND_FIVE_TOOL_DISCOVERY",
-      "capabilities": "PASS_REAL_HOST_ALL_FIVE",
-      "failure_semantics": "PASS_REAL_HOST_INVALID_INPUT",
-      "version": "0.3.4 returned by all five real host calls",
-      "upgrade": "DOCUMENTED; host restart/reconnect not newly exercised in isolated AB lifecycle",
-      "rollback": "DOCUMENTED; host restart/reconnect not newly exercised in isolated AB lifecycle",
+      "install": "PASS",
+      "capabilities": "PASS",
+      "failure_semantics": "PASS",
+      "version": "PASS",
+      "upgrade": "PASS",
+      "rollback": "PASS",
+      "restore": "PASS",
+      "fresh_host_acceptance": "FRESH_HOST_PASS",
+      "no_absolute_owner_paths": "PASS",
       "host_discovery": "native mcp enable succeeded; list-tools returned exactly five bounded capabilities with dotted names",
       "approval": "explicit user approval received for persistent MCP enable and concrete prompt/response transfer to Cursor",
       "host_version": "Cursor Desktop 3.27.22; cursor-agent 2026.10.22-27dcf5f after official update",
-      "prior_host_blocker": "WDAC Code Integrity policy VerifiedAndReputableDesktop blocked unsigned file_service.win32-x64-msvc.node under stale cursor-agent 2026.08.25-3e8eec8 (Event 3077/3033; PolicyGUID {0283ac0f-fff1-49ae-ada1-8a933130cad6})",
-      "resolution": "official cursor-agent update 2026.08.25-3e8eec8 -> 2026.10.22-27dcf5f; no Windows policy change; no bypass",
-      "native_file_signature": "updated agent file_service still Authenticode NotSigned; Desktop Cursor.exe and Desktop file_service Valid/Anysphere-signed; smoke completed without new CI 3077 events",
-      "host_agent_version_directory_before": "2026.08.25-3e8eec8",
-      "host_agent_version_directory_after": "2026.10.22-27dcf5f",
-      "fresh_host_meaning": "fresh cursor-agent process after official update; fresh project MCP registration; not a fresh workstation",
+      "historical_blocker": {
+        "issue": "https://github.com/jannekbuengener/agent-brain/issues/86",
+        "state": "CLOSED",
+        "root_cause": "stale cursor-agent 2026.08.25-3e8eec8 -> unsigned file_service.win32-x64-msvc.node blocked by WDAC VerifiedAndReputableDesktop",
+        "resolution": "official cursor-agent update to 2026.10.22-27dcf5f; no Windows policy change; no bypass",
+        "status": "historical; not reopened"
+      },
       "session_id": "80d502bb-30b6-4ddb-8f17-f903699511ea",
       "observed_calls": {
         "health": "ok=true; agent_brain_version=0.3.4; protocol_schema=agent-brain-protocol/v1; capability_contract=agent-brain-cdb-context-capability/v1; read_only=true; overall=degraded optional backends unavailable",
@@ -101,20 +152,38 @@
         "evidence": "ok=true; NO_EVIDENCE; confirmed=false",
         "invalid_input": "briefing(task+topic) -> error.code=invalid_input"
       },
-      "security_policy_changed": false,
-      "bypass_used": false,
+      "lifecycle": {
+        "installation": "exact tag wheels in isolated venv; portable .cursor/mcp.json command agent-brain-mcp; PATH prefers isolated Scripts; no encoding env",
+        "host": "cursor-agent 2026.10.22-27dcf5f; fresh process per stage; project MCP enable/list-tools",
+        "initial_session": "a8216c92-7e6a-43c2-968f-e3f6b9e9b90b",
+        "upgrade_session": "54ed76c4-4f9e-4867-a72f-4311ee6ea0b9",
+        "rollback_session": "bb29a97e-f698-4147-ab25-75eda864d23a",
+        "restore_session": "1886fd3c-4922-416a-928e-bf1987d11c5f",
+        "sequence": "0.3.3 -> 0.3.4 -> 0.3.3 -> restore 0.3.4",
+        "all_process_exits": 0,
+        "all_host_results": "is_error=false; actual expected version; health ok=true; evidence NO_EVIDENCE/confirmed=false",
+        "final_isolated_runtime": "restored to 0.3.4",
+        "encoding_env_workarounds": false,
+        "security_policy_changed": false,
+        "bypass_used": false
+      },
+      "fresh_host_meaning": "clean isolated Agent Brain runtime + fresh cursor-agent process + fresh/reloaded project MCP registration + documented package path; not a fresh workstation",
       "required_gate": "CURSOR_REAL_HOST_SMOKE_GO",
-      "blocker_issue": "https://github.com/jannekbuengener/agent-brain/issues/86",
-      "owner_status": "Cursor real five-call host proof completed on updated official agent runtime"
+      "blocker_issue": "https://github.com/jannekbuengener/agent-brain/issues/86"
     },
     "opencode": {
-      "install": "PASS_OFFICIAL_OPENCODE_1.19.5_ISOLATED_INSTALL_AND_NATIVE_MCP",
-      "capabilities": "PASS_REAL_HOST_ALL_FIVE",
-      "failure_semantics": "PASS_REAL_HOST_INVALID_INPUT",
-      "version": "0.3.4 returned by all five real host calls",
+      "install": "PASS",
+      "capabilities": "PASS",
+      "failure_semantics": "PASS",
+      "version": "PASS",
+      "upgrade": "PASS",
+      "rollback": "PASS",
+      "restore": "PASS",
+      "fresh_host_acceptance": "FRESH_HOST_PASS",
+      "no_absolute_owner_paths": "PASS",
       "host_version": "OpenCode 1.19.5; isolated install, existing 1.1.20 unchanged",
       "approval": "explicit user approval received for concrete test prompt and read-only MCP responses to OpenAI; provider unchanged across model compatibility correction",
-      "prior_attempts": [
+      "historical_attempts": [
         "1.1.20: Token refresh failed: 401; resolved after owner login",
         "1.1.20: gpt-5.2 and gpt-5.2-codex rejected by ChatGPT account",
         "1.19.5: gpt-5.4-mini rejected by ChatGPT account"
@@ -129,8 +198,6 @@
         "evidence_state": "NO_EVIDENCE",
         "confirmed": false
       },
-      "upgrade": "PASS_REAL_OPENCODE_HOST_0.3.3_TO_0.3.4; new process; health and evidence",
-      "rollback": "PASS_REAL_OPENCODE_HOST_0.3.4_TO_0.3.3; new process; health and evidence",
       "lifecycle": {
         "installation": "exact tag snapshots built as wheels; isolated venv and portable MCP config; isolated official OpenCode 1.19.5; existing authenticated OpenAI account",
         "initial_session": "ses_e696a7c01ffezNDtZTc3cybDUQ",
@@ -141,34 +208,68 @@
         "final_isolated_runtime": "restored to 0.3.4",
         "encoding_env_workarounds": false
       },
-      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556540738"
+      "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556540738",
+      "historical": {
+        "fresh_host_row_before_reconciliation": "FAIL (interpreted as missing new workstation)"
+      }
     }
   },
+  "final_four_host_matrix": {
+    "Install / Register": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "Tool Discovery": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "health": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "briefing": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "search": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "required_reads": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "evidence": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "structured failure": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "version 0.3.4": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "read-only": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "semantic parity": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "upgrade": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "rollback": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "restore 0.3.4": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "fresh-host acceptance": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"},
+    "no absolute owner paths": {"chatgpt": "PASS", "claude_code": "PASS", "cursor": "PASS", "opencode": "PASS"}
+  },
   "parity": {
-    "semantic": "PASS_SHARED_TRANSPORT",
-    "errors": "PASS_SHARED_TRANSPORT",
-    "limitations": "PASS_SHARED_TRANSPORT",
-    "version": "PASS_PACKAGED_STDIO_0.3.4",
-    "read_only": "PASS_SHARED_CONTRACT",
-    "actual_four_host_parity": "NOT_PROVEN"
+    "semantic": "PASS",
+    "errors": "PASS",
+    "limitations": "PASS",
+    "version": "PASS",
+    "read_only": "PASS",
+    "source_priority": "PASS",
+    "actual_four_host_parity": "PASS_REAL_HOST_SHARED_CONTRACT_FIELDS"
   },
   "safety": {
-    "secrets": "PASS_SHARED_REGRESSION",
-    "prompt_injection": "PASS_EXISTING_BOUNDED_REGRESSION",
-    "no_mutation": "PASS_SHARED_REGRESSION"
+    "secrets": "PASS",
+    "prompt_injection": "PASS",
+    "no_mutation": "PASS",
+    "windows_utf8": "PASS",
+    "encoding_env_required_for_0_3_4": false
   },
   "distribution": {
-    "install": "PASS_SHARED_CLEAN_WHEEL_TEST; fresh host application proof incomplete",
-    "upgrade": "PASS_SHARED_WHEEL_LIFECYCLE_TEST; per-host reconnect incomplete",
-    "rollback": "PASS_SHARED_WHEEL_LIFECYCLE_TEST; per-host reconnect incomplete"
+    "install": "PASS",
+    "upgrade": "PASS",
+    "rollback": "PASS",
+    "version_remains": "0.3.4",
+    "new_release": false
   },
   "nonblocking_findings": {
     "required_reads": "available=false / availability_not_provided without supplied availability",
     "search": "empty candidates without supplied records is not confirmed absence",
     "optional_backends": "knowledge/memory/surreal unavailable is allowed degraded state"
   },
-  "blockers": ["BLOCKED_FINAL_ACCEPTANCE", "CHATGPT_LIFECYCLE_RECONNECT_INCOMPLETE", "FRESH_HOST_ACCEPTANCE_INCOMPLETE"],
-  "final_exit": "NOT_GRANTED",
-  "issue_state": "OPEN",
+  "historical_blockers": [
+    "BLOCKED_CHATGPT_CUSTOM_MCP_PERMISSION",
+    "BLOCKED_HOST_INSTALL",
+    "CURSOR_REAL_HOST_SMOKE_REQUIRED",
+    "CHATGPT_LIFECYCLE_RECONNECT_INCOMPLETE",
+    "FRESH_HOST_ACCEPTANCE_INCOMPLETE",
+    "BLOCKED_FINAL_ACCEPTANCE"
+  ],
+  "current_blockers": [],
+  "final_exit": "AGENT_BRAIN_CDB_CONTEXT_MULTI_SURFACE_OPERATIONAL",
+  "issue_state": "OPEN_UNTIL_POST_MERGE_CLOSEOUT",
   "closeout_comment": null
 }
