@@ -29,9 +29,9 @@ exact-package-version + matching-git-tag
 ## Schnellstart für Consumer
 
 ```bash
-python -m pip install "agent-brain==0.2.1"
+python -m pip install "agent-brain==0.3.0"
 # oder, solange kein Index-Publish nötig ist:
-python -m pip install "agent-brain @ git+https://github.com/jannekbuengener/agent-brain.git@v0.2.1"
+python -m pip install "agent-brain @ git+https://github.com/jannekbuengener/agent-brain.git@v0.3.0"
 ```
 
 Danach:
@@ -40,8 +40,8 @@ Danach:
 import agent_brain
 from agent_brain.distribution import verify_installed_version, snapshot_public_surface
 
-assert agent_brain.__version__ == "0.2.1"
-verify_installed_version("0.2.1")
+assert agent_brain.__version__ == "0.3.0"
+verify_installed_version("0.3.0")
 surface = snapshot_public_surface()
 ```
 

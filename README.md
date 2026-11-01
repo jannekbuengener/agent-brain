@@ -27,6 +27,7 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 - [Externe technische Referenzen](docs/external-docs/index.md)
 - [Distribution / Consumer Contract](docs/distribution/README.md)
 - [CLI / Protocol Surface](docs/protocol/README.md)
+- [Capability / cdb_context Plugin Surface](docs/capabilities/README.md)
 - [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
 - [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)
@@ -47,6 +48,7 @@ src/agent_brain/
 ├─ surrealdb/   # SurrealDB Read Runtime
 ├─ distribution/# Consumer Version / Pin Contract (#17)
 ├─ protocol/    # Public Application / Protocol Surface (#12)
+├─ capabilities/# Host-neutral Capability Layer + cdb_context (#73 Goal 1)
 ├─ cli/         # Standalone CLI Transport (#12)
 └─ connectors/  # read-only Repository Ingestion (Slice #9)
 ```
