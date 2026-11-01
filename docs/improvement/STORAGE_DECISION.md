@@ -17,7 +17,8 @@
 
 | Option | Verdict | Why |
 |---|---|---|
-| SurrealDB (`#38/#10`) | DEFER | Planned around Knowledge/Memory read paths; must not become a backdoor into `#39` read-only stores or blur domain boundaries. |
+| SurrealDB (`#38/#10`) as Knowledge/Memory write path | FORBIDDEN | Read adapters only; must not become a backdoor into `#39` read-only stores. |
+| SurrealDB behind `ImprovementObservationStore` (`#64/#89`) | ADOPTED | Durable multi-writer target adapter; domain port unchanged; SQLite retained for offline/tests. |
 | Pure JSONL files | REJECT for V1 concurrency | Weaker multi-writer transactional guarantees than SQLite for the pilot's parallel-agent requirement. |
 | New SaaS / remote DB package | REJECT | Unnecessary dependency and ops surface before pilot evidence. |
 | Mutating KnowledgeStore/MemoryStore | FORBIDDEN | Explicit non-goal of `#45/#47/#39`. |

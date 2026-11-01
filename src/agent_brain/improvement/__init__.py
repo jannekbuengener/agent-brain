@@ -19,6 +19,7 @@ from agent_brain.improvement.management import (
     ImprovementManagementPort,
     InMemoryImprovementManagementPort,
     ManagementActor,
+    SurrealImprovementManagementPort,
     board_manager_actor,
     github_issue_work_ref,
 )
@@ -42,6 +43,7 @@ from agent_brain.improvement.protocol import (
     tool_schemas,
 )
 from agent_brain.improvement.sqlite import SqliteImprovementObservationStore
+from agent_brain.improvement.surreal import SurrealImprovementObservationStore
 
 __all__ = [
     "PROJECTION_VERSION",
@@ -66,6 +68,8 @@ __all__ = [
     "ProtocolDenied",
     "SqliteImprovementObservationStore",
     "SubmitObservationResult",
+    "SurrealImprovementManagementPort",
+    "SurrealImprovementObservationStore",
     "assess_observation",
     "board_manager_actor",
     "capability_readback",

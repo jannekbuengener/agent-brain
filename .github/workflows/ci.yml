@@ -21,6 +21,9 @@ jobs:
           - "3.13"
           - "3.14"
 
+    env:
+      AGENT_BRAIN_SURREAL_ENDPOINT: http://127.0.0.1:8010
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -30,6 +33,23 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
+
+      - name: Start isolated SurrealDB 3.0.4 scratch
+        # Disposable memory engine only — never Claire/unknown volumes (#38/#89).
+        run: |
+          docker run -d --name agent-brain-surreal-scratch \
+            -p 8010:8000 \
+            surrealdb/surrealdb@sha256:65000ff205b08363b035b457f292dc0a0b1cd4212935dd5ea94073cf67adf306 \
+            start --bind 0.0.0.0:8000 --unauthenticated memory
+          for _ in $(seq 1 40); do
+            if curl -sf http://127.0.0.1:8010/version | grep -q 'surrealdb-3.0'; then
+              curl -s http://127.0.0.1:8010/version
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs agent-brain-surreal-scratch || true
+          exit 1
 
       - name: Install package and development tools
         run: |
@@ -43,4 +63,5 @@ jobs:
         # Includes #17 distribution gates (tests/distribution/) and #12
         # CLI/protocol gates (tests/protocol/, tests/cli/): installability,
         # version parity, contract shape, consumer smoke, core-without-MCP.
+        # Also runs #64/#89 Surreal improvement live acceptance against scratch.
         run: python -m pytest -q
