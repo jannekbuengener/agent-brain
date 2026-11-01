@@ -90,7 +90,7 @@ def test_built_at_and_tool_version_come_from_injection() -> None:
     snapshot = build_knowledge_snapshot(result, clock=FixedClock(FIXED_TIME))
 
     assert snapshot.metadata.built_at == FIXED_TIME.isoformat()
-    assert snapshot.metadata.tool_version == "agent-brain/0.3.3"
+    assert snapshot.metadata.tool_version == "agent-brain/0.3.4"
 
 
 def test_manifests_map_artifacts_sorted_by_artifact_id() -> None:

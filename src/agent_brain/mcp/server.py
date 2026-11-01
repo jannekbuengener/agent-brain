@@ -136,6 +136,13 @@ class McpStdioServer:
         }
 
 
+def _force_utf8_text_stream(stream: TextIO) -> None:
+    """Keep MCP stdio UTF-8 even when the Windows host locale is cp1252."""
+    reconfigure = getattr(stream, "reconfigure", None)
+    if callable(reconfigure):
+        reconfigure(encoding="utf-8", errors="strict")
+
+
 def serve_stdio(
     *,
     stdin: TextIO | None = None,
@@ -145,6 +152,8 @@ def serve_stdio(
     """Run the MCP stdio loop until stdin EOF."""
     in_stream = stdin if stdin is not None else sys.stdin
     out_stream = stdout if stdout is not None else sys.stdout
+    _force_utf8_text_stream(in_stream)
+    _force_utf8_text_stream(out_stream)
     server = McpStdioServer(transport=transport)
 
     while True:
