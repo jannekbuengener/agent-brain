@@ -1,6 +1,6 @@
 # Install — Claude Code
 
-1. Install Agent Brain: `python -m pip install "agent-brain==0.3.1"`
+1. Install Agent Brain: `python -m pip install "agent-brain==0.3.2"`
 2. Ensure `agent-brain-mcp` starts (stdio; used by the plugin `.mcp.json`).
 3. Add the local marketplace and install:
 

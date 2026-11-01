@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "agent-brain": {
+      "type": "http",
+      "url": "https://mcp.example.invalid/mcp",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "none"
+          },
+          "auth_model": "PUBLIC_READ_ONLY",
+          "preferred_connection": "secure_mcp_tunnel",
+          "local_stdio_command": "agent-brain-mcp",
+          "local_http_command": "agent-brain-mcp-http",
+          "local_http_path": "/mcp",
+          "local_http_default_port": 8787,
+          "mcp_http_schema": "agent-brain-mcp-streamable-http/v1",
+          "read_only": true,
+          "public_directory_submission": false
+        }
+      }
+    }
+  }
+}

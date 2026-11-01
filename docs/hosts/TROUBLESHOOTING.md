@@ -3,6 +3,9 @@
 ## MCP does not start
 
 - Confirm package import with the **same** interpreter you intend to use: `python -c "import agent_brain; print(agent_brain.__version__)"`
+- ChatGPT cannot reach local MCP: prefer Secure MCP Tunnel; confirm `tunnel-client` `/readyz` and workspace association. Do not claim PASS without a real ChatGPT tool call.
+- ChatGPT tools look stale after a schema change: connection → **Refresh**, then start a new conversation.
+- MCP Inspector fails on `/mcp`: confirm `agent-brain-mcp-http` is listening and Accept headers include `application/json` / `text/event-stream`.
 - Confirm console script: `agent-brain-mcp` (waits on stdio; Ctrl+C to stop)
 - Fallback: `python -m agent_brain.mcp` — only if that `python` is the install environment
 - On Windows with multiple Pythons, bare `python` may resolve to an interpreter **without** agent-brain → OpenCode/Claude show `Connection closed` / `ModuleNotFoundError`. Fix PATH or use `agent-brain-mcp` from the install's Scripts directory.

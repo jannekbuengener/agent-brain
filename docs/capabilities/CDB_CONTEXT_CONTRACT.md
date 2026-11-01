@@ -104,4 +104,5 @@ LOCAL_HOST_SURFACES_READY: YES
 
 bedeutet: Claude Code / Cursor / OpenCode Adapter können gebaut werden, ohne neue fachliche Capability-Entscheidungen treffen zu müssen (Contract, Descriptors, Version, Fixture, Failures, Profil stabil).
 
-Goal-2 Host-Packaging liegt unter `hosts/` und `docs/hosts/`; Exit-Token dort: `LOCAL_HOST_SURFACES_GO`. ChatGPT remote packaging bleibt ein späteres Delivery-Goal unter #73.
+Goal-2 Host-Packaging liegt unter `hosts/` und `docs/hosts/`; Exit-Token dort: `LOCAL_HOST_SURFACES_GO`.  
+Goal-3 ChatGPT remote packaging: `hosts/chatgpt/` + Streamable HTTP / Secure MCP Tunnel; Exit-Token: `CHATGPT_AGENT_BRAIN_APP_GO`.
