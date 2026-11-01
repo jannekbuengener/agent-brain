@@ -37,8 +37,8 @@ ein neuer manueller Marathon ist nicht erforderlich.
 | Nachweis | ChatGPT | Claude Code | Cursor | OpenCode |
 |---|---|---|---|---|
 | Installation / Registration | PASS | PASS | PASS (native MCP-Discovery) | PASS (Discovery) |
-| Fünf Capabilities im echten Host | PASS | PASS (0.3.4) | FAIL | PASS (0.3.4) |
-| Fehler im echten Host | PASS (invalid_input) | PASS (invalid_input / contract_version_mismatch) | FAIL | PASS (invalid_input) |
+| Fünf Capabilities im echten Host | PASS | PASS (0.3.4) | PASS (0.3.4) | PASS (0.3.4) |
+| Fehler im echten Host | PASS (invalid_input) | PASS (invalid_input / contract_version_mismatch) | PASS (invalid_input) | PASS (invalid_input) |
 | Fresh Host vollständig | PASS (akzeptierte Owner-Evidence) | FAIL | FAIL | FAIL |
 | Upgrade + Restart/Reconnect + health | FAIL | PASS (0.3.3 → 0.3.4) | FAIL | PASS (0.3.3 → 0.3.4) |
 | Rollback + Restart/Reconnect + health | FAIL | PASS (0.3.4 → 0.3.3) | FAIL | PASS (0.3.4 → 0.3.3) |
@@ -50,19 +50,25 @@ Restart/Reconnect jeder Host-Anwendung nach einem Versionswechsel.
 
 ## Neue reale Host-Evidence
 
-Nach ausdrücklicher Owner-Freigabe wurde Cursor-MCP im isolierten Workspace
-aktiviert. Natives `mcp list-tools agent-brain` entdeckt genau fünf Tools.
-Die konkrete Übertragung des Testprompts und der read-only MCP-Antworten an
-Cursor wurde anschließend ebenfalls ausdrücklich freigegeben. Der echte
-Fünf-Call-Smoke scheitert jedoch vor den Calls an Windows Application Control:
-Die native Cursor-Agent-Datei `file_service.win32-x64-msvc.node` im
-Versionsverzeichnis `2026.08.25-3e8eec8` wird blockiert. Es wurde keine
+Nach ausdrücklicher Owner-Freigabe wurde Cursor-MCP registriert. Natives
+`mcp list-tools agent-brain` entdeckt genau fünf Tools. Der frühere echte
+Host-Smoke scheiterte unter stale `cursor-agent` `2026.08.25-3e8eec8` an
+WDAC/Code Integrity (`VerifiedAndReputableDesktop`, Events 3077/3033) beim
+Laden von unsigniertem `file_service.win32-x64-msvc.node`. Es wurde keine
 Sicherheitsrichtlinie geändert und keine Sperre umgangen.
-`CURSOR_REAL_HOST_SMOKE_REQUIRED` bleibt offen; aus Discovery folgt kein
-Capability- oder Version-PASS im echten Host.
-Der konkrete Cursor-Blocker wird auf Owner-Auftrag in [#86](https://github.com/jannekbuengener/agent-brain/issues/86)
-verfolgt. Der Owner bestätigt, dass Cursor derzeit nicht funktioniert. #86 ersetzt
-keinen Cursor-PASS und keine Final-Abnahme unter #73.
+
+Unter [#86](https://github.com/jannekbuengener/agent-brain/issues/86) wurde
+per offiziellem `cursor-agent update` auf `2026.10.22-27dcf5f` gewechselt
+(Cursor Desktop weiterhin `3.27.22`). Danach lief der echte Fünf-Call-Smoke
+über den offiziellen Cursor-Agent-Host: Session
+`80d502bb-30b6-4ddb-8f17-f903699511ea`. Alle fünf Capabilities lieferten
+`agent_brain_version=0.3.4`, Contract/`read_only=true`, Claire-Profil und
+explizite Limitations; Evidence blieb `NO_EVIDENCE` / `confirmed=false`;
+`briefing(task + topic)` lieferte `invalid_input`. Keine neuen CI-3077-Events
+während des erfolgreichen Smokes. Fresh-Workstation sowie isolierter
+Agent-Brain-Upgrade/Rollback-Reconnect für Cursor bleiben getrennt offen.
+`CURSOR_REAL_HOST_SMOKE_GO` ist damit für #86 erfüllt; #73 bleibt wegen der
+restlichen Goal-4-Gates offen.
 
 Für Claude wurden Testprompt und read-only MCP-Antworten ebenfalls ausdrücklich
 freigegeben. Nach dem Owner-Login hat Claude Code 2.1.104 alle fünf Capabilities
@@ -126,7 +132,7 @@ Host-Workstation oder neue Account-Anmeldung wird daraus abgeleitet.
 Echte lokale Host-Smokes sowie pro Host Upgrade-/Rollback-Reconnect nachweisen.
 Erst danach finale Matrix und Evidence aktualisieren, finalen CI-/Main-Stand
 prüfen, Abschlusskommentar auf #73 schreiben und das Issue manuell schließen.
-Bis dahin: `BLOCKED_HOST_INSTALL / CURSOR_REAL_HOST_SMOKE_REQUIRED / BLOCKED_FINAL_ACCEPTANCE`, `NOT_GRANTED`.
+Bis dahin: `BLOCKED_FINAL_ACCEPTANCE / CHATGPT_LIFECYCLE_RECONNECT_INCOMPLETE / FRESH_HOST_ACCEPTANCE_INCOMPLETE`, `NOT_GRANTED`.
 
 Bekannte degradierte Zustände bleiben zulässig: fehlende Required-Read-Availability,
 leere Search ohne Records und optionale unavailable Backends. Fehlende Evidence

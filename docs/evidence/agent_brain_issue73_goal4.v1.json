@@ -10,7 +10,7 @@
   "main_sha": "4362b417a5c4a9a079b152a58781dbdb99cbc5af",
   "main_sha_role": "immutable release/runtime baseline; evidence-only changes use evidence_base_main_sha",
   "evidence_base_main_sha": "c3c6b1989ce7bc6be21a2dd6d3425245e002ba33",
-  "latest_host_evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556556881",
+  "latest_host_evidence": "https://github.com/jannekbuengener/agent-brain/issues/86#issuecomment-6558109509",
   "release_immutable": true,
   "baseline_pr": 83,
   "baseline_pr_ci": "https://github.com/jannekbuengener/agent-brain/actions/runs/41292426553",
@@ -32,7 +32,7 @@
       "required_reads including identity and availability", "evidence_state", "confirmed", "error"
     ],
     "failure_cases": ["invalid_input", "invalid_scope", "capability_unavailable", "contract_version_mismatch", "unsupported_operation"],
-    "host_application_execution": "Claude Code and OpenCode real five-capability smokes verified; ChatGPT accepted owner evidence; Cursor blocked"
+    "host_application_execution": "Claude Code, OpenCode, and Cursor real five-capability smokes verified; ChatGPT accepted owner evidence"
   },
   "hosts": {
     "chatgpt": {
@@ -77,20 +77,35 @@
       "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556381157"
     },
     "cursor": {
-      "install": "PASS_NATIVE_MCP_REGISTRATION_AND_FIVE_TOOL_DISCOVERY; full agent startup blocked by Windows Application Control",
-      "capabilities": "PASS_SHARED_TRANSPORT; real host execution missing",
-      "failure_semantics": "PASS_SHARED_TRANSPORT",
-      "version": "0.3.4 packaged launcher verified",
-      "upgrade": "DOCUMENTED; shared plan tests only",
-      "rollback": "DOCUMENTED; shared plan tests only",
-      "host_discovery": "native mcp enable succeeded in isolated workspace; list-tools returned exactly five bounded capabilities",
+      "install": "PASS_NATIVE_MCP_REGISTRATION_AND_FIVE_TOOL_DISCOVERY",
+      "capabilities": "PASS_REAL_HOST_ALL_FIVE",
+      "failure_semantics": "PASS_REAL_HOST_INVALID_INPUT",
+      "version": "0.3.4 returned by all five real host calls",
+      "upgrade": "DOCUMENTED; host restart/reconnect not newly exercised in isolated AB lifecycle",
+      "rollback": "DOCUMENTED; host restart/reconnect not newly exercised in isolated AB lifecycle",
+      "host_discovery": "native mcp enable succeeded; list-tools returned exactly five bounded capabilities with dotted names",
       "approval": "explicit user approval received for persistent MCP enable and concrete prompt/response transfer to Cursor",
-      "host_blocker": "Windows Application Control blocked Cursor Agent native file_service.win32-x64-msvc.node before capability calls",
-      "native_file_signature": "NotSigned; read-only Authenticode check; no policy changes",
-      "host_agent_version_directory": "2026.08.25-3e8eec8",
-      "required_gate": "CURSOR_REAL_HOST_SMOKE_REQUIRED",
+      "host_version": "Cursor Desktop 3.27.22; cursor-agent 2026.10.22-27dcf5f after official update",
+      "prior_host_blocker": "WDAC Code Integrity policy VerifiedAndReputableDesktop blocked unsigned file_service.win32-x64-msvc.node under stale cursor-agent 2026.08.25-3e8eec8 (Event 3077/3033; PolicyGUID {0283ac0f-fff1-49ae-ada1-8a933130cad6})",
+      "resolution": "official cursor-agent update 2026.08.25-3e8eec8 -> 2026.10.22-27dcf5f; no Windows policy change; no bypass",
+      "native_file_signature": "updated agent file_service still Authenticode NotSigned; Desktop Cursor.exe and Desktop file_service Valid/Anysphere-signed; smoke completed without new CI 3077 events",
+      "host_agent_version_directory_before": "2026.08.25-3e8eec8",
+      "host_agent_version_directory_after": "2026.10.22-27dcf5f",
+      "fresh_host_meaning": "fresh cursor-agent process after official update; fresh project MCP registration; not a fresh workstation",
+      "session_id": "80d502bb-30b6-4ddb-8f17-f903699511ea",
+      "observed_calls": {
+        "health": "ok=true; agent_brain_version=0.3.4; protocol_schema=agent-brain-protocol/v1; capability_contract=agent-brain-cdb-context-capability/v1; read_only=true; overall=degraded optional backends unavailable",
+        "briefing": "ok=true; repository_identity=jannekbuengener/Claire_de_Binare; source_priority preserved; limitations partial_source_state/no_evidence",
+        "search": "ok=true; candidates=[]; version 0.3.4",
+        "required_reads": "ok=true; six CDB source refs; available=false / availability_not_provided",
+        "evidence": "ok=true; NO_EVIDENCE; confirmed=false",
+        "invalid_input": "briefing(task+topic) -> error.code=invalid_input"
+      },
+      "security_policy_changed": false,
+      "bypass_used": false,
+      "required_gate": "CURSOR_REAL_HOST_SMOKE_GO",
       "blocker_issue": "https://github.com/jannekbuengener/agent-brain/issues/86",
-      "owner_status": "Cursor currently not working; no real five-call host proof"
+      "owner_status": "Cursor real five-call host proof completed on updated official agent runtime"
     },
     "opencode": {
       "install": "PASS_OFFICIAL_OPENCODE_1.19.5_ISOLATED_INSTALL_AND_NATIVE_MCP",
@@ -152,7 +167,7 @@
     "search": "empty candidates without supplied records is not confirmed absence",
     "optional_backends": "knowledge/memory/surreal unavailable is allowed degraded state"
   },
-  "blockers": ["BLOCKED_HOST_INSTALL", "CURSOR_REAL_HOST_SMOKE_REQUIRED", "BLOCKED_FINAL_ACCEPTANCE"],
+  "blockers": ["BLOCKED_FINAL_ACCEPTANCE", "CHATGPT_LIFECYCLE_RECONNECT_INCOMPLETE", "FRESH_HOST_ACCEPTANCE_INCOMPLETE"],
   "final_exit": "NOT_GRANTED",
   "issue_state": "OPEN",
   "closeout_comment": null
