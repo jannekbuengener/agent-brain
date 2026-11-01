@@ -1,0 +1,3985 @@
+{
+  "aggregates": {
+    "agent_memory": {
+      "backend": "surrealdb_agent_memory",
+      "block_reason": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "blocked": true,
+      "failure_safety": 0.0,
+      "latency_ms": {
+        "count": 68.0,
+        "max": 0.000200001522898674,
+        "p50": 0.000100000761449337,
+        "p95": 0.000100000761449337
+      },
+      "live_state_authority": 0.0,
+      "mrr": 0.23529411764705882,
+      "must_hit_recall_at_10": 0.23529411764705882,
+      "ndcg_at_10": 0.23529411764705882,
+      "provenance_completeness": 0.0,
+      "query_count_run1": 17,
+      "recall@1": 0.23529411764705882,
+      "recall@10": 0.23529411764705882,
+      "recall@3": 0.23529411764705882,
+      "recall@5": 0.23529411764705882,
+      "repeatability_topk_overlap": 1.0,
+      "scope_isolation": 0.0,
+      "supersession_correctness": 0.0,
+      "temporal_correctness": 0.0
+    },
+    "native": {
+      "backend": "native_agent_brain",
+      "block_reason": null,
+      "blocked": false,
+      "failure_safety": 1.0,
+      "latency_ms": {
+        "count": 68.0,
+        "max": 0.4014000005554408,
+        "p50": 0.194500000361586,
+        "p95": 0.24476999951730247
+      },
+      "live_state_authority": 1.0,
+      "mrr": 0.9411764705882353,
+      "must_hit_recall_at_10": 0.9411764705882353,
+      "ndcg_at_10": 0.9411764705882353,
+      "provenance_completeness": 1.0,
+      "query_count_run1": 17,
+      "recall@1": 0.9117647058823529,
+      "recall@10": 0.9411764705882353,
+      "recall@3": 0.9411764705882353,
+      "recall@5": 0.9411764705882353,
+      "repeatability_topk_overlap": 1.0,
+      "scope_isolation": 1.0,
+      "supersession_correctness": 1.0,
+      "temporal_correctness": 1.0
+    }
+  },
+  "authority": {
+    "authority": "NO_NEW_AUTHORITY / EXECUTE_EXISTING_#40 / PARENT_#36_REMAINS_META_OWNER / EVALUATION_ONLY",
+    "issue": 40,
+    "parent": 36
+  },
+  "benchmark_version": "issue40-eval/v1",
+  "compatibility": {
+    "embedding_dimensions": 3072,
+    "embedding_model": "gemini-embedding-2",
+    "evaluation_status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+    "evidence_urls": [
+      "https://surrealdb.com/docs/agent-memory",
+      "https://surrealdb.com/docs/agent-memory/integrations/sdks/python",
+      "https://surrealdb.com/docs/agent-memory/quickstarts/embedded",
+      "https://surrealdb.com/docs/agent-memory/tuning/models-per-stage",
+      "https://surrealdb.com/docs/agent-memory/reasoning/reconciliation-and-supersession",
+      "https://pypi.org/project/surrealdb-memory/1.0.0b1/"
+    ],
+    "external_model_dependency": "Google Gemini embeddings required deployment-wide",
+    "import_path": "surrealdb.memory",
+    "in_process_library": false,
+    "local_no_cost_path": false,
+    "package": "surrealdb-memory",
+    "package_version": "1.0.0b1",
+    "productive_write_verbs_present": [
+      "remember",
+      "remember_many",
+      "reflect",
+      "consolidate",
+      "elaborate",
+      "forget"
+    ],
+    "python_requires": ">=3.10 (Agent Brain baseline remains >=3.12)",
+    "required_services": [
+      "SurrealDB server",
+      "Spectron/Agent Memory API (ghcr.io/surrealdb/spectron or hosted)",
+      "Object store (file/S3/GCS/Azure)",
+      "Gemini API for embeddings",
+      "LLM provider key for extraction stages (openai/anthropic/google/cerebras/openrouter)"
+    ],
+    "runtime_topology": "Separate SurrealDB Agent Memory / Spectron HTTP service in front of SurrealDB; clients call endpoint+api_key; no supported in-process embedded library",
+    "storage_requirements": [
+      "SurrealDB durable store for graph/vector/document memory",
+      "Object store for raw document bytes"
+    ],
+    "surrealdb_driver_note": "surrealdb 2.x stable has no memory extra; memory client requires surrealdb 3.x prerelease",
+    "surrealdb_sdk_extra": "pip install --pre 'surrealdb[memory]'"
+  },
+  "core_coupling_hits": [],
+  "decision": {
+    "decision": "REJECT_FOR_NOW",
+    "hard_gates": {
+      "core_coupling_zero": true,
+      "failure_safety": false,
+      "latency": false,
+      "live_state_authority": false,
+      "must_hit_recall": false,
+      "provenance_completeness": false,
+      "ranking_not_worse": false,
+      "repeatability": true,
+      "scope_isolation": false,
+      "supersession_correctness": false,
+      "temporal_correctness": false
+    },
+    "material_value": false,
+    "operational_complexity": "Agent Memory adds Spectron service + object store + mandatory Gemini embeddings + LLM provider keys on top of SurrealDB; native baseline already owns temporal/provenance/scope/live-revalidation contracts without those dependencies.",
+    "patterns_to_retain_as_reference": [
+      "tri-temporal known/valid/system separation (already absorbed via #37)",
+      "same-provenance supersession + cross-provenance uncertainty (reference)",
+      "explicit scope lens / fail-closed grants (aligned with #39 MemoryScope)",
+      "retrieval/decision/response traces as first-class memory (reference-only)"
+    ],
+    "reason": "Fair live Agent Memory evaluation is BLOCKED_EXTERNAL_MODEL_DEPENDENCY (mandatory gemini-embedding-2 + Spectron HTTP service; no authorized local no-cost path). Hard adoption gates cannot pass. Operational dependency burden is disproportionate versus the native Agent-Brain baseline that already implements #37/#39/#10/#11 contracts.",
+    "reevaluation_would_require": [
+      "Official local/no-cost embedding path (or explicit authorized paid eval budget)",
+      "Pinned disposable Spectron image digest usable in CI without unknown volumes",
+      "Demonstrable material reduction of Agent-Brain backend complexity OR clear retrieval gain",
+      "Proof that Live-State Authority remains 100% Agent-Brain-owned under adapter"
+    ]
+  },
+  "decision_matrix": [
+    {
+      "adoption_requirement": "Agent Memory 100%",
+      "agent_memory": 0.0,
+      "gate": "Scope isolation",
+      "native": 1.0
+    },
+    {
+      "adoption_requirement": "100%",
+      "agent_memory": 0.0,
+      "gate": "Temporal correctness",
+      "native": 1.0
+    },
+    {
+      "adoption_requirement": "100%",
+      "agent_memory": 0.0,
+      "gate": "Supersession",
+      "native": 1.0
+    },
+    {
+      "adoption_requirement": "100% accepted facts",
+      "agent_memory": 0.0,
+      "gate": "Provenance",
+      "native": 1.0
+    },
+    {
+      "adoption_requirement": "100%",
+      "agent_memory": 0.0,
+      "gate": "Live-state authority",
+      "native": 1.0
+    },
+    {
+      "adoption_requirement": ">=95% + not worse than native",
+      "agent_memory": 0.23529411764705882,
+      "gate": "Must-hit Recall@10",
+      "native": 0.9411764705882353
+    },
+    {
+      "adoption_requirement": "not worse than native",
+      "agent_memory": 0.23529411764705882,
+      "gate": "Ranking MRR",
+      "native": 0.9411764705882353
+    },
+    {
+      "adoption_requirement": "not worse than native",
+      "agent_memory": 0.23529411764705882,
+      "gate": "Ranking nDCG@10",
+      "native": 0.9411764705882353
+    },
+    {
+      "adoption_requirement": ">=0.90",
+      "agent_memory": 1.0,
+      "gate": "Repeatability",
+      "native": 1.0
+    },
+    {
+      "adoption_requirement": "100%",
+      "agent_memory": 0.0,
+      "gate": "Failure safety",
+      "native": 1.0
+    },
+    {
+      "adoption_requirement": "AM P95 <= native P95 + 200ms OR <= 2x native",
+      "agent_memory": 0.000100000761449337,
+      "gate": "P95 latency",
+      "native": 0.24476999951730247
+    },
+    {
+      "adoption_requirement": "0 Agent-Memory imports in Domain/Core",
+      "agent_memory": 0,
+      "gate": "Core coupling",
+      "native": 0
+    },
+    {
+      "adoption_requirement": "material value required",
+      "agent_memory": "Spectron service + SurrealDB + object store + Gemini embeddings",
+      "gate": "Operational complexity",
+      "native": "in-process native ports + optional pinned Surreal read runtime"
+    }
+  ],
+  "environment": {
+    "agent_memory_backend": "surrealdb_agent_memory",
+    "native_backend": "native_agent_brain",
+    "paid_api_invoked": false,
+    "productive_writes_introduced": false,
+    "repeats": 5,
+    "sdk_installed_on_host": false,
+    "source_priority_preserved": true
+  },
+  "final": [
+    "NO_FAKE_PASS",
+    "NO_PRODUCTIVE_AGENT_MEMORY_WRITES",
+    "NO_NEW_AUTHORITY_EXCEPT_ADOPT_ONLY_IMPLEMENTATION_FOLLOWUP"
+  ],
+  "hashes": {
+    "fixture_count": 10,
+    "fixtures": "d55f45d15ed2c2d43dd6cc5eaf7c564d4a68088860cb4aade90e66c09ae43268",
+    "gold": "3cec3ed0597912beed9c6f6d1779e1298dd4b36b1f937553eebf44a6efa5091a",
+    "gold_count": 17,
+    "queries": "5064c1afd545bc50f3f94a5d82a4535b59e231b80179da3be080e80728b420a2",
+    "query_count": 17
+  },
+  "observed_at": "2026-11-01T14:32:36Z",
+  "raw_results": [
+    {
+      "actual_hits": [
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2663999985088594,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.14730000111740083,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.1542999998491723,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.06139999823062681,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": 1,
+        "f1-role-b": 2
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.09800000043469481,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f2-delayed"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.11730000187526457,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f3-github-claim",
+        "f3-memory-claim"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.13380000018514693,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f4-tenant-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.11670000094454736,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": 1
+      },
+      "run_id": 1,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.11379999705241062,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f5-surrealdb"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.11249999806750566,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f6-span"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.1145999995060265,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.12729999798466451,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-symbol"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.12649999916902743,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.21430000197142363,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19609999799286015,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.21669999841833487,
+      "live_ok": true,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "native_agent_brain",
+      "detail": "memory store unavailable",
+      "expected_hits": [],
+      "failure_ok": true,
+      "latency_ms": 0.1067000011971686,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.234499999351101,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2305999987584073,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.22769999850424938,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.10089999705087394,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": 1,
+        "f1-role-b": 2
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.1609999999345746,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f2-delayed"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2037999984167982,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f3-github-claim",
+        "f3-memory-claim"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.22700000045006163,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f4-tenant-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.1970999983313959,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": 1
+      },
+      "run_id": 2,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.19830000019283034,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f5-surrealdb"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.20600000061676838,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f6-span"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.1979000007850118,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19700000120792538,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-symbol"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19460000112303533,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19750000137719326,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19439999960013665,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.21659999765688553,
+      "live_ok": true,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "native_agent_brain",
+      "detail": "memory store unavailable",
+      "expected_hits": [],
+      "failure_ok": true,
+      "latency_ms": 0.10939999992842786,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.23160000273492187,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2061000013782177,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.26590000197757035,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.09689999933470972,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": 1,
+        "f1-role-b": 2
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.16479999976581894,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f2-delayed"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19160000010742806,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f3-github-claim",
+        "f3-memory-claim"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.22810000155004673,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f4-tenant-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19460000112303533,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": 1
+      },
+      "run_id": 3,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.19489999976940453,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f5-surrealdb"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.21980000019539148,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f6-span"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19429999883868732,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19289999909233302,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-symbol"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18880000061471947,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19289999909233302,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.22149999858811498,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.19579999934649095,
+      "live_ok": true,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "native_agent_brain",
+      "detail": "memory store unavailable",
+      "expected_hits": [],
+      "failure_ok": true,
+      "latency_ms": 0.09950000094249845,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.22669999816571362,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19550000070012175,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2272000019729603,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.09349999891128391,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": 1,
+        "f1-role-b": 2
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.15809999968041666,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f2-delayed"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.1951000012923032,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f3-github-claim",
+        "f3-memory-claim"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.22460000036517158,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f4-tenant-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18899999849963933,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": 1
+      },
+      "run_id": 4,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.19020000036107376,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f5-surrealdb"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18850000196835026,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f6-span"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19080000129179098,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2007000002777204,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-symbol"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.1889000013761688,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19070000053034164,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18849999833037145,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.16369999866583385,
+      "live_ok": true,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "native_agent_brain",
+      "detail": "memory store unavailable",
+      "expected_hits": [],
+      "failure_ok": true,
+      "latency_ms": 0.08539999907952733,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18819999968400225,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.15129999883356504,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.4014000005554408,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.17909999951370992,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": 1,
+        "f1-role-b": 2
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.17750000188243575,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f2-delayed"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2569999996921979,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": true
+    },
+    {
+      "actual_hits": [
+        "f3-github-claim",
+        "f3-memory-claim"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.2502999996067956,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f4-tenant-a"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18849999833037145,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": 1
+      },
+      "run_id": 5,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.18629999976838008,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": true,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f5-surrealdb"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.234499999351101,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f6-span"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18740000086836517,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": true,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.21330000163288787,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-symbol"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.18629999976838008,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [
+        "f7-issue"
+      ],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19260000044596381,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": 1
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.19099999917671084,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "available",
+      "backend": "native_agent_brain",
+      "detail": null,
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.19919999976991676,
+      "live_ok": true,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "native_agent_brain",
+      "detail": "memory store unavailable",
+      "expected_hits": [],
+      "failure_ok": true,
+      "latency_ms": 0.10400000246590935,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "OK",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0010000003385357559,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0002999986463692039,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='valid-at' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='history' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": null,
+        "f1-role-b": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='conflict' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": null
+      },
+      "run_id": 1,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='provenance' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='semantic' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='live-revalidation' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": false,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='failure' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": false,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 1,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='valid-at' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='history' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": null,
+        "f1-role-b": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='conflict' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": null
+      },
+      "run_id": 2,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='provenance' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='semantic' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.00019999788491986692,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='live-revalidation' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": false,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='failure' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": false,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 2,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='valid-at' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='history' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": null,
+        "f1-role-b": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000200001522898674,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='conflict' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": null
+      },
+      "run_id": 3,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='provenance' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='semantic' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='live-revalidation' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": false,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='failure' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": false,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 3,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='valid-at' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='history' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": null,
+        "f1-role-b": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='conflict' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": null
+      },
+      "run_id": 4,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000200001522898674,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='provenance' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='semantic' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='live-revalidation' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": false,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='failure' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": false,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 4,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-current",
+      "rank_positions": {
+        "f1-role-b": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-known-as-of",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='valid-at' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-valid-at",
+      "rank_positions": {
+        "f1-role-a": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='history' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f1-role-a",
+        "f1-role-b"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F1-history",
+      "rank_positions": {
+        "f1-role-a": null,
+        "f1-role-b": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='known-as-of' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F2-delayed",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='current' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f2-delayed"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F2-after-known",
+      "rank_positions": {
+        "f2-delayed": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": false
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='conflict' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f3-github-claim"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F3-conflict",
+      "rank_positions": {
+        "f3-github-claim": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f4-tenant-a"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-tenant-a",
+      "rank_positions": {
+        "f4-tenant-a": null
+      },
+      "run_id": 5,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='scope' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F4-scope-adversarial",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": false,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f5-surrealdb"
+      ],
+      "failure_ok": null,
+      "latency_ms": 9.999712347052991e-05,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F5-alias",
+      "rank_positions": {
+        "f5-surrealdb": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='provenance' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f6-span"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": false,
+      "query_id": "Q-F6-provenance",
+      "rank_positions": {
+        "f6-span": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-issue",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-symbol"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-symbol",
+      "rank_positions": {
+        "f7-symbol": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='exact' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f7-issue"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F7-exact-sha",
+      "rank_positions": {
+        "f7-issue": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='semantic' not executed against live Agent Memory.",
+      "expected_hits": [
+        "f8-semantic"
+      ],
+      "failure_ok": null,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": false,
+      "provenance_ok": null,
+      "query_id": "Q-F8-semantic",
+      "rank_positions": {
+        "f8-semantic": null
+      },
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='live-revalidation' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": null,
+      "latency_ms": 0.000100000761449337,
+      "live_ok": false,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F9-live",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    },
+    {
+      "actual_hits": [],
+      "availability": "unavailable",
+      "backend": "surrealdb_agent_memory",
+      "detail": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY: fair Agent Memory ingest/recall requires Spectron service and mandatory gemini-embedding-2; no authorized no-cost local path. Query category='failure' not executed against live Agent Memory.",
+      "expected_hits": [],
+      "failure_ok": false,
+      "latency_ms": 0.0,
+      "live_ok": null,
+      "must_hit_ok": true,
+      "provenance_ok": null,
+      "query_id": "Q-F10-failure",
+      "rank_positions": {},
+      "run_id": 5,
+      "scope_ok": null,
+      "status": "BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "temporal_ok": null
+    }
+  ],
+  "schema_version": "agent-memory-issue40-evaluation/v1",
+  "versions": {
+    "agent_brain": "0.3.4",
+    "agent_memory_package": "surrealdb-memory",
+    "agent_memory_version": "1.0.0b1",
+    "embedding_reranking": {
+      "agent_memory": "mandatory gemini-embedding-2 (3072-dim); BLOCKED_EXTERNAL_MODEL_DEPENDENCY",
+      "native": "lexical/hybrid deferred-semantic (no external embedding dependency)"
+    },
+    "main_sha": "0c024a7173be923fb4c1cca3e089c33c9a8245ff",
+    "python": "3.14.10",
+    "surrealdb_runtime_pinned_digest": "sha256:65000ff205b08363b035b457f292dc0a0b1cd4212935dd5ea94073cf67adf306",
+    "surrealdb_runtime_version_verified": "surrealdb-3.0.4"
+  }
+}
