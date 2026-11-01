@@ -23,6 +23,7 @@ Adapters:
 
 - `InMemoryImprovementObservationStore` — Fixture/Contract-Tests (#47)
 - `SqliteImprovementObservationStore` — durable stdlib SQLite adapter (#48; see [`STORAGE_DECISION.md`](STORAGE_DECISION.md))
+- `SurrealImprovementObservationStore` — durable SurrealDB adapter (#64/#89; same port; see [`../surrealdb/GOAL_89_EXIT_EVIDENCE_2026-11-01.md`](../surrealdb/GOAL_89_EXIT_EVIDENCE_2026-11-01.md))
 
 ## Invarianten
 
