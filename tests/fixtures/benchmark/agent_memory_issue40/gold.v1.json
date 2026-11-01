@@ -1,0 +1,191 @@
+{
+  "schema_version": "agent-memory-issue40-gold/v1",
+  "benchmark_version": "issue40-eval/v1",
+  "authority": "Independent gold answers; not generated from either backend under test.",
+  "cases": [
+    {
+      "query_id": "Q-F1-current",
+      "expected_records": ["f1-role-b"],
+      "expected_ordering": ["f1-role-b"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": "head_is_f1-role-b",
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F1-known-as-of",
+      "expected_records": ["f1-role-a"],
+      "expected_ordering": ["f1-role-a"],
+      "expected_temporal_state": "KNOWN_AS_OF",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": "pre_b",
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F1-valid-at",
+      "expected_records": ["f1-role-a"],
+      "expected_ordering": ["f1-role-a"],
+      "expected_temporal_state": "VALID_AT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": "role_a_valid",
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F1-history",
+      "expected_records": ["f1-role-a", "f1-role-b"],
+      "expected_ordering": ["f1-role-a", "f1-role-b"],
+      "expected_temporal_state": "HISTORY",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": "chain_a_to_b",
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F2-delayed",
+      "expected_records": [],
+      "expected_ordering": [],
+      "expected_temporal_state": "NOT_YET_KNOWN",
+      "expected_provenance": {"source_ref_required": false},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F2-after-known",
+      "expected_records": ["f2-delayed"],
+      "expected_ordering": ["f2-delayed"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F3-conflict",
+      "expected_records": ["f3-github-claim"],
+      "expected_ordering": ["f3-github-claim", "f3-memory-claim"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {
+        "source_ref_required": true,
+        "winner_source_priority": "github_live",
+        "conflict_traceable": true
+      },
+      "expected_supersession_state": "cross_provenance_coexistence_or_priority_win",
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F4-scope-tenant-a",
+      "expected_records": ["f4-tenant-a"],
+      "expected_ordering": ["f4-tenant-a"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F4-scope-adversarial",
+      "expected_records": [],
+      "expected_ordering": [],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": false},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F5-alias",
+      "expected_records": ["f5-surrealdb"],
+      "expected_ordering": ["f5-surrealdb"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F6-provenance",
+      "expected_records": ["f6-span"],
+      "expected_ordering": ["f6-span"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {
+        "source_ref_required": true,
+        "source_span_required": true,
+        "source_ref": "docs/contracts/README.md",
+        "source_span": {"start": 120, "end": 159}
+      },
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F7-exact-issue",
+      "expected_records": ["f7-issue"],
+      "expected_ordering": ["f7-issue"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F7-exact-symbol",
+      "expected_records": ["f7-symbol"],
+      "expected_ordering": ["f7-symbol"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F7-exact-sha",
+      "expected_records": ["f7-issue"],
+      "expected_ordering": ["f7-issue"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F8-semantic",
+      "expected_records": ["f8-semantic"],
+      "expected_ordering": ["f8-semantic"],
+      "expected_temporal_state": "CURRENT",
+      "expected_provenance": {"source_ref_required": true},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null
+    },
+    {
+      "query_id": "Q-F9-live",
+      "expected_records": [],
+      "expected_ordering": [],
+      "expected_temporal_state": "STALE_VS_LIVE",
+      "expected_provenance": {"source_ref_required": false},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": {
+        "winner": "closed",
+        "memory_admissible": false,
+        "authority": "github_live"
+      }
+    },
+    {
+      "query_id": "Q-F10-failure",
+      "expected_records": [],
+      "expected_ordering": [],
+      "expected_temporal_state": null,
+      "expected_provenance": {"source_ref_required": false},
+      "expected_supersession_state": null,
+      "expected_scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+      "expected_live_state_decision": null,
+      "expected_availability": "unavailable"
+    }
+  ]
+}

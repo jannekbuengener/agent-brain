@@ -1,0 +1,338 @@
+{
+  "schema_version": "agent-memory-issue40-fixtures/v1",
+  "benchmark_version": "issue40-eval/v1",
+  "description": "Semantically identical fixture corpus for native vs Agent Memory #40 evaluation.",
+  "fixtures": [
+    {
+      "fixture_id": "F1",
+      "category": "temporal_chain",
+      "identity": "subject:alice",
+      "records": [
+        {
+          "record_id": "f1-role-a",
+          "subject_ref": "subject:alice",
+          "content": "Alice role is COO",
+          "summary": "Alice role is COO",
+          "source_ref": "docs/org/roles.md",
+          "source_span": {"start": 0, "end": 17},
+          "known_at": "2026-01-01T00:00:00",
+          "valid_from": "2025-06-01T00:00:00",
+          "valid_until": "2026-03-01T00:00:00",
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.9,
+          "source_trust": 0.85,
+          "superseded_by_ref": "f1-role-b",
+          "live_state_relation": null
+        },
+        {
+          "record_id": "f1-role-b",
+          "subject_ref": "subject:alice",
+          "content": "Alice role is CTO",
+          "summary": "Alice role is CTO",
+          "source_ref": "docs/org/roles.md",
+          "source_span": {"start": 18, "end": 35},
+          "known_at": "2026-03-02T00:00:00",
+          "valid_from": "2026-03-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.95,
+          "source_trust": 0.9,
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F2",
+      "category": "delayed_knowledge",
+      "identity": "subject:policy-window",
+      "records": [
+        {
+          "record_id": "f2-delayed",
+          "subject_ref": "subject:policy-window",
+          "content": "Refund window is 30 days",
+          "summary": "Refund window is 30 days",
+          "source_ref": "docs/policy/returns.md",
+          "source_span": {"start": 10, "end": 34},
+          "known_at": "2026-06-01T00:00:00",
+          "valid_from": "2026-01-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.8,
+          "source_trust": 0.8,
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F3",
+      "category": "cross_provenance_conflict",
+      "identity": "subject:deadline",
+      "records": [
+        {
+          "record_id": "f3-memory-claim",
+          "subject_ref": "subject:deadline",
+          "content": "Ship date is 2026-05-01",
+          "summary": "Ship date is 2026-05-01",
+          "source_ref": "memory:session-note",
+          "source_span": null,
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.7,
+          "source_trust": 0.4,
+          "source_kind": "memory",
+          "source_priority": "memory",
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        },
+        {
+          "record_id": "f3-github-claim",
+          "subject_ref": "subject:deadline",
+          "content": "Ship date is 2026-06-15",
+          "summary": "Ship date is 2026-06-15",
+          "source_ref": "github:issue/88",
+          "source_span": {"start": 0, "end": 23},
+          "known_at": "2026-04-02T00:00:00",
+          "valid_from": "2026-04-02T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.9,
+          "source_trust": 0.95,
+          "source_kind": "github_live",
+          "source_priority": "github_live",
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F4",
+      "category": "scope_isolation",
+      "identity": "multi-scope",
+      "records": [
+        {
+          "record_id": "f4-tenant-a",
+          "subject_ref": "subject:secret-token",
+          "content": "tenant-a secret token ALPHA",
+          "summary": "tenant-a secret token ALPHA",
+          "source_ref": "docs/tenant-a/secrets.md",
+          "source_span": {"start": 0, "end": 27},
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.9,
+          "source_trust": 0.9,
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        },
+        {
+          "record_id": "f4-tenant-b",
+          "subject_ref": "subject:secret-token",
+          "content": "tenant-b secret token BRAVO",
+          "summary": "tenant-b secret token BRAVO",
+          "source_ref": "docs/tenant-b/secrets.md",
+          "source_span": {"start": 0, "end": 27},
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-b"},
+          "confidence": 0.9,
+          "source_trust": 0.9,
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        },
+        {
+          "record_id": "f4-session-1",
+          "subject_ref": "subject:session-note",
+          "content": "session-1 private note",
+          "summary": "session-1 private note",
+          "source_ref": "session:1/notes",
+          "source_span": null,
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {
+            "kind": "session",
+            "tenant_id": "tenant-a",
+            "agent_id": "agent-1",
+            "session_id": "session-1"
+          },
+          "confidence": 0.8,
+          "source_trust": 0.7,
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F5",
+      "category": "alias_identity",
+      "identity": "subject:surrealdb-aliases",
+      "records": [
+        {
+          "record_id": "f5-surrealdb",
+          "subject_ref": "subject:surrealdb",
+          "content": "SurrealDB is a multi-model database",
+          "summary": "SurrealDB is a multi-model database",
+          "source_ref": "docs/external-docs/surrealdb-reference-landscape.md",
+          "source_span": {"start": 0, "end": 35},
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.9,
+          "source_trust": 0.9,
+          "aliases": ["SurrealDB", "surrealdb", "surrealdb/surrealdb", "Surreal DB"],
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F6",
+      "category": "provenance_span",
+      "identity": "subject:span-claim",
+      "records": [
+        {
+          "record_id": "f6-span",
+          "subject_ref": "subject:span-claim",
+          "content": "Exact provenance span must be preserved",
+          "summary": "Exact provenance span must be preserved",
+          "source_ref": "docs/contracts/README.md",
+          "source_span": {"start": 120, "end": 159},
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.95,
+          "source_trust": 0.95,
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F7",
+      "category": "exact_retrieval",
+      "identity": "exact-tokens",
+      "records": [
+        {
+          "record_id": "f7-issue",
+          "subject_ref": "subject:issue-40",
+          "content": "GitHub issue #40 owns Agent Memory evaluation",
+          "summary": "GitHub issue #40 owns Agent Memory evaluation",
+          "source_ref": "github:issue/40",
+          "source_span": null,
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 1.0,
+          "source_trust": 1.0,
+          "exact_tokens": ["#40", "jannekbuengener/agent-brain", "0c024a7173be923fb4c1cca3e089c33c9a8245ff"],
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        },
+        {
+          "record_id": "f7-symbol",
+          "subject_ref": "subject:symbol-memory-scope",
+          "content": "Symbol MemoryScope is the typed fail-closed scope contract",
+          "summary": "Symbol MemoryScope is the typed fail-closed scope contract",
+          "source_ref": "src/agent_brain/memory/scope.py",
+          "source_span": {"start": 46, "end": 58},
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 1.0,
+          "source_trust": 1.0,
+          "exact_tokens": ["MemoryScope", "MEMORY_SCOPE_SCHEMA"],
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F8",
+      "category": "semantic_retrieval",
+      "identity": "subject:hybrid-ranking",
+      "records": [
+        {
+          "record_id": "f8-semantic",
+          "subject_ref": "subject:hybrid-ranking",
+          "content": "Hybrid ranking blends lexical matches with graph signals and source priority",
+          "summary": "Hybrid ranking blends lexical matches with graph signals and source priority",
+          "source_ref": "docs/START_HIER.md",
+          "source_span": {"start": 200, "end": 280},
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.85,
+          "source_trust": 0.85,
+          "paraphrase_queries": [
+            "How does the system combine text search with relationship cues?"
+          ],
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    },
+    {
+      "fixture_id": "F9",
+      "category": "stale_live_state",
+      "identity": "issue:40:state",
+      "records": [
+        {
+          "record_id": "f9-stale-open",
+          "subject_ref": "subject:issue-40-state",
+          "content": "Issue #40 is open",
+          "summary": "Issue #40 is open",
+          "source_ref": "memory:stale-snapshot",
+          "source_span": null,
+          "known_at": "2026-03-01T00:00:00",
+          "valid_from": "2026-03-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.9,
+          "source_trust": 0.5,
+          "superseded_by_ref": null,
+          "live_state_relation": {
+            "claim_key": "issue:40:state",
+            "memory_value": "open",
+            "live_value": "closed",
+            "live_source": "github_live",
+            "expected_winner": "closed"
+          }
+        }
+      ]
+    },
+    {
+      "fixture_id": "F10",
+      "category": "backend_failure",
+      "identity": "failure-modes",
+      "records": [
+        {
+          "record_id": "f10-available",
+          "subject_ref": "subject:availability",
+          "content": "Backend health probe record",
+          "summary": "Backend health probe record",
+          "source_ref": "docs/DEVELOPMENT.md",
+          "source_span": null,
+          "known_at": "2026-04-01T00:00:00",
+          "valid_from": "2026-04-01T00:00:00",
+          "valid_until": null,
+          "scope": {"kind": "tenant", "tenant_id": "tenant-a"},
+          "confidence": 0.8,
+          "source_trust": 0.8,
+          "superseded_by_ref": null,
+          "live_state_relation": null
+        }
+      ]
+    }
+  ]
+}
