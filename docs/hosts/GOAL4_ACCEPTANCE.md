@@ -54,6 +54,11 @@ aus dem temporären Workspace wurde vor Ausführung von Auto-Review abgelehnt:
 mögliche dauerhafte globale Cursor-Freigabe. Die explizite Owner-Zustimmung
 steht aus; die Ablehnung wird nicht umgangen.
 
+Auch der native Claude-Code-Smoke wurde vor Ausführung von Auto-Review
+abgelehnt: Testprompt und MCP-Antworten würden an den externen Claude-Dienst
+übermittelt; die Prüfung verlangt dafür eine ausdrückliche Payload-/Ziel-Freigabe.
+Diese Owner-Zustimmung wurde ebenfalls angefragt. Der Smoke wurde nicht ausgeführt.
+
 ## Verbleibende Abnahme
 
 Echte lokale Host-Smokes sowie pro Host Upgrade-/Rollback-Reconnect nachweisen.

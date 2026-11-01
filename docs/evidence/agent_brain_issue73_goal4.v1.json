@@ -46,6 +46,7 @@
       "capabilities": "PASS_SHARED_TRANSPORT; real five-capability host run not recorded here",
       "failure_semantics": "PASS_SHARED_TRANSPORT",
       "version": "0.3.4 packaged launcher verified",
+      "approval": "auto-review rejected native Claude smoke because prompt and MCP results would be sent to external Claude service; explicit user approval pending",
       "upgrade": "DOCUMENTED; shared plan tests only",
       "rollback": "DOCUMENTED; shared plan tests only",
       "evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6552770668"
