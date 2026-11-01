@@ -4,7 +4,7 @@
 
 Agent Brain ist das gemeinsame Kontext- und Wissenssystem für KI-Agenten. Es entscheidet nicht selbst, **was** ein Produkt tun darf. Es hilft Agenten, den aktuellen Zustand eines Projekts korrekt zu verstehen, relevante Zusammenhänge wiederzufinden und Aussagen mit Evidence zu belegen.
 
-Das System wird aus dem bestehenden Context-/Agent-Brain von Claire de Binare herausgelöst und als eigenständiges Repository generalisiert.
+Das System wurde aus dem Context-/Agent-Brain von Claire de Binare extrahiert und als eigenständiges Repository generalisiert. Die ursprüngliche Extraction-/Consumerization-Roadmap ist abgeschlossen; spätere Arbeit entsteht consumer-driven aus realem Bedarf.
 
 ## Die wichtigste Trennung
 
@@ -24,10 +24,10 @@ Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 5. [Entwicklungsbaseline](DEVELOPMENT.md) — Installation, Tests und die aktuell erlaubten Modulgrenzen.
 6. [Externe Referenzdokumentation](external-docs/index.md) — `P0`/`P1` markieren aktuell belegte Referenzen mit Repo-Evidence; `P2` ist geparkt/reference-only und keine Runtime-/Dependency-Aussage.
 7. [Datenflüsse](DATENFLUESSE.md) — visuelle Mermaid-Erklärung des Systems.
-8. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wird.
+8. [Extraction Canon](extraction/README.md) — was aus Claire wohin gehört und wie bestehender State behandelt wurde.
 9. [Repository Adoption How-to](extraction/REPOSITORY_ADOPTION_HOWTO.md) — wiederverwendbares Verfahren für weitere Repositories: Live-State, Canon-Audit, Ownership, State, Parity, Adoption und Closeout.
-10. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — Zielarchitektur und Migrationslogik.
-11. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — operative Roadmap und Issue-Status.
+10. [Extraction Design](superpowers/specs/2026-10-20-agent-brain-extraction-design.md) — historische Zielarchitektur und Migrationslogik.
+11. [Epic #2](https://github.com/jannekbuengener/agent-brain/issues/2) — abgeschlossene Extraction-/Consumerization-Authority.
 
 ## Slice #9 — Repository Ingestion / Connectors (implementiert)
 
@@ -36,7 +36,7 @@ Der read-only, produktneutrale Ingestionskern ist implementiert. Er liest expliz
 - [Source → Target Matrix](extraction/SLICE_5_SOURCE_TARGET_MATRIX.md) — Claire-Verhalten: übernehmen, generalisieren, Adapter/Stay/Defer.
 - [Acceptance / Parity / Risk Matrix](extraction/SLICE_5_ACCEPTANCE_PARITY_MATRIX.md) — jedes AC mit Beweis und Negative Controls.
 - [Implementation Plan](superpowers/plans/2026-10-20-repository-ingestion-connectors.md) — TDD-/Task-Reihenfolge.
-- [SurrealDB Reference Landscape](external-docs/surrealdb-reference-landscape.md) — Reuse-/Research-Routing; keine aktuelle Runtime-Dependency.
+- [SurrealDB Reference Landscape](external-docs/surrealdb-reference-landscape.md) — Reuse-/Research-Routing; keine automatische Runtime-Dependency.
 
 Die Entscheidungen über Claire-vs-Core, DB-Writes, Repo-Identität und SurrealDB-Aktivierung sind damit festgelegt; ein Consumer folgt dem Connectors-README und den #15-Verträgen.
 
@@ -47,7 +47,7 @@ Der deterministische Knowledge-Build, der neutrale Seed und der Snapshot-Import 
 - **Build:** `build_knowledge_snapshot` erzeugt aus `RepositoryIngestionResult`-Eingängen einen stabilen `knowledge-snapshot/v1`-Snapshot mit Manifest, Build-Metadaten und kanonisierter JSON-Serialisierung.
 - **Seed-Fixture:** `tests/fixtures/knowledge/knowledge_snapshot.neutral.v1.json` ist der committete, produktneutrale Seed-Snapshot auf Basis des Ingestion-Fixtures unter `tests/fixtures/connectors/` (profilgesteuert, ohne Claire-, Trading- oder Live-Bezug).
 - **Import:** `import_knowledge_snapshot` führt einen Snapshot atomar in einen importierenden Ziel-Store ein (Validation-First, keine Teil-Commits; identische Records werden übersprungen, geänderte aktualisiert, fehlende via Tombstone entfernt).
-- **Write-Grenze:** KB-Writes sind reproduzierbare Build-Artefakte und nicht mit produktiven Agent-Memory-Writes zu verwechseln; letztere bleiben im Epic `DEFER`.
+- **Write-Grenze:** KB-Writes sind reproduzierbare Build-Artefakte und nicht mit allgemeinen produktiven Agent-Memory-Writes zu verwechseln; letztere bleiben nicht freigegeben.
 
 ## Slice #7 — Hybrid Retrieval / Knowledge Reasoning (implementiert)
 
@@ -55,33 +55,28 @@ Der produktneutrale Retrieval-Layer konsumiert die stabilen #15-Index-/Graph-Ver
 
 - **Candidate Collection:** `collect_candidates` dedupliziert `IndexRecord`-Eingänge und erzeugt stabil sortierte `RetrievalCandidate`-Werte.
 - **Hybrid Ranking:** `rank_candidates` kombiniert injizierte lexikalische/Graph-Signale, Source Priority und konservative Deferred-Faktoren deterministisch; jede Wertung erhält eine strukturierte `RankingExplanation`.
-- **Graph / Impact:** `compute_graph_signals`, `bounded_graph_traversal` und `annotate_impact` arbeiten in-memory auf `GraphEdge`-Verträgen. Es gibt keine DB-Annahme und keine Trust-/Decision-Autorität.
-- **Required Reads / Stop:** `resolve_retrieval_required_reads` reused den bestehenden `RequiredReadsProfile`-Resolver; `resolve_retrieval_stop` materialisiert `PolicyDecision` fail-conservativ als `RetrievalStop`.
-- **E2E:** `run_retrieval` liefert einen deterministischen `RetrievalResult`; neutrale Retrieval-Fixtures sind an die Provenance des #16-Seeds `tests/fixtures/knowledge/knowledge_snapshot.neutral.v1.json` gebunden.
-- **Grenzen:** Evidence-/Decision-/Trust-Semantik bleibt Slice #8; eine produktive SurrealDB-Read-Runtime bleibt Slice #10. Semantic/Vector-Signale sind bis dahin konservativ deferred, nicht implizit erfunden.
+- **Graph / Impact:** `compute_graph_signals`, `bounded_graph_traversal` und `annotate_impact` arbeiten in-memory auf `GraphEdge`-Verträgen.
+- **Required Reads / Stop:** `resolve_retrieval_required_reads` verwendet den bestehenden `RequiredReadsProfile`-Resolver; `resolve_retrieval_stop` materialisiert `PolicyDecision` fail-conservativ als `RetrievalStop`.
+- **E2E:** `run_retrieval` liefert einen deterministischen `RetrievalResult`; neutrale Retrieval-Fixtures sind an die Provenance des #16-Seeds gebunden.
 
 Implementierungsplan: [Hybrid Retrieval und Knowledge Reasoning](superpowers/plans/2026-10-21-hybrid-retrieval-knowledge-reasoning.md).
 
 ## Slice #8 — Evidence / Decisions / Trust (implementiert)
 
 - **Paket:** `agent_brain.evidence` — fünfstufige, gerichtete Pipeline Resolution → Decisions → Integrity → Quality → Trust.
-- **Contracts:** konsumiert unverändert #15 (`EvidenceRef` / `ClaimRef`) und #37 (`TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`); Slice-8-Overlays und Policies liegen in `agent_brain.evidence.contract`.
-- **Zeit:** nur Stufe 3 (`evaluate_freshness`, `detect_scope_drift`, `detect_contradictions`) nutzt explizites `as_of`; `ResolutionState` wird ausschließlich in `freshness.py` abgeleitet.
+- **Contracts:** konsumiert unverändert #15 (`EvidenceRef` / `ClaimRef`) und #37 (`TemporalEnvelope`, `Provenance`, `ResolutionMeta`, `ResolutionState`).
+- **Zeit:** `evaluate_freshness`, `detect_scope_drift` und `detect_contradictions` nutzen explizites `as_of`; `ResolutionState` wird read-side abgeleitet.
 - **Tests:** `tests/evidence/` mit neutralen Fixtures unter `tests/fixtures/evidence/`.
 - **Plan:** [Evidence, Decisions und Trust](superpowers/plans/2026-10-21-evidence-decisions-trust.md).
 
 ## P0 #37 — Temporal / Provenance / Supersession (implementiert)
 
-Die bestehenden `EvidenceRef`-/`ClaimRef`-Typen bleiben reine Referenzen. Ergänzend stehen nun backend-neutrale Contracts für die Semantik bereit, die #8 und #11 gemeinsam benötigen:
+Die bestehenden `EvidenceRef`-/`ClaimRef`-Typen bleiben reine Referenzen. Ergänzend stehen backend-neutrale Contracts für die Semantik bereit, die Evidence- und Memory-Reads gemeinsam benötigen:
 
 - `TemporalEnvelope`: `known_at`, optionale Realwelt-Gültigkeit (`valid_from` / `valid_until`) und optionales `system_as_of` als Storage-/Read-Snapshot-Metadatum.
 - `Provenance` + `SourceSpan`: strukturierte Quelle, optionale exakte 0-based/end-exclusive Unicode-Spans und Ableitungs-Linie.
 - `ResolutionMeta`: Supersession-Referenzen sowie getrennte `source_trust`-/`confidence`-Werte.
-- `ResolutionState`: read-side Enum; `CURRENT / STALE / SUPERSEDED / UNKNOWN` wird später abgeleitet und nicht als Wahrheit im Metadata-Contract gespeichert.
-
-Die Contracts enthalten keine SurrealDB-/Agent-Memory-Runtime, keine produktiven Writes, kein Last-Write-Wins und keinen Freshness-/Trust-Resolver.
-
-Runtime-/Storage-Inventar für #38: [SurrealDB Runtime Baseline — 2026-10-21](surrealdb/RUNTIME_BASELINE_2026-10-21.md).
+- `ResolutionState`: read-side Enum; `CURRENT / STALE / SUPERSEDED / UNKNOWN` wird abgeleitet und nicht als Wahrheit im Metadata-Contract gespeichert.
 
 ## P1 #39 — KnowledgeStore / MemoryStore / MemoryScope (implementiert)
 
@@ -90,8 +85,7 @@ Backend-neutrale, read-only Store-Ports und ein typisierter, fail-closed `Memory
 - `KnowledgeStore` / `MemoryStore` als Protocols ohne SurrealDB- oder Agent-Memory-SDK-Typen.
 - `MemoryScope` verlangt explizite Kind-/Identitätsfelder; fehlender Scope ist niemals still global.
 - Fixture-/In-Memory- und Unavailable-Adapter trennen `UNAVAILABLE`, `EMPTY` und `ABSENT`.
-- Keine Write-/Remember-/Consolidate-Surface; produktive Agent-Memory-Writes bleiben `DEFER`.
-- Native SurrealDB-Read-Runtime bleibt #10 und implementiert diese Ports, ohne sie neu zu definieren.
+- Keine generische Write-/Remember-/Consolidate-Surface.
 
 ## Slice #10 / #11 — Memory Read / Recall / Rediscovery (implementiert)
 
@@ -102,7 +96,7 @@ Der fail-closed Memory-Read-Pfad liegt unter `agent_brain.memory.read` und konsu
 - **TTL / Freshness:** `ttl_seconds`, `valid_from` / `valid_until` und Supersession; Boundary-Cases getestet.
 - **Live-State:** optionale Claims werden gegen injizierte Live-Checker revalidiert; GitHub-/Repo-Live gewinnen immer; unavailable ≠ confirmed.
 - **Rediscovery:** `prove_cross_session_rediscovery` belegt scoped Cross-Session-Recall ohne Scope-Leakage.
-- **Grenzen:** keine produktiven Writes, kein zweiter Store-/Scope-/Provenance-Contract, Knowledge-Build bleibt `ArtifactKind.KNOWLEDGE_BUILD`.
+- **Grenzen:** keine allgemeinen produktiven Memory-Writes, kein zweiter Store-/Scope-/Provenance-Contract.
 
 ## Slice #11 — Distribution / Versionierung / Consumer Contract (implementiert)
 
@@ -123,39 +117,35 @@ Agent Brain ist ohne Claire und ohne privaten MCP bedienbar. Die gemeinsame Appl
 - optionaler host-neutraler MCP-Adapter ohne SDK-Pflichtabhängigkeit
 - Neutraler Protocol-Consumer-Smoke: `tests/fixtures/protocol/neutral_protocol_consumer/`
 
-## #73 Goal 1 — cdb_context Capability Foundation (implementiert)
+## #73 — cdb_context Multi-Surface Plugin (abgeschlossen)
 
-Hostneutraler Capability Contract auf der bestehenden #12-Surface, ohne Host-Pakete:
+Die vier historischen Delivery-Stufen sind vollständig abgenommen:
+
+1. `CDB_CONTEXT_CAPABILITY_FOUNDATION_GO`
+2. `LOCAL_HOST_SURFACES_GO`
+3. `CHATGPT_AGENT_BRAIN_APP_GO`
+4. finale Vier-Host-Acceptance
+
+Der gemeinsame Capability Contract läuft auf ChatGPT, Claude Code, Cursor und OpenCode. Der Release `0.3.4` / `v0.3.4` erzwingt UTF-8 im gemeinsamen stdio-Server; globale Encoding-Workarounds sind keine Voraussetzung.
 
 - [Capability Architecture](capabilities/README.md)
 - [cdb_context Contract](capabilities/CDB_CONTEXT_CONTRACT.md)
-- Python-API: `agent_brain.capabilities` / `invoke_capability(...)`
-- CDB-Profil isoliert unter `agent_brain.capabilities.cdb_context`
-- Shared Host Contract Suite: `tests/capabilities/test_host_contract_suite.py`
-- Exit-Ziel: `CDB_CONTEXT_CAPABILITY_FOUNDATION_GO` (Parent #73 bleibt offen)
+- [Host Surfaces](hosts/README.md)
+- [Goal-4-Evidence](evidence/agent_brain_issue73_goal4.v1.json)
 
-## #73 Goal 2 — Local Host Surfaces (Claude / Cursor / OpenCode)
+Finaler Exit von #73:
 
-Gemeinsamer MCP-stdio-Transport und dünne Host-Adapter ohne Capability-Duplikation:
+`AGENT_BRAIN_CDB_CONTEXT_MULTI_SURFACE_OPERATIONAL`
 
-- Shared transport: `agent-brain-mcp` (fallback `python -m agent_brain.mcp`)
-- Shared skill: `hosts/shared/skills/agent-brain-cdb-context/SKILL.md`
-- Host packages: `hosts/claude-code/`, `hosts/cursor/`, `hosts/opencode/`
-- Doku: [Host Surfaces](hosts/README.md)
-- Delivery: `LOCAL_HOST_SURFACES_GO`; Parent #73 bleibt für die finale Host-Abnahme offen.
+## Abgeschlossene SurrealDB- und Memory-Tracks
 
-## #73 Goal 3 / Goal 4 — ChatGPT und finale Host-Abnahme
+- **#65 / #89 / #64 — SurrealDB Foundation + durable Improvement-Persistenz:** `SURREALDB_AGENT_BRAIN_FOUNDATION_OPERATIONAL`.
+- **#36 — Memory Architecture Hardening:** Temporalität, Provenance, Supersession, Store-/Scope-Boundaries und native Memory-Read-Baseline sind abgeschlossen.
+- **#40 — SurrealDB Agent Memory Evaluation:** `REJECT_FOR_NOW`; kein produktiver Agent-Memory-Adapter wurde eingeführt.
 
-ChatGPT-Owner-Smokes für alle fünf Capabilities und `invalid_input` sind im
-[Goal-3-Abschluss](https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556040954)
-belegt: `CHATGPT_AGENT_BRAIN_APP_GO`. Der Release `0.3.4` / `v0.3.4` erzwingt
-UTF-8 im gemeinsamen stdio-Server; globale Encoding-Workarounds sind keine Voraussetzung.
+Improvement-Writes bleiben eine eigene eng typisierte Domain-Surface. `KnowledgeStore` und `MemoryStore` bleiben read-only; es gibt keine allgemeine `brain.write()`-/`remember()`-/`consolidate()`-API.
 
-Die finale Vier-Host-Abnahme unter #73 bleibt davon getrennt. Automatisierte
-Transport-Parität ersetzt keinen echten Host-Smoke. Aktueller Nachweisstand:
-[Goal-4-Evidence](evidence/agent_brain_issue73_goal4.v1.json).
-
-## Was Agent Brain später können soll
+## Kernfähigkeiten heute
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.
 2. Code, Dokumentation, Entscheidungen und Evidence miteinander verknüpfen.
@@ -164,6 +154,9 @@ Transport-Parität ersetzt keinen echten Host-Smoke. Aktueller Nachweisstand:
 5. frühere Entscheidungen nachvollziehbar wiedergeben.
 6. begrenztes, quellengestütztes Memory über Sessions hinweg bereitstellen.
 7. anderen Systemen strukturierte Briefings und Trust-Zusammenfassungen liefern.
+8. das Improvement Blackboard über eine eng typisierte, durable Persistenz betreiben.
+
+Optional nicht erreichbare Backends bleiben explizit `UNAVAILABLE`/degraded und werden nicht als leere oder bestätigte Wahrheit interpretiert.
 
 ## Was Agent Brain ausdrücklich nicht sein soll
 
@@ -174,7 +167,7 @@ Transport-Parität ersetzt keinen echten Host-Smoke. Aktueller Nachweisstand:
 - kein Sammelbecken für produktspezifische Geschäftslogik,
 - keine Voraussetzung für private ChatGPT-Operator-Zugänge.
 
-## Roadmap
+## Extraction-Roadmap — vollständig abgeschlossen
 
 ```text
 0  Extraction Canon                 #3   abgeschlossen
@@ -186,37 +179,20 @@ Transport-Parität ersetzt keinen echten Host-Smoke. Aktueller Nachweisstand:
 6  Knowledge Build / Seed            #16  abgeschlossen
 7  Retrieval                         #7   abgeschlossen
 8  Evidence / Trust                  #8   abgeschlossen
-9  SurrealDB Read                    #10  abgeschlossen (via #67)
-10 Memory Read                       #11  implementiert
-11 Distribution / Versionierung      #17  implementiert
-12 CLI / Protocol                    #12  implementiert
-13 Claire Cutover                    #13  implementiert (pin v0.2.0+)
+9  SurrealDB Read                    #10  abgeschlossen
+10 Memory Read                       #11  abgeschlossen
+11 Distribution / Versionierung      #17  abgeschlossen
+12 CLI / Protocol                    #12  abgeschlossen
+13 Claire Cutover                    #13  abgeschlossen
 14 Parity / Dual Run                 #18  abgeschlossen
-15 Genericity / Cleanup              #19  in progress
+15 Genericity / Cleanup              #19  abgeschlossen
 ```
 
-## Slice #18 — Claire Parity / Dual Run (consumer evidence)
+Meta-Exit von #2:
 
-Parity is proven on the Claire consumer side against the immutable pin
-`agent-brain==0.2.0` / tag `v0.2.0` (no Agent Brain feature work required for the
-dual-run harness itself):
+`AGENT_BRAIN_EXTRACTION_CONSUMERIZATION_COMPLETE`
 
-- Claire tracking: [Claire_de_Binare#4615](https://github.com/jannekbuengener/Claire_de_Binare/issues/4615)
-- Claire PR: dual-run harness + E2E + Cleanup-Go under `tools/agent_brain/parity*`
-- Exit token: `CLAIRE_PARITY_DUAL_RUN_GO` (post-merge acceptance on #18)
-- Cleanup authority for #19 is evidence-bound (`SAFE_TO_REMOVE` only)
-
-## Slice #19 — Genericity Proof / Cleanup (in progress)
-
-- Neutral protocol consumer exercises version, capabilities, context, retrieval,
-  evidence/trust, memory read, and structured failure without Claire packages
-- AST/import runtime dependency gate under `tests/genericity/`
-- `SurrealDbReadSettings` defaults are product-neutral (`agent_brain` / `context`);
-  Claire inventory mapping remains explicit via `settings_from_runtime_truth`
-- Package target for this slice after merge/tag: `0.2.1` / `v0.2.1`
-
-
-Zusätzlich existiert [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21). Dieses Gate übernimmt **keine** allgemeinen Knowledge-Mirrors, sondern schützt nur echten SurrealDB-primary State vor stillem Verlust und blockiert die linearen Foundation-/Contract-/Context-Slices nicht.
+Historische Slice-Pläne, Audit-SHAs und Exit-Evidence bleiben bewusst unverändert und dokumentieren den damaligen Delivery-Zustand.
 
 ## Ergebnis von Slice 0
 
@@ -225,17 +201,21 @@ Der Extraction Canon hat festgelegt:
 - generische Komponenten → `MOVE`,
 - generisches Prinzip mit Claire-spezifischer Ausprägung → `ADAPTER`,
 - Claire-Produkt-/Operator-Flächen → `STAY`,
-- produktive Agent-Memory-Write-Flächen → `DEFER`.
+- allgemeine produktive Agent-Memory-Write-Flächen → `DEFER`.
 
 Persistierter State wird getrennt behandelt:
 
 - Git-/GitHub-/Ledger-/Upstream-Mirrors → `REBUILD_FROM_SOURCE`,
 - SurrealDB-primary Evidence/Claims/Memory → `MIGRATE`, falls tatsächlich vorhanden und valide,
 - verbotene/ungültige Daten → `DROP_WITH_REASON`,
-- produktive neue Memory Writes → `DEFER`.
+- allgemeine produktive neue Memory Writes → `DEFER`.
 
 Details: [State Transition](extraction/STATE_TRANSITION.md).
 
-## Aktueller Arbeitsmodus
+## Aktueller Arbeitsmodus — 2026-11-01
 
-**`SLICE_7_DONE / #37_TEMPORAL_PROVENANCE_IMPLEMENTED`**. #37 ist die gemeinsame Contract-Basis vor #8/#11. Nach #37 können #8 und #39 parallel arbeiten; #38 darf parallel ausschließlich read-only die reale SurrealDB-Runtime/Storage-Baseline erfassen. #10 konsumiert später #8 + #39 sowie die Evidence aus #38.
+**Maintenance / Consumer-driven Development.** Die geplanten Extraction-, Multi-Surface-, SurrealDB-Foundation-, durable-Improvement- und Memory-Hardening-Tracks sind abgeschlossen.
+
+Aktuell existiert kein offener Produkt-/Delivery-Track. [#25 Repo Health Book](https://github.com/jannekbuengener/agent-brain/issues/25) bleibt als kontinuierliche Operations-/Evidence-Fläche bewusst offen und ist kein Delivery-Backlog.
+
+Neue Delivery-Arbeit entsteht nur aus konkretem Consumer-Bedarf, einem belegten Scout-/Health-Finding oder einer neuen klar abgegrenzten Capability-Anforderung. GitHub-/Repo-Live-State bleibt für jeden Re-entry maßgeblich.
