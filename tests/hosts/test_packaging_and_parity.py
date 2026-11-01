@@ -18,6 +18,9 @@ from agent_brain.capabilities import (
     REQUIRED_CAPABILITY_NAMES,
 )
 from agent_brain.mcp.host_configs import (
+    CHATGPT_AUTH_MODEL,
+    chatgpt_plugin_manifest,
+    chatgpt_remote_mcp_json,
     claude_code_mcp_json,
     cursor_agent_plugin_mcp_json,
     foundation_metadata,
@@ -38,6 +41,7 @@ DISTRIBUTED_SKILLS = (
     HOSTS / "claude-code" / "plugins" / "agent-brain" / "skills" / "agent-brain-cdb-context" / "SKILL.md",
     HOSTS / "cursor" / "agent-brain" / "skills" / "agent-brain-cdb-context" / "SKILL.md",
     HOSTS / "opencode" / "skills" / "agent-brain-cdb-context" / "SKILL.md",
+    HOSTS / "chatgpt" / "agent-brain" / "skills" / "agent-brain-cdb-context" / "SKILL.md",
 )
 
 FORBIDDEN_IMPORT_MARKERS = (
@@ -99,9 +103,9 @@ def _invoke_via_host_label(host: str, capability: str, arguments: dict) -> dict:
     return response["result"]["structuredContent"]
 
 
-@pytest.mark.parametrize("host", ["claude-code", "cursor", "opencode"])
+@pytest.mark.parametrize("host", ["claude-code", "cursor", "opencode", "chatgpt"])
 def test_host_contract_suite_binding(host: str) -> None:
-    assert host in {"claude-code", "cursor", "opencode"}
+    assert host in {"claude-code", "cursor", "opencode", "chatgpt"}
     transport = CapabilityMcpTransport()
 
     def invoke(capability: str, payload=None, **kwargs):
@@ -124,8 +128,18 @@ def test_host_manifests_and_mcp_configs() -> None:
     cursor_plugin = HOSTS / "cursor" / "agent-brain" / "plugin.json"
     cursor_mcp = HOSTS / "cursor" / "agent-brain" / "mcp.json"
     opencode_mcp = HOSTS / "opencode" / "opencode.agent-brain.mcp.example.json"
+    chatgpt_plugin = HOSTS / "chatgpt" / "agent-brain" / "plugin.json"
+    chatgpt_mcp = HOSTS / "chatgpt" / "agent-brain" / "mcp.json"
 
-    for path in (claude_plugin, claude_mcp, cursor_plugin, cursor_mcp, opencode_mcp):
+    for path in (
+        claude_plugin,
+        claude_mcp,
+        cursor_plugin,
+        cursor_mcp,
+        opencode_mcp,
+        chatgpt_plugin,
+        chatgpt_mcp,
+    ):
         data = json.loads(path.read_text(encoding="utf-8"))
         assert isinstance(data, dict)
 
@@ -133,10 +147,23 @@ def test_host_manifests_and_mcp_configs() -> None:
     assert json.loads(cursor_mcp.read_text(encoding="utf-8")) == cursor_agent_plugin_mcp_json()
     example = json.loads(opencode_mcp.read_text(encoding="utf-8"))
     assert example["mcp"] == opencode_mcp_config()["mcp"]
+    assert json.loads(chatgpt_plugin.read_text(encoding="utf-8")) == chatgpt_plugin_manifest()
+    assert json.loads(chatgpt_mcp.read_text(encoding="utf-8")) == chatgpt_remote_mcp_json()
 
     cursor_manifest = json.loads(cursor_plugin.read_text(encoding="utf-8"))
     assert cursor_manifest["$schema"] == "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
     assert cursor_manifest["name"] == "agent-brain"
+
+    chatgpt_manifest = json.loads(chatgpt_plugin.read_text(encoding="utf-8"))
+    assert chatgpt_manifest["version"] == __version__
+    assert chatgpt_manifest["extensions"]["com.openai"]["auth_model"] == CHATGPT_AUTH_MODEL
+    assert chatgpt_manifest["extensions"]["com.openai"]["ui"] is False
+    openai_ext = json.loads(chatgpt_mcp.read_text(encoding="utf-8"))["mcpServers"]["agent-brain"][
+        "extensions"
+    ]["com.openai"]
+    assert openai_ext["auth"]["type"] == "none"
+    assert openai_ext["preferred_connection"] == "secure_mcp_tunnel"
+    assert "sk-" not in json.dumps(openai_ext)
 
 
 def test_no_absolute_user_paths_and_host_adapter_purity() -> None:
@@ -184,13 +211,17 @@ def test_foundation_metadata_pins_exact_version() -> None:
     ],
 )
 def test_cross_host_semantic_parity(capability: str, arguments: dict) -> None:
+    # Goal 3 adds ChatGPT as another transport consumer of the same semantics.
+    # Final four-host closeout remains Goal 4; Goal 3 still requires ChatGPT parity
+    # against the canonical contract.
     results = {
         host: _semantic_fields(_invoke_via_host_label(host, capability, arguments))
-        for host in ("claude-code", "cursor", "opencode")
+        for host in ("claude-code", "cursor", "opencode", "chatgpt")
     }
     baseline = results["claude-code"]
     assert results["cursor"] == baseline
     assert results["opencode"] == baseline
+    assert results["chatgpt"] == baseline
     assert baseline["agent_brain_version"] == __version__
 
 
@@ -208,7 +239,7 @@ def test_cross_host_error_parity() -> None:
     for capability, arguments, expected in cases:
         coded = {
             host: _invoke_via_host_label(host, capability, arguments)["error"]["code"]
-            for host in ("claude-code", "cursor", "opencode")
+            for host in ("claude-code", "cursor", "opencode", "chatgpt")
         }
         assert set(coded.values()) == {expected.value}
 

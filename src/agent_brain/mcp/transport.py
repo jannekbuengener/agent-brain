@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from agent_brain.capabilities import (
+    AGENT_BRAIN_HEALTH,
     REQUIRED_CAPABILITY_NAMES,
     CapabilityGateway,
     capability_tool_descriptors,
@@ -14,6 +15,50 @@ from agent_brain.capabilities import (
 )
 from agent_brain.protocol.models import ProtocolResponse
 from agent_brain.protocol.runtime import ProtocolRuntime
+
+# Host metadata only. Server safety does not depend on these hints.
+# openWorldHint: health is bounded local; cdb_context tools may consult
+# GitHub Live / public repo sources (prefer_live_over_persisted).
+_TOOL_ANNOTATIONS: dict[str, dict[str, bool]] = {
+    AGENT_BRAIN_HEALTH: {
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+    "cdb_context.briefing": {
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+    "cdb_context.search": {
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+    "cdb_context.required_reads": {
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+    "cdb_context.evidence": {
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": True,
+    },
+}
+
+
+def mcp_tool_annotations(name: str) -> dict[str, bool]:
+    """Return MCP tool annotations for a bounded capability name."""
+    try:
+        return dict(_TOOL_ANNOTATIONS[name])
+    except KeyError as exc:
+        raise KeyError(f"no annotations for unexpected tool: {name}") from exc
 
 
 def mcp_tool_definitions() -> list[dict[str, object]]:
@@ -28,8 +73,10 @@ def mcp_tool_definitions() -> list[dict[str, object]]:
         tools.append(
             {
                 "name": name,
+                "title": name,
                 "description": meta["description"],
                 "inputSchema": meta["input_schema"],
+                "annotations": mcp_tool_annotations(name),
             }
         )
     return tools
@@ -97,5 +144,6 @@ def invoke_via_transport(
 __all__ = [
     "CapabilityMcpTransport",
     "invoke_via_transport",
+    "mcp_tool_annotations",
     "mcp_tool_definitions",
 ]

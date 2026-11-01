@@ -17,8 +17,8 @@ def test_pyproject_is_single_declared_version_source(repo_root) -> None:
     declared = declared_version_from_pyproject(repo_root / "pyproject.toml")
     parsed = parse_package_version(declared)
 
-    assert declared == "0.3.1"
-    assert parsed.text == "0.3.1"
+    assert declared == "0.3.2"
+    assert parsed.text == "0.3.2"
     assert get_package_version() == declared
     assert agent_brain.__version__ == declared
 
@@ -29,8 +29,8 @@ def test_runtime_version_matches_importlib_metadata() -> None:
 
 
 def test_git_tag_convention_matches_package_version() -> None:
-    assert version_git_tag("0.3.1") == "v0.3.1"
-    assert version_git_tag(parse_package_version("0.3.1")) == "v0.3.1"
+    assert version_git_tag("0.3.2") == "v0.3.2"
+    assert version_git_tag(parse_package_version("0.3.2")) == "v0.3.2"
 
 
 def test_knowledge_tool_version_tracks_package_semver() -> None:

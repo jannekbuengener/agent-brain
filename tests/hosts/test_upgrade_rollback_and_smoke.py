@@ -29,14 +29,14 @@ from agent_brain.mcp.server import McpStdioServer
 from agent_brain.mcp.transport import CapabilityMcpTransport
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-PREVIOUS_FOUNDATION = "0.3.0"
+PREVIOUS_FOUNDATION = "0.3.1"
 CURRENT = __version__
 
 
 def test_upgrade_and_rollback_plans_for_host_pins() -> None:
     compatibility = classify_surface_diff(
         removed=set(),
-        added={"agent_brain.mcp:serve_stdio"},
+        added={"agent_brain.mcp:serve_http"},
     )
     assert compatibility.verdict is CompatibilityVerdict.COMPATIBLE
     assert compatibility.kind is ChangeKind.ADDITIVE
@@ -171,13 +171,30 @@ def test_cursor_agent_plugin_files_present_for_host_smoke() -> None:
     assert manifest["$schema"].startswith("https://agent-plugins.org/schemas/")
 
 
+def test_chatgpt_agent_plugin_files_present_for_host_smoke() -> None:
+    """ChatGPT packaging evidence: plugin identity + remote MCP declaration + skill."""
+    root = REPO_ROOT / "hosts" / "chatgpt" / "agent-brain"
+    assert (root / "plugin.json").is_file()
+    assert (root / "mcp.json").is_file()
+    assert (root / "skills" / "agent-brain-cdb-context" / "SKILL.md").is_file()
+    manifest = json.loads((root / "plugin.json").read_text(encoding="utf-8"))
+    mcp = json.loads((root / "mcp.json").read_text(encoding="utf-8"))
+    assert manifest["version"] == CURRENT
+    assert mcp["mcpServers"]["agent-brain"]["type"] == "http"
+    assert "/mcp" in mcp["mcpServers"]["agent-brain"]["url"]
+    assert "sk-" not in json.dumps(mcp)
+
+
 def test_console_script_entrypoint_resolves() -> None:
     # After editable install, module entry works without source CWD.
     result = subprocess.run(
         [
             sys.executable,
             "-c",
-            "from agent_brain.mcp.server import main; import inspect; assert callable(main)",
+            (
+                "from agent_brain.mcp.server import main; import inspect; assert callable(main); "
+                "from agent_brain.mcp.http import main as http_main; assert callable(http_main)"
+            ),
         ],
         capture_output=True,
         text=True,

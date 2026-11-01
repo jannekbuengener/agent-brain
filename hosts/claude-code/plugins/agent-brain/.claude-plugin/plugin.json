@@ -1,6 +1,6 @@
 {
   "name": "agent-brain",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Agent Brain cdb_context for Claire de Binare — shared MCP transport, no host-local capability logic.",
   "author": {
     "name": "Jannek Büngener"

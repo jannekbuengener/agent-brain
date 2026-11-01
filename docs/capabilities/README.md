@@ -44,7 +44,12 @@ Nicht:
 - dünne Host-Adapter für Claude Code, Cursor (Agent Plugins) und OpenCode
 - Host-Doku unter [docs/hosts/](../hosts/README.md)
 
-ChatGPT bleibt ein späteres Delivery-Goal unter #73.
+## Was Goal 3 liefert
+
+- dünnen Streamable-HTTP-Transport (`agent-brain-mcp-http` → `/mcp`) über denselben `CapabilityGateway`
+- ChatGPT-Plugin-Paket unter `hosts/chatgpt/` (Tool-only, keine Custom UI)
+- Secure-MCP-Tunnel-first Install-/Test-Pfad ([INSTALL_CHATGPT.md](../hosts/INSTALL_CHATGPT.md))
+- Public Directory Submission bleibt out of scope, sofern #73 keine neue Owner-Entscheidung enthält
 
 ## Dokumente
 
