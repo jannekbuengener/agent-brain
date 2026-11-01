@@ -4,7 +4,7 @@ Skills + local MCP registration. No OpenCode JS/TS plugin — Skill + MCP is suf
 
 ## Prerequisites
 
-1. `python -m pip install "agent-brain==0.3.2"`
+1. `python -m pip install "agent-brain==0.3.3"`
 2. OpenCode CLI available (`opencode`)
 
 ## Install skill

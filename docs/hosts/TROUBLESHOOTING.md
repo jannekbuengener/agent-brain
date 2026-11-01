@@ -12,6 +12,11 @@
 
 ## Tools missing / wrong tools
 
+Bei einem Windows-stdio-Timeout von `cdb_context.briefing`: siehe
+[Diagnose und Reparatur ab 0.3.3](BRIEFING_STDIO_REPAIR.md). Der synchrone
+Briefing-Pfad startet keinen Event-Loop; ein request-only Ergebnis bleibt
+über `partial_source_state` / `no_evidence` als unvollständig erkennbar.
+
 Only these five tools are registered: `agent_brain.health`, `cdb_context.briefing`, `cdb_context.search`, `cdb_context.required_reads`, `cdb_context.evidence`. Internal protocol operations are not published as host tools.
 
 ## `contract_version_mismatch`
