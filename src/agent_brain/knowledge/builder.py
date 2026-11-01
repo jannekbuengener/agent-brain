@@ -22,7 +22,7 @@ from agent_brain.core.time import Clock, SystemClock
 from agent_brain.knowledge.snapshot import BuildMetadata, KnowledgeManifest, KnowledgeSnapshot
 
 # Keep in sync with pyproject.toml / package SemVer (#17 version source of truth).
-DEFAULT_TOOL_VERSION = "agent-brain/0.3.3"
+DEFAULT_TOOL_VERSION = "agent-brain/0.3.4"
 
 
 def _require_ingestion_result(

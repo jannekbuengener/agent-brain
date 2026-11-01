@@ -116,7 +116,7 @@ def test_payload_shape() -> None:
     assert payload["schema_version"] == snapshot.schema_version
     assert payload["metadata"] == {
         "built_at": FIXED_TIME.isoformat(),
-        "tool_version": "agent-brain/0.3.3",
+        "tool_version": "agent-brain/0.3.4",
         "schema_version": snapshot.metadata.schema_version,
     }
     assert payload["manifests"] == [

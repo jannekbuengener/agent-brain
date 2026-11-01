@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import subprocess
@@ -21,7 +22,12 @@ from agent_brain.capabilities import (
     CDB_CONTEXT_SEARCH,
     REQUIRED_CAPABILITY_NAMES,
 )
-from agent_brain.mcp.server import MCP_PROTOCOL_VERSION, MCP_SERVER_NAME, McpStdioServer
+from agent_brain.mcp.server import (
+    MCP_PROTOCOL_VERSION,
+    MCP_SERVER_NAME,
+    McpStdioServer,
+    serve_stdio,
+)
 from agent_brain.mcp.transport import CapabilityMcpTransport
 from agent_brain.protocol.errors import ProtocolErrorCode
 from tests.capabilities.test_host_contract_suite import run_host_contract_suite
@@ -148,6 +154,32 @@ def _mcp_rpc(proc: subprocess.Popen[str], msg_id: int, method: str, params: dict
     line = proc.stdout.readline()
     assert line, f"no response for {method}"
     return json.loads(line)
+
+
+def test_stdio_reconfigures_non_utf8_host_streams_before_json_rpc() -> None:
+    request = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "tools/call",
+        "params": {
+            "name": CDB_CONTEXT_BRIEFING,
+            "arguments": {"task": "architecture overview"},
+        },
+    }
+    input_bytes = io.BytesIO((json.dumps(request) + "\n").encode("utf-8"))
+    output_bytes = io.BytesIO()
+    stdin = io.TextIOWrapper(input_bytes, encoding="cp1252")
+    stdout = io.TextIOWrapper(output_bytes, encoding="cp1252")
+
+    assert serve_stdio(stdin=stdin, stdout=stdout) == 0
+    stdout.flush()
+
+    raw = output_bytes.getvalue()
+    decoded = raw.decode("utf-8")
+    response = json.loads(decoded)
+    structured = response["result"]["structuredContent"]
+    assert structured["ok"] is True
+    assert "überschreiben" in decoded
 
 
 @pytest.fixture

@@ -5,7 +5,7 @@ Contract: [CDB_CONTEXT_CONTRACT.md](../capabilities/CDB_CONTEXT_CONTRACT.md)
 
 ## Prerequisites
 
-1. `python -m pip install "agent-brain==0.3.3"` (exact pin; no `main` / `latest`).
+1. `python -m pip install "agent-brain==0.3.4"` (exact pin; no `main` / `latest`).
 2. ChatGPT account/workspace permission to **Add custom MCP server**.
 3. For private/local servers: Platform access to create a **Secure MCP Tunnel** and run `tunnel-client` ([OpenAI Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)).
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "agent-brain",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Agent Brain cdb_context \u2014 ChatGPT plugin surface over shared remote MCP (Secure MCP Tunnel or HTTPS /mcp).",
   "author": {
     "name": "Jannek B\u00fcngener"
@@ -21,7 +21,7 @@
     "com.openai": {
       "display_name": "Agent Brain",
       "capability_contract_schema": "agent-brain-cdb-context-capability/v1",
-      "agent_brain_version": "0.3.3",
+      "agent_brain_version": "0.3.4",
       "auth_model": "PUBLIC_READ_ONLY",
       "ui": false,
       "public_directory_submission": false

@@ -4,7 +4,7 @@ Portable **Agent Plugins** package (skills + MCP). Prefer this over Cursor-only 
 
 ## Prerequisites
 
-1. `python -m pip install "agent-brain==0.3.3"`
+1. `python -m pip install "agent-brain==0.3.4"`
 2. Cursor with Agent Plugins support
 
 ## Install / register
