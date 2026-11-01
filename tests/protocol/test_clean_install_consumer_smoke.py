@@ -116,7 +116,12 @@ def test_neutral_protocol_consumer_smoke(
     assert result["installed_version"] == package_version
     assert result["cli_version"] == package_version
     assert result["context_ok"] is True
-    assert "context_read" in result["available_capabilities"]
+    assert result["retrieval_ok"] is True
+    assert result["evidence_ok"] is True
+    assert result["memory_read_ok"] is True
+    assert result["claire_packages_absent"] is True
+    for required in ("context_read", "retrieval", "evidence"):
+        assert required in result["available_capabilities"]
     assert result["failure_code"] in {"capability_unavailable", "invalid_scope"}
 
 

@@ -34,7 +34,7 @@ Keine zweite Versionsquelle.
 ## Schnellstart
 
 ```bash
-python -m pip install "agent-brain==0.2.0"
+python -m pip install "agent-brain==0.2.1"
 agent-brain version
 agent-brain health --json
 agent-brain capabilities --json

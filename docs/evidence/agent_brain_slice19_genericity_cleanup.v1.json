@@ -1,0 +1,40 @@
+{
+  "schema_version": "agent-brain-genericity-cleanup/v1",
+  "source_issue": "agent-brain#19",
+  "parent_meta_issue": "agent-brain#2",
+  "predecessor_cleanup_authority": "Claire_de_Binare:docs/evidence/agent_brain_slice18_cleanup_go.v1.json",
+  "status": "IN_PROGRESS",
+  "exit_token": null,
+  "agent_brain": {
+    "target_version": "0.2.1",
+    "target_tag": "v0.2.1",
+    "branch": "feat/issue-19-genericity-cleanup",
+    "notes": [
+      "SurrealDbReadSettings defaults neutralized to agent_brain/context",
+      "Claire inventory mapping remains via settings_from_runtime_truth / runtime_truth",
+      "Neutral protocol consumer covers version/capabilities/context/retrieval/evidence/memory/failure",
+      "AST runtime dependency gate under tests/genericity/"
+    ]
+  },
+  "genericity": {
+    "neutral_consumer": "PASS_PENDING_MERGE",
+    "clean_environment": "PASS_PENDING_MERGE",
+    "claire_runtime_dependencies": 0,
+    "trading_runtime_dependencies": 0,
+    "private_cdb_core_runtime_dependencies": 0,
+    "classification": {
+      "RUNTIME_DEPENDENCY": [],
+      "HISTORICAL_REFERENCE": [
+        "src/agent_brain/surrealdb/runtime_truth.py Claire volume/namespace inventory fields"
+      ],
+      "DOCUMENTATION_REFERENCE": [
+        "negation docstrings across retrieval/protocol/distribution/cli"
+      ],
+      "FALSE_POSITIVE": []
+    }
+  },
+  "claire_cleanup": {
+    "authority_rule": "remove only SAFE_TO_REMOVE from slice18 cleanup-go",
+    "pending": true
+  }
+}

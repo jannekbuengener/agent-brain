@@ -158,9 +158,9 @@ Agent Brain ist ohne Claire und ohne privaten MCP bedienbar. Die gemeinsame Appl
 10 Memory Read                       #11  implementiert
 11 Distribution / Versionierung      #17  implementiert
 12 CLI / Protocol                    #12  implementiert
-13 Claire Cutover                    #13  implementiert (pin v0.2.0)
-14 Parity / Dual Run                 #18  in progress (Claire consumer evidence)
-15 Genericity / Cleanup              #19
+13 Claire Cutover                    #13  implementiert (pin v0.2.0+)
+14 Parity / Dual Run                 #18  abgeschlossen
+15 Genericity / Cleanup              #19  in progress
 ```
 
 ## Slice #18 — Claire Parity / Dual Run (consumer evidence)
@@ -173,6 +173,15 @@ dual-run harness itself):
 - Claire PR: dual-run harness + E2E + Cleanup-Go under `tools/agent_brain/parity*`
 - Exit token: `CLAIRE_PARITY_DUAL_RUN_GO` (post-merge acceptance on #18)
 - Cleanup authority for #19 is evidence-bound (`SAFE_TO_REMOVE` only)
+
+## Slice #19 — Genericity Proof / Cleanup (in progress)
+
+- Neutral protocol consumer exercises version, capabilities, context, retrieval,
+  evidence/trust, memory read, and structured failure without Claire packages
+- AST/import runtime dependency gate under `tests/genericity/`
+- `SurrealDbReadSettings` defaults are product-neutral (`agent_brain` / `context`);
+  Claire inventory mapping remains explicit via `settings_from_runtime_truth`
+- Package target for this slice after merge/tag: `0.2.1` / `v0.2.1`
 
 
 Zusätzlich existiert [#21 — State Migration Gate](https://github.com/jannekbuengener/agent-brain/issues/21). Dieses Gate übernimmt **keine** allgemeinen Knowledge-Mirrors, sondern schützt nur echten SurrealDB-primary State vor stillem Verlust und blockiert die linearen Foundation-/Contract-/Context-Slices nicht.
