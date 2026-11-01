@@ -35,11 +35,21 @@ Nicht:
 - Mapping der fünf Pflicht-Capabilities auf bestehende #12/#6/#7/#8 Surfaces
 - CDB-Profil (Required Reads, Source Priority, Guardrails, Repo-Identity)
 - gemeinsame Contract-Test-Suite (`tests/capabilities/test_host_contract_suite.py`) für spätere Host-Adapter
-- keine Host-Pakete und keine zweite Public Protocol Surface
+- hostneutrale Tool Descriptors ohne Host-Pakete
+
+## Was Goal 2 liefert
+
+- gemeinsamen MCP-stdio-Transport (`python -m agent_brain.mcp` / `agent-brain-mcp`)
+- gemeinsame Usage-Skill-Source unter `hosts/shared/skills/`
+- dünne Host-Adapter für Claude Code, Cursor (Agent Plugins) und OpenCode
+- Host-Doku unter [docs/hosts/](../hosts/README.md)
+
+ChatGPT bleibt ein späteres Delivery-Goal unter #73.
 
 ## Dokumente
 
 - [cdb_context Contract](CDB_CONTEXT_CONTRACT.md)
+- [Host Surfaces](../hosts/README.md)
 
 ## Versionierung
 

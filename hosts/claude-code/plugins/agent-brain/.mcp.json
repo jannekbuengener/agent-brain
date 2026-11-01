@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "agent-brain": {
+      "command": "agent-brain-mcp",
+      "args": []
+    }
+  }
+}

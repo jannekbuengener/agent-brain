@@ -34,7 +34,7 @@ Keine zweite Versionsquelle.
 ## Schnellstart
 
 ```bash
-python -m pip install "agent-brain==0.3.0"
+python -m pip install "agent-brain==0.3.1"
 agent-brain version
 agent-brain health --json
 agent-brain capabilities --json
@@ -73,6 +73,16 @@ Strukturierte Codes: `invalid_input`, `invalid_scope`, `unsupported_operation`, 
 ## Optionaler MCP-Adapter
 
 `agent_brain.protocol.tool_schemas` / `BrainMcpAdapter` sind host-neutral und benötigen kein MCP-SDK. Der Core bleibt ohne MCP installierbar und testbar. Privates ChatGPT-MCP ist ausgeschlossen.
+
+Für Host-Surfaces (#73 Goal 2) existiert zusätzlich der shared stdio-Entrypoint:
+
+```bash
+agent-brain-mcp
+# fallback:
+python -m agent_brain.mcp
+```
+
+Er exponiert nur die bounded `cdb_context`-Tools über `CapabilityGateway` und wird von den Claude-/Cursor-/OpenCode-Adaptern unter `hosts/` referenziert.
 
 ## Beziehung zu #13 / #17 / #73
 

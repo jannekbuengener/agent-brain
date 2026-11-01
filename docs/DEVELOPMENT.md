@@ -27,12 +27,12 @@ python -m pip install -e ".[dev]"
 Externe Consumer pinnen eine **exakte** Version und nutzen keinen `main`-Branch und keinen unversionierten lokalen Pfad:
 
 ```bash
-python -m pip install "agent-brain==0.3.0"
+python -m pip install "agent-brain==0.3.1"
 # oder immutable Git-Tag:
-python -m pip install "agent-brain @ git+https://github.com/jannekbuengener/agent-brain.git@v0.3.0"
+python -m pip install "agent-brain @ git+https://github.com/jannekbuengener/agent-brain.git@v0.3.1"
 ```
 
-Kanonische Version-Quelle: `pyproject.toml` `[project].version` (aktuell `0.3.0`). Runtime: `agent_brain.__version__`. Details: [distribution/CONSUMER_CONTRACT.md](distribution/CONSUMER_CONTRACT.md).
+Kanonische Version-Quelle: `pyproject.toml` `[project].version` (aktuell `0.3.1`). Runtime: `agent_brain.__version__`. Details: [distribution/CONSUMER_CONTRACT.md](distribution/CONSUMER_CONTRACT.md).
 
 ## Validierung
 
