@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -131,13 +132,33 @@ def test_opencode_mcp_config_list_smoke(tmp_path: Path) -> None:
     }
     config_path = tmp_path / "opencode.json"
     config_path.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
-    # OpenCode discovers project config from cwd.
-    result = _run([opencode, "mcp", "list"], cwd=tmp_path)
-    combined = (result.stdout or "") + (result.stderr or "")
-    assert "agent-brain" in combined.lower(), combined
-    # When the console script is resolvable, expect a live connection.
-    assert "failed" not in combined.lower() or "✓ agent-brain" in combined or "agent-brain" in combined.lower()
-    assert "connected" in combined.lower()
+    # Prefer OPENCODE_CONFIG: bare tmp cwd discovery is flaky across hosts.
+    env = {**os.environ, "OPENCODE_CONFIG": str(config_path)}
+    combined = ""
+    for attempt in range(3):
+        result = _run(
+            [opencode, "mcp", "list", "--print-logs", "--log-level", "INFO"],
+            cwd=tmp_path,
+            env=env,
+        )
+        combined = (result.stdout or "") + (result.stderr or "")
+        lines = combined.splitlines()
+        log_ok = any(
+            "key=agent-brain" in line and "successfully created client" in line for line in lines
+        )
+        # UI row may include other failed servers; require agent-brain itself connected.
+        agent_row_ok = any(
+            "agent-brain" in "\n".join(lines[idx : idx + 3]).lower()
+            and "connected" in "\n".join(lines[idx : idx + 3]).lower()
+            and "failed" not in "\n".join(lines[idx : idx + 3]).lower()
+            for idx, line in enumerate(lines)
+            if "agent-brain" in line.lower() and "key=agent-brain" not in line
+        )
+        if log_ok or agent_row_ok:
+            return
+        if attempt < 2:
+            time.sleep(2)
+    pytest.fail(f"OpenCode did not connect agent-brain after retries:\n{combined}")
 
 
 def test_cursor_agent_plugin_files_present_for_host_smoke() -> None:
