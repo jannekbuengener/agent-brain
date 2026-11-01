@@ -346,7 +346,12 @@ def operation_context_read(payload: Mapping[str, Any], _runtime: ProtocolRuntime
                 evidence_refs=_parse_evidence_refs(data.get("evidence_refs")),
                 guardrails=tuple(str(item) for item in (data.get("guardrails") or ())),
             )
-            return {"mode": mode, "briefing": envelope.to_dict()}
+            # This operation builds a request-only briefing: no context package
+            # or live source has been loaded. Never present that as full context.
+            limitations = ["partial_source_state"]
+            if not envelope.relevant_evidence:
+                limitations.append("no_evidence")
+            return {"mode": mode, "briefing": envelope.to_dict(), "limitations": limitations}
 
         request = ContextPackageRequest(
             target_scope=_required_text(data.get("target_scope"), "target_scope"),

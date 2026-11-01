@@ -4,7 +4,7 @@ Thin Claude Code plugin. MCP tools come from the shared `python -m agent_brain.m
 
 ## Prerequisites
 
-1. Install a pinned Agent Brain release: `python -m pip install "agent-brain==0.3.2"`
+1. Install a pinned Agent Brain release: `python -m pip install "agent-brain==0.3.3"`
 2. Ensure `agent-brain-mcp` is on PATH (from that install)
 3. Claude Code CLI available (`claude`)
 

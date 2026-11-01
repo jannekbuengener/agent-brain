@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Local marketplace for the Agent Brain cdb_context Claude Code plugin (#73).",
-    "version": "0.3.2"
+    "version": "0.3.3"
   },
   "plugins": [
     {
       "name": "agent-brain",
       "source": "./plugins/agent-brain",
       "description": "Agent Brain cdb_context via shared MCP stdio transport",
-      "version": "0.3.2"
+      "version": "0.3.3"
     }
   ]
 }

@@ -24,7 +24,7 @@ No ChatGPT-specific context/retrieval/evidence fork. Tool-only; no custom UI.
 
 ## Preferred connection
 
-1. Install pinned package: `python -m pip install "agent-brain==0.3.2"`
+1. Install pinned package: `python -m pip install "agent-brain==0.3.3"`
 2. Run local MCP (stdio **or** Streamable HTTP):
    - `agent-brain-mcp` (stdio; Secure MCP Tunnel `--mcp-command`)
    - `agent-brain-mcp-http --host 127.0.0.1 --port 8787` → `http://127.0.0.1:8787/mcp`
