@@ -10,7 +10,7 @@
   "main_sha": "4362b417a5c4a9a079b152a58781dbdb99cbc5af",
   "main_sha_role": "immutable release/runtime baseline; evidence-only changes use evidence_base_main_sha",
   "evidence_base_main_sha": "c3c6b1989ce7bc6be21a2dd6d3425245e002ba33",
-  "latest_host_evidence": "https://github.com/jannekbuengener/agent-brain/issues/73#issuecomment-6556556881",
+  "latest_host_evidence": "https://github.com/jannekbuengener/agent-brain/issues/86#issuecomment-6558109509",
   "release_immutable": true,
   "baseline_pr": 83,
   "baseline_pr_ci": "https://github.com/jannekbuengener/agent-brain/actions/runs/41292426553",
