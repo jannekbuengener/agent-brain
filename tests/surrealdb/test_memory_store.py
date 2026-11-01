@@ -37,7 +37,7 @@ def test_absent_namespace_recall_is_unavailable() -> None:
             namespaces=frozenset({"main"}),
             namespace_present=False,
             database_present=False,
-            detail="configured namespace 'cdb_context_local' absent",
+            detail="configured namespace 'agent_brain' absent",
         )
 
     store = SurrealMemoryStore(version_prober=_ok_version, catalog_prober=_catalog)
@@ -57,6 +57,6 @@ def test_absent_namespace_recall_is_unavailable() -> None:
         )
         assert result.availability is StoreAvailability.UNAVAILABLE
         assert result.records == ()
-        assert result.detail and "cdb_context_local" in result.detail
+        assert result.detail and "agent_brain" in result.detail
 
     asyncio.run(_run())

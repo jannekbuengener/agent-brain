@@ -85,7 +85,7 @@ def test_absent_namespace_is_unavailable_not_empty() -> None:
             namespaces=frozenset({"main", "governance"}),
             namespace_present=False,
             database_present=False,
-            detail="configured namespace 'cdb_context_local' absent",
+            detail="configured namespace 'agent_brain' absent",
         )
 
     store = SurrealKnowledgeStore(
@@ -103,7 +103,7 @@ def test_absent_namespace_is_unavailable_not_empty() -> None:
         )
         assert result.availability is StoreAvailability.UNAVAILABLE
         assert result.hits == ()
-        assert result.detail and "cdb_context_local" in result.detail
+        assert result.detail and "agent_brain" in result.detail
         snap = await store.get_snapshot("snap-1")
         assert snap.status is LookupStatus.UNAVAILABLE
 
@@ -114,7 +114,7 @@ def test_present_catalog_returns_available_hits() -> None:
     def _catalog(**_kwargs: object) -> CatalogProbe:
         return CatalogProbe(
             reachable=True,
-            namespaces=frozenset({"cdb_context_local"}),
+            namespaces=frozenset({"agent_brain"}),
             namespace_present=True,
             database_present=True,
         )

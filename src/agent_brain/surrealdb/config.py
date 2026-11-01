@@ -1,8 +1,10 @@
 """SurrealDB connection settings for the native read runtime (#10 / #38).
 
 These settings capture endpoint and namespace/database mapping without importing
-any SurrealDB SDK types. Defaults mirror Claire config evidence; DB-backed
-existence of those names must still be verified at runtime (#38 baseline).
+any SurrealDB SDK types. Defaults are product-neutral; consumers that need a
+Claire (or other) inventory mapping must pass explicit namespace/database values
+(or use ``settings_from_runtime_truth``). DB-backed existence must still be
+verified at runtime (#38 baseline).
 """
 
 from __future__ import annotations
@@ -15,8 +17,8 @@ class SurrealDbReadSettings:
     """Read-only connection parameters for Surreal HTTP access."""
 
     endpoint: str = "http://127.0.0.1:8010"
-    namespace: str = "cdb_context_local"
-    database: str = "cdb_context_intel"
+    namespace: str = "agent_brain"
+    database: str = "context"
     timeout_seconds: float = 2.0
     # Expected server major from #38 scratch evidence when digest-pinned locally.
     expected_server_version_prefix: str | None = "surrealdb-3.0"
