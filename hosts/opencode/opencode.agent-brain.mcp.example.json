@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "agent-brain": {
+      "type": "local",
+      "command": ["agent-brain-mcp"],
+      "enabled": true
+    }
+  }
+}

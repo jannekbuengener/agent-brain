@@ -28,6 +28,7 @@ Agent Brain soll Agenten dabei helfen, schnell zu verstehen:
 - [Distribution / Consumer Contract](docs/distribution/README.md)
 - [CLI / Protocol Surface](docs/protocol/README.md)
 - [Capability / cdb_context Plugin Surface](docs/capabilities/README.md)
+- [Host Surfaces (Claude / Cursor / OpenCode)](docs/hosts/README.md)
 - [Entwicklungsbaseline](docs/DEVELOPMENT.md)
 - [Datenflüsse und Mermaid-Diagramme](docs/DATENFLUESSE.md)
 - [Extraction Canon — Ergebnis von Slice 0](docs/extraction/README.md)

@@ -134,6 +134,16 @@ Hostneutraler Capability Contract auf der bestehenden #12-Surface, ohne Host-Pak
 - Shared Host Contract Suite: `tests/capabilities/test_host_contract_suite.py`
 - Exit-Ziel: `CDB_CONTEXT_CAPABILITY_FOUNDATION_GO` (Parent #73 bleibt offen)
 
+## #73 Goal 2 — Local Host Surfaces (Claude / Cursor / OpenCode)
+
+Gemeinsamer MCP-stdio-Transport und dünne Host-Adapter ohne Capability-Duplikation:
+
+- Shared transport: `agent-brain-mcp` (fallback `python -m agent_brain.mcp`)
+- Shared skill: `hosts/shared/skills/agent-brain-cdb-context/SKILL.md`
+- Host packages: `hosts/claude-code/`, `hosts/cursor/`, `hosts/opencode/`
+- Doku: [Host Surfaces](hosts/README.md)
+- Exit-Ziel: `LOCAL_HOST_SURFACES_GO` (Parent #73 bleibt offen; ChatGPT folgt später)
+
 ## Was Agent Brain später können soll
 
 1. Repositories und ausgewählte Dokumente einlesen und strukturieren.

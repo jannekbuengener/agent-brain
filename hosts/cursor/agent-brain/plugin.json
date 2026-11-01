@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "agent-brain",
+  "version": "0.3.1",
+  "description": "Agent Brain cdb_context — portable Agent Plugin (skills + shared MCP stdio).",
+  "author": {
+    "name": "Jannek Büngener"
+  },
+  "homepage": "https://github.com/jannekbuengener/agent-brain",
+  "repository": "https://github.com/jannekbuengener/agent-brain",
+  "license": "SEE REPOSITORY",
+  "keywords": ["agent-brain", "cdb_context", "mcp", "context", "evidence"]
+}
