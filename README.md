@@ -17,6 +17,10 @@ Agent Brain hilft Agenten dabei, schnell zu verstehen:
 
 **Wichtig:** Agent Brain ist Kontext- und Evidence-Infrastruktur. Es ersetzt niemals GitHub oder das aktuelle Repository als Live-Wahrheit und besitzt keine Live-Trading- oder Ausführungsautorität.
 
+## Gemeinsames Arbeitsgedächtnis (SurrealDB, lokaler erster Slice)
+
+Agenten können über `agent-brain-handoff write/read` unveränderliche Arbeitsstände pro Repository austauschen. Eigene SurrealDB-Runtime mit eigenem Docker-Volume, nicht CDBs Sidecar. Schreibfunktion bewusst getrennt von `MemoryStore` (read-only). Voraussetzung ist die lokale, vertrauenswürdige Maintainer-Umgebung; für Remote-/Multi-Tenant-Adoption fehlen noch pro-Consumer-Authentifizierung und API-Gateway. Siehe [Shared Memory / Betrieb](docs/operations/SHARED_MEMORY.md).
+
 ## Start hier
 
 - [Start hier](docs/START_HIER.md)

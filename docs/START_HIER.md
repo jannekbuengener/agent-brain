@@ -15,6 +15,14 @@ Das System wurde aus dem Context-/Agent-Brain von Claire de Binare extrahiert un
 
 Agent Brain liefert Kontext, aber keine Produkt-, Trading- oder Live-Autorität.
 
+## Neu: echtes gemeinsames Arbeitsgedächtnis (Agent Brain #94)
+
+Agent Brain betreibt jetzt lokal eine eigene, von CDB getrennte SurrealDB auf `127.0.0.1:8012`. `agent-brain-handoff write/read` speichert und liest tatsächlich persistente, repositorybezogene Arbeits-Handoffs zwischen Agenten. **Gewöhnliche Handoffs dürfen ohne manuelle Einzelgenehmigung gespeichert werden.** Der bisherige allgemeine read-only `MemoryStore` bleibt separat; kein automatisches `remember` und kein freier Datenbank-Write.
+
+Der Datenbank- und Backup-/Restore-Pfad wurde praktisch getestet. Die Einrichtung, Rollen- und Sicherheitsgrenzen stehen im [Shared-Memory-Betriebshandbuch](operations/SHARED_MEMORY.md). Externe Repos/Host-Plugins sind noch nicht automatisch verbunden: Der aktuelle Slice ist für lokale vertrauenswürdige Agenten, ohne serverseitige Mandantentrennung.
+
+Die weiter unten dokumentierten historischen Extraction- und Slice-Grenzen behalten ihre Bedeutung für die bestehenden APIs; für den eng begrenzten lokalen Handoff gilt die neuere Entscheidung #94.
+
 ## Wo beginne ich?
 
 1. [Portable Foundation](foundation/README.md) — produktneutrale Core-Primitiven und ihre Grenzen.

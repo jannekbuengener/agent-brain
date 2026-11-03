@@ -3,7 +3,8 @@
 Backend-neutral read-only ports for KnowledgeStore and MemoryStore, plus a
 typed fail-closed MemoryScope. Slice #11 adds recall evaluation, freshness,
 live-state revalidation, and cross-session rediscovery on top of those ports.
-No productive write surface lives here.
+Read-only MemoryStore ports remain unchanged. The separate handoff module is an
+explicit, typed append-only local work-journal; it is not a generic MemoryStore write API.
 """
 
 from __future__ import annotations

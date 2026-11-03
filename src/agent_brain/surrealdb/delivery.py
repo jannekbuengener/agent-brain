@@ -27,7 +27,7 @@ def settings_from_runtime_truth(truth: SurrealRuntimeTruth) -> SurrealDbReadSett
     else:
         prefix = f"surrealdb-{truth.server_version}"
     return SurrealDbReadSettings(
-        endpoint="http://127.0.0.1:8010",
+        endpoint="http://127.0.0.1:8012",
         namespace=truth.configured_namespace,
         database=truth.configured_database,
         expected_server_version_prefix=prefix,

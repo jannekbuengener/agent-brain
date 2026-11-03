@@ -1,0 +1,10 @@
+{
+  "repository_ref": "jannekbuengener/agent-brain",
+  "agent_id": "claude-code",
+  "task_ref": "issue:example",
+  "status": "in_progress",
+  "summary": "Tests sind grün; die Integration steht aus.",
+  "next_step": "Integration prüfen.",
+  "source_ref": "repo:docs/operations/SHARED_MEMORY.md",
+  "idempotency_key": "example-handoff-1"
+}

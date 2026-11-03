@@ -16,7 +16,7 @@ from dataclasses import dataclass
 class SurrealDbReadSettings:
     """Read-only connection parameters for Surreal HTTP access."""
 
-    endpoint: str = "http://127.0.0.1:8010"
+    endpoint: str = "http://127.0.0.1:8012"
     namespace: str = "agent_brain"
     database: str = "context"
     timeout_seconds: float = 2.0
