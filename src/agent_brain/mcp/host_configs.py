@@ -12,8 +12,11 @@ from agent_brain.mcp.server import MCP_SERVER_NAME, MCP_SERVER_SCHEMA
 # (Windows) do not pick an interpreter without agent-brain installed.
 STDIO_COMMAND = "agent-brain-mcp"
 STDIO_ARGS: tuple[str, ...] = ()
+HANDOFF_STDIO_COMMAND = "agent-brain-mcp-handoff"
+HANDOFF_STDIO_ARGS: tuple[str, ...] = ()
 HTTP_COMMAND = "agent-brain-mcp-http"
 HTTP_ARGS: tuple[str, ...] = ()
+HANDOFF_TOKEN_ENV = "AGENT_BRAIN_HANDOFF_TOKEN"
 # Documented fallback when the console script is unavailable:
 MODULE_FALLBACK_COMMAND = "python"
 MODULE_FALLBACK_ARGS: tuple[str, ...] = ("-m", "agent_brain.mcp")
@@ -46,6 +49,19 @@ def claude_code_mcp_json() -> dict[str, object]:
     }
 
 
+def claude_code_handoff_mcp_json() -> dict[str, object]:
+    """Claude Code stdio registration for grant-gated shared-memory handoff."""
+    return {
+        "mcpServers": {
+            "agent-brain-handoff": {
+                "command": HANDOFF_STDIO_COMMAND,
+                "args": list(HANDOFF_STDIO_ARGS),
+                "env": {HANDOFF_TOKEN_ENV: "${AGENT_BRAIN_HANDOFF_TOKEN}"},
+            }
+        }
+    }
+
+
 def cursor_agent_plugin_mcp_json() -> dict[str, object]:
     """Cursor / Agent Plugins ``mcp.json`` shape."""
     launch = shared_stdio_launch()
@@ -56,6 +72,21 @@ def cursor_agent_plugin_mcp_json() -> dict[str, object]:
                 "type": "stdio",
                 "command": launch["command"],
                 "args": launch["args"],
+            }
+        },
+    }
+
+
+def cursor_handoff_mcp_json() -> dict[str, object]:
+    """Cursor stdio registration for grant-gated shared-memory handoff."""
+    return {
+        "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+        "mcpServers": {
+            "agent-brain-handoff": {
+                "type": "stdio",
+                "command": HANDOFF_STDIO_COMMAND,
+                "args": list(HANDOFF_STDIO_ARGS),
+                "env": {HANDOFF_TOKEN_ENV: "${AGENT_BRAIN_HANDOFF_TOKEN}"},
             }
         },
     }
@@ -168,6 +199,9 @@ def foundation_metadata() -> dict[str, object]:
 __all__ = [
     "CHATGPT_AUTH_MODEL",
     "CHATGPT_AUTH_TYPE",
+    "HANDOFF_STDIO_ARGS",
+    "HANDOFF_STDIO_COMMAND",
+    "HANDOFF_TOKEN_ENV",
     "HTTP_ARGS",
     "HTTP_COMMAND",
     "HTTP_MODULE_FALLBACK_ARGS",
@@ -177,8 +211,10 @@ __all__ = [
     "STDIO_COMMAND",
     "chatgpt_plugin_manifest",
     "chatgpt_remote_mcp_json",
+    "claude_code_handoff_mcp_json",
     "claude_code_mcp_json",
     "cursor_agent_plugin_mcp_json",
+    "cursor_handoff_mcp_json",
     "foundation_metadata",
     "opencode_mcp_config",
     "shared_stdio_launch",

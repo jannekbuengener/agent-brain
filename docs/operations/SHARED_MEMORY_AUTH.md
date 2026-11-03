@@ -48,4 +48,11 @@ Full volume drill: G5 / [#99](https://github.com/jannekbuengener/agent-brain/iss
 
 ## Application API
 
-`HandoffGateway` wraps `SurrealHandoffJournal` and returns structured results with codes `OK`, `EMPTY`, `FORBIDDEN`, `INVALID_REQUEST`. MCP binding is G2 ([#98](https://github.com/jannekbuengener/agent-brain/issues/98)).
+`HandoffGateway` wraps `SurrealHandoffJournal` and returns structured results with codes `OK`, `EMPTY`, `FORBIDDEN`, `INVALID_REQUEST`.
+
+## MCP binding (G2)
+
+- Entry: `agent-brain-mcp-handoff` (reuses `McpStdioServer`; **no** second MCP SDK/runtime).
+- Tools: `shared_memory.handoff.append`, `shared_memory.handoff.recall`.
+- Host token env: `AGENT_BRAIN_HANDOFF_TOKEN` (Cursor/Claude snippets via `cursor_handoff_mcp_json` / `claude_code_handoff_mcp_json`).
+- Existing `agent-brain-mcp` read-only `cdb_context` catalogue stays unchanged.
