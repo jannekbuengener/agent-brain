@@ -8,9 +8,11 @@ from agent_brain.capabilities import REQUIRED_CAPABILITY_NAMES
 from agent_brain.mcp.handoff_server import build_handoff_stdio_server
 from agent_brain.mcp.handoff_transport import (
     HANDOFF_APPEND_TOOL,
+    HANDOFF_APPEND_TOOL_CURSOR_ALIAS,
     HANDOFF_MCP_SCHEMA,
     HANDOFF_MCP_SERVER_NAME,
     HANDOFF_RECALL_TOOL,
+    HANDOFF_RECALL_TOOL_CURSOR_ALIAS,
     HandoffMcpTransport,
 )
 from agent_brain.mcp.host_configs import claude_code_handoff_mcp_json, cursor_handoff_mcp_json
@@ -194,3 +196,59 @@ def test_host_handoff_snippets_use_dedicated_entry() -> None:
     assert cursor["mcpServers"]["agent-brain-handoff"]["command"] == "agent-brain-mcp-handoff"
     assert claude["mcpServers"]["agent-brain-handoff"]["command"] == "agent-brain-mcp-handoff"
     assert "AGENT_BRAIN_HANDOFF_TOKEN" in cursor["mcpServers"]["agent-brain-handoff"]["env"]
+
+
+def test_cursor_underscore_tool_name_aliases_append_and_recall(tmp_path: Path) -> None:
+    """Cursor sanitizes dotted MCP tool names to underscores on tools/call."""
+    tokens: list[str] = []
+    gateway = _gateway(tmp_path, tokens)
+    transport = HandoffMcpTransport(gateway, token_provider=lambda: tokens[0])
+    server = build_handoff_stdio_server(transport)
+
+    append = server.handle_message(
+        {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+                "name": HANDOFF_APPEND_TOOL_CURSOR_ALIAS,
+                "arguments": {
+                    "repository_ref": "jannekbuengener/sample-brain",
+                    "agent_id": "cursor",
+                    "task_ref": "issue:cursor-alias",
+                    "status": "in_progress",
+                    "summary": "Cursor underscore alias path",
+                    "next_step": "Recall via underscore alias",
+                    "source_ref": "local:cursor-alias",
+                    "idempotency_key": "cursor-alias-key",
+                },
+            },
+        }
+    )
+    assert append is not None
+    assert append["result"]["isError"] is False
+    assert append["result"]["structuredContent"]["ok"] is True
+
+    recall = server.handle_message(
+        {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {
+                "name": HANDOFF_RECALL_TOOL_CURSOR_ALIAS,
+                "arguments": {
+                    "repository_ref": "jannekbuengener/sample-brain",
+                    "task_ref": "issue:cursor-alias",
+                },
+            },
+        }
+    )
+    assert recall is not None
+    assert recall["result"]["isError"] is False
+    events = recall["result"]["structuredContent"]["events"]
+    assert len(events) == 1
+    assert events[0]["summary"] == "Cursor underscore alias path"
+
+    unknown = transport.call_tool_mcp_result("shared_memory_handoff_unknown", {})
+    assert unknown["isError"] is True
+    assert unknown["structuredContent"]["code"] == "NOT_FOUND"
