@@ -9,7 +9,7 @@ from typing import Any, TextIO
 
 from agent_brain import __version__
 from agent_brain.capabilities import CAPABILITY_CONTRACT_SCHEMA, PRODUCT_NAME
-from agent_brain.mcp.transport import CapabilityMcpTransport
+from agent_brain.mcp.transport import CapabilityMcpTransport, McpToolTransport
 
 MCP_SERVER_SCHEMA = "agent-brain-mcp-stdio/v1"
 MCP_SERVER_NAME = "agent-brain"
@@ -41,10 +41,32 @@ _REJECTED_METHODS = frozenset(
 
 
 class McpStdioServer:
-    """Read-only MCP stdio server bound to ``CapabilityMcpTransport``."""
+    """MCP stdio JSON-RPC server bound to an injectable transport facade.
 
-    def __init__(self, transport: CapabilityMcpTransport | None = None) -> None:
-        self._transport = transport if transport is not None else CapabilityMcpTransport()
+    Default transport remains the read-only ``CapabilityMcpTransport`` (cdb_context).
+    Shared-memory handoff injects ``HandoffMcpTransport`` without a second MCP runtime.
+    """
+
+    def __init__(
+        self,
+        transport: McpToolTransport | None = None,
+        *,
+        server_name: str = MCP_SERVER_NAME,
+        server_schema: str = MCP_SERVER_SCHEMA,
+        instructions: str = MCP_SERVER_INSTRUCTIONS,
+        read_only: bool = True,
+        capability_contract_schema: str | None = CAPABILITY_CONTRACT_SCHEMA,
+        reject_as_read_only_surface: bool = True,
+    ) -> None:
+        self._transport: McpToolTransport = (
+            transport if transport is not None else CapabilityMcpTransport()
+        )
+        self._server_name = server_name
+        self._server_schema = server_schema
+        self._instructions = instructions
+        self._read_only = read_only
+        self._capability_contract_schema = capability_contract_schema
+        self._reject_as_read_only_surface = reject_as_read_only_surface
         self._initialized = False
 
     def handle_message(self, message: Mapping[str, Any]) -> dict[str, object] | None:
@@ -71,13 +93,28 @@ class McpStdioServer:
             return None
 
         if method in _REJECTED_METHODS:
+            surface = (
+                "read-only Agent Brain surface"
+                if self._reject_as_read_only_surface
+                else "Agent Brain handoff surface"
+            )
             return self._error_response(
                 msg_id,
                 -32601,
-                f"Method not found (read-only Agent Brain surface): {method}",
+                f"Method not found ({surface}): {method}",
             )
 
         if method == "initialize":
+            meta: dict[str, object] = {
+                "agent_brain_mcp_schema": self._server_schema,
+                "agent_brain_version": __version__,
+                "read_only": self._read_only,
+                "requires_mcp_sdk": False,
+                "requires_private_operator_mcp": False,
+                "requires_claire_runtime": False,
+            }
+            if self._capability_contract_schema is not None:
+                meta["capability_contract_schema"] = self._capability_contract_schema
             return self._result(
                 msg_id,
                 {
@@ -86,20 +123,12 @@ class McpStdioServer:
                         "tools": {"listChanged": False},
                     },
                     "serverInfo": {
-                        "name": MCP_SERVER_NAME,
+                        "name": self._server_name,
                         "version": __version__,
                         "title": PRODUCT_NAME,
                     },
-                    "instructions": MCP_SERVER_INSTRUCTIONS,
-                    "_meta": {
-                        "agent_brain_mcp_schema": MCP_SERVER_SCHEMA,
-                        "capability_contract_schema": CAPABILITY_CONTRACT_SCHEMA,
-                        "agent_brain_version": __version__,
-                        "read_only": True,
-                        "requires_mcp_sdk": False,
-                        "requires_private_operator_mcp": False,
-                        "requires_claire_runtime": False,
-                    },
+                    "instructions": self._instructions,
+                    "_meta": meta,
                 },
             )
 
@@ -147,14 +176,15 @@ def serve_stdio(
     *,
     stdin: TextIO | None = None,
     stdout: TextIO | None = None,
-    transport: CapabilityMcpTransport | None = None,
+    transport: McpToolTransport | None = None,
+    server: McpStdioServer | None = None,
 ) -> int:
     """Run the MCP stdio loop until stdin EOF."""
     in_stream = stdin if stdin is not None else sys.stdin
     out_stream = stdout if stdout is not None else sys.stdout
     _force_utf8_text_stream(in_stream)
     _force_utf8_text_stream(out_stream)
-    server = McpStdioServer(transport=transport)
+    server = server if server is not None else McpStdioServer(transport=transport)
 
     while True:
         line = in_stream.readline()

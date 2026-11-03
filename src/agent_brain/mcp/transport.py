@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Protocol
 
 from agent_brain.capabilities import (
     AGENT_BRAIN_HEALTH,
@@ -82,6 +82,20 @@ def mcp_tool_definitions() -> list[dict[str, object]]:
     return tools
 
 
+class McpToolTransport(Protocol):
+    """Minimal transport surface consumed by ``McpStdioServer`` / HTTP adapter."""
+
+    def list_tools(self) -> list[dict[str, object]]: ...
+
+    def call_tool_mcp_result(
+        self,
+        name: str,
+        arguments: Mapping[str, Any] | None = None,
+        *,
+        request_id: str | None = None,
+    ) -> dict[str, object]: ...
+
+
 class CapabilityMcpTransport:
     """Thin MCP-shaped facade that only forwards to ``CapabilityGateway``."""
 
@@ -143,6 +157,7 @@ def invoke_via_transport(
 
 __all__ = [
     "CapabilityMcpTransport",
+    "McpToolTransport",
     "invoke_via_transport",
     "mcp_tool_annotations",
     "mcp_tool_definitions",
