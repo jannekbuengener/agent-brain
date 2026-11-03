@@ -39,6 +39,7 @@ Niedrigere Quellen dürfen höhere, aktuellere Quellen nicht überschreiben.
 - Slice #5 besitzt die Portable Foundation; Slice #15 besitzt gemeinsame Source-/Index-/Evidence-Contracts. Frühere Slices dürfen diese APIs nicht vorwegnehmen.
 - Keine funktionale Retrieval-, Context-, SurrealDB- oder Memory-Runtime ohne passendes Issue.
 - **Gemeinsame Arbeits-Handoffs sind erlaubt:** Die durch [#94](https://github.com/jannekbuengener/agent-brain/issues/94) explizit freigegebene, eng typisierte lokale `agent-brain-handoff write/read`-Oberfläche darf Agenten-Arbeitsstände append-only in der eigenen SurrealDB (`agent_brain/shared_memory`) speichern und wieder abrufen. Kein individueller Human-GO für jeden gewöhnlichen Arbeitsstand; keine Secrets/Trading-State und keine automatische Live-Aktion. Einstieg: `docs/operations/SHARED_MEMORY.md`.
+- **Consumer-Auth (G1 / #96):** Externe Consumer nutzen `agent-brain-handoff-auth` + `HandoffGateway` mit Token-Hashes, per-Repo Grants, Rotation/Widerruf und Revoke-Denylist außerhalb des Surreal-Volumes. Keine DB-Root-Credentials an Consumer. Details: `docs/operations/SHARED_MEMORY_AUTH.md`.
 - **Unbeschränkte, generische Agent-Memory-Writes** (`remember/reflect/consolidate`, freie DB-Mutationen und Remote-Consumer ohne pro-Repo-Auth) bleiben `DEFER`. Die bestehenden `MemoryStore`/`KnowledgeStore`-Ports bleiben read-only. Handoff darf diese Guards nicht umgehen.
 - Keine Agent-Workforce-Produktintegration in der Scaffold-Baseline.
 - Keine Secrets, Trading-Runtime-Daten oder produktiven State-Mutationen.
