@@ -14,7 +14,7 @@
 | G3 | PASS | Harness PR [#102](https://github.com/jannekbuengener/agent-brain/pull/102); sample-brain [#1365](https://github.com/jannekbuengener/sample-brain/pull/1365); security-business [#35](https://github.com/jannekbuengener/security-business/pull/35); live [G3_CROSS_HOST_EVIDENCE.json](G3_CROSS_HOST_EVIDENCE.json) |
 | G4 | PASS | workforce PR [#101](https://github.com/jannekbuengener/agent-workforce/pull/101) → `a1ed1ad`; child #100 closed |
 | G5 | PASS | PR [#103](https://github.com/jannekbuengener/agent-brain/pull/103); [G5_REVOKE_RESTORE_EVIDENCE.json](G5_REVOKE_RESTORE_EVIDENCE.json); unit revoke-survives-restore |
-| G6 | IN PROGRESS | This release `0.3.5` + consumer pin update |
+| G6 | PASS | Release [v0.3.5](https://github.com/jannekbuengener/agent-brain/releases/tag/v0.3.5) on main `21cbabf`; host manifests synced; consumer pin PRs |
 
 ## Parent acceptance checklist
 
