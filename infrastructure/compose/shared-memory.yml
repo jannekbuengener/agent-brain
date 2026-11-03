@@ -1,0 +1,31 @@
+# Agent Brain-owned SurrealDB runtime, separate from Claire de Binare.
+name: agent_brain
+services:
+  surrealdb:
+    image: surrealdb/surrealdb@sha256:65000ff205b08363b035b457f292dc0a0b1cd4212935dd5ea94073cf67adf306
+    container_name: agent_brain_surrealdb
+    restart: unless-stopped
+    command: ["start", "surrealkv:/data/agent_brain.db"]
+    env_file:
+      - ${AGENT_BRAIN_SECRETS_PATH:?Set AGENT_BRAIN_SECRETS_PATH to a private absolute directory}/SURREALDB_ENV
+    ports:
+      - "127.0.0.1:8012:8000"
+    volumes:
+      - type: volume
+        source: agent_brain_memory_data
+        target: /data
+        volume:
+          nocopy: true
+    healthcheck:
+      test: ["CMD", "/surreal", "isready", "--endpoint", "http://127.0.0.1:8000"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  agent_brain_memory_data:
+    external: true
+    name: agent_brain_memory_data

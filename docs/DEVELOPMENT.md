@@ -102,6 +102,12 @@ src/agent_brain/
 - `tests/conftest.py` enthält kleine prozedurale Fixtures.
 - Claire-Parity-Tests und -Fixtures werden nicht blind kopiert, sondern nur im zuständigen Slice produktneutral charakterisiert oder später im Parity-Scope verglichen.
 
+## Agent-Brain-eigener lokaler Memory-Stack (#94)
+
+Seit 2026-11-03 existiert zusätzlich eine eigene SurrealDB-Runtime und ein getesteter append-only Shared-Handoff-Pfad. `scripts/shared-memory.ps1` verwaltet nur den Agent-Brain-Container. `scripts/backup-shared-memory.ps1` erstellt separate konsistente Volumen-Backups auf F:. Alle Schritte und Grenzen: [Shared-Memory-Betrieb](operations/SHARED_MEMORY.md).
+
+Die unten beschriebene ursprüngliche Scaffold-Baseline ist historisch und darf die explizit ausgelieferte #94-Write-Capability nicht blockieren. Sie autorisiert weiterhin **keine** generischen Memory-Writes oder CDB-/Trading-Mutationen.
+
 ## Sicherheitsgrenzen
 
-Die aktuelle Baseline implementiert keine Repository-Ingestion, kein Retrieval, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes. Der Context-/Briefing-Core führt keine externen Aktionen aus und besitzt keine Produktfreigabe-Autorität. `EvidenceRef` und `ClaimRef` transportieren weiterhin nur Identität und Beziehungen; Trust, Resolver und Scoring folgen erst in Slice #8. Produktpolicy bleibt außerhalb des generischen Kerns und kann nur über neutrale Policy-Hooks injiziert werden.
+Die ursprüngliche Scaffold-Baseline implementierte keine Repository-Ingestion, kein Retrieval, keine SurrealDB-Runtime, keine Agent-Workforce-Anbindung und keine produktiven Memory Writes. Diese Aussage ist historisch; inzwischen sind Repository-Ingestion, Retrieval und die ausdrücklich eng begrenzte lokale Handoff-Runtime unter #94 implementiert. Generische produktive Agent-Memory-Writes bleiben getrennt und nicht freigegeben. Der Context-/Briefing-Core führt keine externen Aktionen aus und besitzt keine Produktfreigabe-Autorität. `EvidenceRef` und `ClaimRef` transportieren weiterhin nur Identität und Beziehungen; Trust, Resolver und Scoring folgen erst in Slice #8. Produktpolicy bleibt außerhalb des generischen Kerns und kann nur über neutrale Policy-Hooks injiziert werden.

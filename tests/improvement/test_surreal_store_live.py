@@ -35,13 +35,12 @@ from agent_brain.improvement import (
     SurrealImprovementObservationStore,
     board_manager_actor,
 )
+from agent_brain.memory.handoff import load_local_authorization
 from agent_brain.surrealdb.config import SurrealDbReadSettings
 from agent_brain.surrealdb.http import probe_version
 
-SURREAL_ENDPOINT = os.environ.get("AGENT_BRAIN_SURREAL_ENDPOINT", "http://127.0.0.1:8010")
-SURREAL_DIGEST = (
-    "sha256:65000ff205b08363b035b457f292dc0a0b1cd4212935dd5ea94073cf67adf306"
-)
+SURREAL_ENDPOINT = os.environ.get("AGENT_BRAIN_SURREAL_ENDPOINT", "http://127.0.0.1:8012")
+SURREAL_DIGEST = "sha256:65000ff205b08363b035b457f292dc0a0b1cd4212935dd5ea94073cf67adf306"
 
 
 def _surreal_reachable(endpoint: str) -> bool:
@@ -50,7 +49,11 @@ def _surreal_reachable(endpoint: str) -> bool:
 
 
 pytestmark = pytest.mark.skipif(
-    not _surreal_reachable(SURREAL_ENDPOINT),
+    (
+        os.environ.get("AGENT_BRAIN_IMPROVEMENT_LIVE") != "1"
+        or SURREAL_ENDPOINT != "http://127.0.0.1:8012"
+        or not _surreal_reachable(SURREAL_ENDPOINT)
+    ),
     reason=(
         f"SurrealDB 3.0 endpoint not reachable at {SURREAL_ENDPOINT}; "
         "start an isolated scratch runtime to run live #64/#89 acceptance"
@@ -98,7 +101,9 @@ def _observation(
 def store() -> SurrealImprovementObservationStore:
     # Unique DB per test for isolation on shared scratch server.
     db_name = f"imp_{uuid.uuid4().hex}"
-    return SurrealImprovementObservationStore(_settings(db_name))
+    return SurrealImprovementObservationStore(
+        _settings(db_name), authorization=load_local_authorization()
+    )
 
 
 def test_live_contract_parity_create_retry_list(store: SurrealImprovementObservationStore) -> None:
@@ -271,7 +276,9 @@ def test_live_backup_restore_parity_after_parallel_writes(
     assert snapshot["counts"]["observations"] == 12
     assert digest
 
-    target = SurrealImprovementObservationStore(_settings(f"restore_{uuid.uuid4().hex}"))
+    target = SurrealImprovementObservationStore(
+        _settings(f"restore_{uuid.uuid4().hex}"), authorization=load_local_authorization()
+    )
     target.import_board_snapshot(json.loads(artifact.read_text(encoding="utf-8")))
 
     source_ids = {
