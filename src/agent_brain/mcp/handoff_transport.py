@@ -19,6 +19,15 @@ from agent_brain.surrealdb.config import SurrealDbReadSettings
 
 HANDOFF_APPEND_TOOL = "shared_memory.handoff.append"
 HANDOFF_RECALL_TOOL = "shared_memory.handoff.recall"
+# Cursor MCP host sanitizes dotted tool names to underscores on call.
+HANDOFF_APPEND_TOOL_CURSOR_ALIAS = "shared_memory_handoff_append"
+HANDOFF_RECALL_TOOL_CURSOR_ALIAS = "shared_memory_handoff_recall"
+_HANDOFF_TOOL_NAME_ALIASES = {
+    HANDOFF_APPEND_TOOL: HANDOFF_APPEND_TOOL,
+    HANDOFF_RECALL_TOOL: HANDOFF_RECALL_TOOL,
+    HANDOFF_APPEND_TOOL_CURSOR_ALIAS: HANDOFF_APPEND_TOOL,
+    HANDOFF_RECALL_TOOL_CURSOR_ALIAS: HANDOFF_RECALL_TOOL,
+}
 HANDOFF_MCP_SCHEMA = "agent-brain-mcp-handoff-stdio/v1"
 HANDOFF_MCP_SERVER_NAME = "agent-brain-handoff"
 HANDOFF_TOKEN_ENV = "AGENT_BRAIN_HANDOFF_TOKEN"
@@ -124,6 +133,7 @@ class HandoffMcpTransport:
     ) -> dict[str, object]:
         del request_id
         payload = dict(arguments or {})
+        name = _HANDOFF_TOOL_NAME_ALIASES.get(name, name)
         try:
             token = self._token_provider()
         except HandoffAuthUnavailable as exc:
