@@ -15,6 +15,7 @@ agent-brain = "agent_brain.cli.main:run"
 agent-brain-mcp = "agent_brain.mcp.server:main"
 agent-brain-mcp-http = "agent_brain.mcp.http:main"
 agent-brain-handoff = "agent_brain.memory.handoff_cli:run"
+agent-brain-handoff-auth = "agent_brain.memory.handoff_auth_cli:run"
 
 [project.optional-dependencies]
 dev = [

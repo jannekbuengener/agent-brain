@@ -1,6 +1,7 @@
 # Agent Brain: gemeinsames Arbeitsgedächtnis (lokaler SurrealDB-Slice)
 
-**Stand:** 2026-11-03. **Status:** LOCAL_TRUSTED_OPERATOR_SLICE — noch kein Remote-/Multi-Tenant-Produkt.
+**Stand:** 2026-11-03. **Status:** LOCAL_TRUSTED_OPERATOR_SLICE + G1 consumer AuthN/AuthZ foundation ([#96](https://github.com/jannekbuengener/agent-brain/issues/96) / [#97](https://github.com/jannekbuengener/agent-brain/issues/97)).  
+Consumer grants use protected token hashes and an external revoke denylist — see [SHARED_MEMORY_AUTH.md](SHARED_MEMORY_AUTH.md). MCP gateway and multi-repo host E2E remain later gates. No Remote-/Public-Bind without Owner approval.
 
 ## Ziel und Architektur
 
@@ -82,10 +83,11 @@ als leer. Ausfall der DB ist ein Fehler – kein erfolgreicher Leerstand.
 
 - Nur typisierte append-/recall-Operationen, keine direkte SurrealQL-CLI nach außen.
 - Kein repoübergreifendes Lesen ohne expliziten getrennten Aufruf.
-- Repo-Filterung im ersten Slice ist **keine serverseitige Mandanten-Authentifizierung**:
-  alle lokalen Agenten laufen als derselbe vertrauenswürdige Maintainer. Für externe
-  Consumer braucht es ein Gateway mit einer eigenen Identität/Berechtigung je Repo
-  und DB-seitigen Least-Privilege-Rollen.
+- Die Legacy-CLI `agent-brain-handoff` bleibt die lokale Maintainer-Oberfläche mit
+  Root-DB-Auth. Externe Consumer dürfen **keine** Root-Credentials erhalten.
+- G1 führt serverseitige Consumer-Identitäten ein (`agent-brain-handoff-auth` +
+  `HandoffGateway`): Token-Hashes, per-Repo Grants, Rotation/Widerruf und eine
+  Revoke-Denylist außerhalb des Surreal-Volumes. Details: [SHARED_MEMORY_AUTH.md](SHARED_MEMORY_AUTH.md).
 - Keine Secrets, personenbezogenen Daten oder produktiven Trading-Zustände eintragen.
 - Statusmeldungen aus Memory ersetzen nicht den Live-Check von GitHub/Repo.
 - Kein generischer `brain.write`-Pfad; keine produktive Agent-Memory-Adoption.
