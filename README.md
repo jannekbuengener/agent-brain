@@ -62,7 +62,7 @@ Die Portable Foundation stellt generische Zeit-, Hashing-, Identitäts-, Provena
 
 - Python: `>=3.12`
 - Packaging: `pyproject.toml` + `src`-Layout
-- Package-Version: `0.3.4`
+- Package-Version: `0.3.5`
 - Pflicht-Runtime-Abhängigkeiten: keine
 - Qualität: Ruff + pytest
 - CI: Python 3.12, 3.13 und 3.14
