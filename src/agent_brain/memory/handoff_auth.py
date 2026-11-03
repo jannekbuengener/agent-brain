@@ -323,8 +323,10 @@ class HandoffCredentialStore:
     ) -> RequestContext:
         op = operation if isinstance(operation, HandoffOperation) else HandoffOperation(operation)
         repo = _require_repo(repository_ref)
+        if self._denylist is None:
+            raise HandoffAuthUnavailable("revoke denylist is not configured")
         token_hash = hash_consumer_token(token, pepper=self._pepper)
-        if self._denylist is not None and self._denylist.contains(token_hash):
+        if self._denylist.contains(token_hash):
             raise HandoffForbidden("consumer credential revoked")
         grant_id = self._by_hash.get(token_hash)
         if grant_id is None:
