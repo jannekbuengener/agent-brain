@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "gate": "G3_CROSS_REPO_CROSS_HOST_PROVEN_PARTIAL",
+  "hosts": {
+    "cursor_snippet_command": "agent-brain-mcp-handoff",
+    "claude_snippet_command": "agent-brain-mcp-handoff",
+    "session_a": "cursor",
+    "session_b": "claude-code"
+  },
+  "task_ref": "g3-e2e:fb3b9e9ea00f",
+  "sample_brain_events": 2,
+  "cross_tenant_denied": true,
+  "note": "Plaintext tokens never written to this evidence blob."
+}

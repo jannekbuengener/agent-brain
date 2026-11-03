@@ -2,7 +2,8 @@
 
 **Stand:** 2026-11-03. **Status:** LOCAL_TRUSTED_OPERATOR_SLICE + G1 consumer AuthN/AuthZ foundation ([#96](https://github.com/jannekbuengener/agent-brain/issues/96) / [#97](https://github.com/jannekbuengener/agent-brain/issues/97)).  
 Consumer grants use protected token hashes and an external revoke denylist — see [SHARED_MEMORY_AUTH.md](SHARED_MEMORY_AUTH.md).  
-Handoff MCP entry `agent-brain-mcp-handoff` reuses the existing stdio runtime; `agent-brain-mcp` remains the unchanged read-only `cdb_context` surface. Multi-repo host E2E is G3. No Remote-/Public-Bind without Owner approval.
+Handoff MCP entry `agent-brain-mcp-handoff` reuses the existing stdio runtime; `agent-brain-mcp` remains the unchanged read-only `cdb_context` surface.  
+G3 harness: `scripts/prove_g3_cross_host_handoff.py` (live opt-in) and evidence [`G3_CROSS_HOST_EVIDENCE.json`](G3_CROSS_HOST_EVIDENCE.json). No Remote-/Public-Bind without Owner approval.
 
 ## Ziel und Architektur
 
