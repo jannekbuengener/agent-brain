@@ -14,7 +14,7 @@
 | G3 | PASS | Harness PR [#102](https://github.com/jannekbuengener/agent-brain/pull/102); sample-brain [#1365](https://github.com/jannekbuengener/sample-brain/pull/1365); security-business [#35](https://github.com/jannekbuengener/security-business/pull/35); live [G3_CROSS_HOST_EVIDENCE.json](G3_CROSS_HOST_EVIDENCE.json) |
 | G4 | PASS | workforce PR [#101](https://github.com/jannekbuengener/agent-workforce/pull/101) → `a1ed1ad`; child #100 closed |
 | G5 | PASS | PR [#103](https://github.com/jannekbuengener/agent-brain/pull/103); [G5_REVOKE_RESTORE_EVIDENCE.json](G5_REVOKE_RESTORE_EVIDENCE.json); unit revoke-survives-restore |
-| G6 | PASS | Release [v0.3.5](https://github.com/jannekbuengener/agent-brain/releases/tag/v0.3.5) on main `21cbabf`; host manifests synced; consumer pin PRs |
+| G6 | PASS | Release [v0.3.5](https://github.com/jannekbuengener/agent-brain/releases/tag/v0.3.5) → `21cbabf`; host manifests synced; sample-brain pin [#1366](https://github.com/jannekbuengener/sample-brain/pull/1366) → `6c9c820`; security-business pin [#36](https://github.com/jannekbuengener/security-business/pull/36) → `751d59c` |
 
 ## Parent acceptance checklist
 
@@ -22,14 +22,14 @@
 | --- | --- |
 | Isolated Agent Brain SurrealDB; CDB untouched | compose `shared-memory.yml`; #94 restore proof; no CDB volume mutation in #96 PRs |
 | Auth contract; no DB root to consumers | [SHARED_MEMORY_AUTH.md](SHARED_MEMORY_AUTH.md); `HandoffGateway`; MCP env token only |
-| Two external consumers with grants/CI/main | sample-brain + security-business PRs merged |
+| Two external consumers with grants/CI/main | sample-brain `6c9c820` (`agent-brain==0.3.5`); security-business `751d59c` (guide pin 0.3.5) |
 | Two hosts: A stores, B new session uses | Cursor→Claude MCP sessions in G3 evidence + unit `test_g3_cross_host_session.py` |
 | Cross-tenant denial | G3 evidence `cross_tenant_denied: true` |
 | Idempotency / negatives | `tests/memory/test_handoff*.py`, `test_handoff_auth.py` |
 | cdb_context / read-only ports unchanged | `test_readonly_tool_catalogue_unchanged` |
 | Revoke survives restore | G5 evidence + denylist outside Surreal volume |
 | Workforce discovery | `shared_memory_handoff` in REGISTRY + routing |
-| Version pin | `agent-brain==0.3.5` / `v0.3.5` after G6 tag |
+| Version pin | `agent-brain==0.3.5` / `v0.3.5`; both external consumers pinned on `main` |
 
 ## Explicit HOLDs (not blockers for localhost multi-repo ops)
 
