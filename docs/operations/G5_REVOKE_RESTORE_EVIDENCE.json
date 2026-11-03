@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "gate": "G5_REVOKE_SURVIVES_GRANT_RESTORE",
+  "grant_status_after_restore": "active",
+  "denylist_path_outside_volume": "AGENT_BRAIN_SECRETS_PATH/handoff_revoke_denylist.jsonl"
+}

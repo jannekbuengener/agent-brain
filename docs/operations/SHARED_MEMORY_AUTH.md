@@ -44,7 +44,7 @@ Enroll/rotate print the plaintext token **once**. Store it in the consumer host 
 5. Auth with the old token must still fail because the denylist was not rolled back.
 
 Unit coverage: `tests/memory/test_handoff_auth.py::test_revoked_credential_not_revived_by_grant_snapshot_restore`.  
-Full volume drill: G5 / [#99](https://github.com/jannekbuengener/agent-brain/issues/99).
+Unit + operator drill evidence: `docs/operations/G5_REVOKE_RESTORE_EVIDENCE.json`. Full Surreal volume drill remains tracked in [#99](https://github.com/jannekbuengener/agent-brain/issues/99).
 
 ## Application API
 
